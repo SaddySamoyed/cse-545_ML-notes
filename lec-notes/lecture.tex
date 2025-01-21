@@ -1,0 +1,126 @@
+\documentclass[lang=cn,11pt]{elegantbook}
+\usepackage[utf8]{inputenc}
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath}%
+\usepackage{amssymb}%
+\usepackage{graphicx}
+\usepackage{pdfpages}
+
+\title{CSE 545: Machine Learning}
+\subtitle{25 Win, instructed by Honglak Lee}
+
+\begin{document}
+\frontmatter
+\tableofcontents
+\mainmatter
+
+\chapter{Linear Regression: I}
+
+\begin{definition}{supervised learning}
+\textbf{Supervise Learning}: Given data X in feature space and labels Y, learn to predict Y from given X.    
+\end{definition}
+\noindent Label: 可以是 discrete 的 or continuous 的.\\
+对于\textbf{discrete} 的 label, 这类问题称为 \textbf{classification}.\\
+对于\textbf{continuous} 的 label, 这类问题称为 \textbf{regression}.\\
+
+
+\section{notation and expression}
+我们使用以下 notation:
+\pic[0.7]{assets/lec1-notation.png}
+
+\begin{definition}{(generalized) linear regression}
+给定 $N$ 个 data points $\{(x^{(n)},y^{(n)}) \}_{n=1,\cdots, N}$ where each $x^{(n)}\in\bR^d,y^{(n)}  \in\bR$, \\
+以及预先设定好的 $M$ 个 basis functions $\{ \phi_i(x)\}_{i=1,\cdots, M}$ 用以表示 $M$ 个 features,\\\
+   
+我们通过建立一个 $h(x,w): \bR^d \times \bR^M \rar \bR = \sum_{i=0}^{M-1} w_i \phi_i(x)$, 使其关于 $w$ 线性, 以找到一组参数 $w \in \bR^M$, 使得 $h(x^{(n)},w)$ 能够近似 $y^{(n)}$ for each $n$, with respect to the loss function we define to measure the distance between two vectors. 
+\end{definition}
+\pic[0.7]{assets/lec1(expression).png}
+\begin{remark}
+    注意: linear regression 指的是 $y\in\bR$ 和参数 $w \in \bR^M$ 之间是 linear 的, 而不是说 $y$ 和 input $x$ 之间是 linear 的. 我们可以选择 nonlinear 的 basis funtions 来 encode $x$ 来表示 features 的特性, 比如我们可以选择:
+\pic[0.7] {assets/lec1-basis.png}
+\end{remark}
+
+
+
+
+\section{loss function: sum of squared error}
+这个 loss function 衡量两个 vectors 之间的距离, 目的是衡量 $y \in \bR^N$ 和 $h(x,w) \in \bR^N$ 这两个 vectors 的差距. 实际上就是它们 difference 的 $L_2$-norm 的平方.
+\pic[0.6]{assets/lec1-loss.png}
+
+
+
+
+\section{gradient of sum of squared error}
+我们下面首先通过求 $\nabla E(w)$ 的每个 entry $\frac{\partial E}{\partial w_k}(w)$ 来写出这个 gradient.
+\pic[0.6]{assets/lec1-gradient.png}
+
+
+
+
+\section{batch v.s. stochastic GD}
+
+我们通过迭代降低 gradient 来降低 loss function 的值, 从而优化 weight vector.
+\pic[0.8]{assets/lec1-descent.png}
+
+More practically, 我们可以采用 minibatch SGD: 即在 batch GD 和 SGD 之间, 每次选择一小部分 samples, 称为一个 \textbf{minibatch}, 在这个 minibatch 上进行 GD.
+
+
+
+
+
+
+
+\chapter{Linear Regression: II}
+\section{vectorization}
+我们可以把每个 $x^{(n)}$ 的 features 写成一个 row vector, 并 stack up $N$ 个 row vectors, 成为一个 $N\times M$ 的 matrix $\Phi$. 从而:
+$$
+h(x,w) = \Phi w
+$$
+vectorization 的好处是: 1. 便于手算; 2. computer 可以进行并行计算.
+\pic[0.6]{assets/lec2-vect.png}
+计算得 linear regression 的 loss function 为:
+\[
+E(w) = \frac{1}{2}w^T \Phi^T \Phi w - w^T \Phi^T y + \frac{1}{2}y^T y
+\]
+
+
+
+\section{closed-form solution}
+如果
+$$
+\nabla E(w) = y
+$$
+有一个 closed form solution, 那么这个 solution 一定是一个 local min/max, 从而 possibly 成为一个 global min.\\
+为了计算 closed form solution, 我们首先要给出 $\nabla E(w)$ 的 matrix form 表达式. \\
+这里首先引入 linear form 和 quadratic form ($\bR^m \rar \bR$) 的 gradient:
+\pic[0.6]{assets/lec2-diff.png}
+我们发现: $E(w)$ 就是一个 $w$ 的 quadratic form, 一个 $w$ 的 linear form 和一个 const 的组合. 从而可以求出:
+\pic[0.6]{assets/lec2-grad.png}
+从而我们得到 closed form solution (if exists):
+\pic[0.6]{assets/lec2-closed.png}
+因而 closed form exists iff $\Phi^T\Phi$ 可逆, iff $\Phi$ 可逆.\\
+并且 recalll in linear algebra: $\rank(\Phi^T\Phi) = \rank(\Phi)$.
+因而, \textbf{closed form exists iff $M >= N $ 且 $\rank(\Phi) = N$.}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
