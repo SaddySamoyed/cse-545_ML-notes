@@ -142,99 +142,35 @@ summary: regularization controls the tradeoff bewteen fitting error 和 expressi
 
 
 
-
-
-
-
-
-
 ## Linear Regression(lec3)
 
 ### Review on Probability
 
 <img src="Linear_Regression.assets/image-20250121215444693.png" alt="image-20250121215444693" style="zoom:50%;" />
 
-
-
 #### Likelihood function
 
-后验概率 $P(\theta | X)$ 表示在给定观测数据 $X$ 的情况下，参数 $\theta$ 的概率分布。它是我们在观察数据后对参数的更新认知
+**Likelihood function** (似然函数) 表示在给定一组 i.i.d 的数据 samples $D$ 以及其以 $\theta$ 为参数的分布形式下，random vector =$D$ 处的概率密度；其以参数 $\theta$ 为变量，表达的是在固定数据 $D$ 的前提下，不同参数 $\theta$ 对数据的适配程度
 
-根据 **贝叶斯定理**：
-$$
-P(θ|X)= \frac{P(X | \theta) P(\theta)}{P(X)}
-$$
-其中：
+而 maximum likelihood estimator 则是使得这个 random vector =$D$ 处的概率密度 maximize 的参数 $\tilde{\theta}$
 
-- $P(θ|X)$: 后验概率 (posterior)
-- $P(X|θ)$: 似然函数（Likelihood）
-- $P(θ)$: 先验概率（Prior）
-- $P(X)$: 边际似然或归一化常数，确保后验概率的总和为 1。
+由于独立同分布,  random vector =$D:=\{x_1,\cdots,x_n\}$ 处的概率密度就等于所有 $X=x_i$ 处的概率密度的 product.
 
-### 2. **Likelihood（似然）**
+取得 maximum likelihood estimator 即: 在这个参数下, 我们得到的模型, 对于我们的训练数据而言, 取得其相对的 y 的概率密度最大.
 
-似然 $P(X|θ)$ 描述在给定参数 $θ$ 的情况下，生成观测数据 $X$ 的可能性.
+<img src="Linear_Regression.assets/image-20250123174328307.png" alt="image-20250123174328307" style="zoom: 67%;" />
 
-数学形式：如果数据是独立同分布（i.i.d.），则似然函数为
-$$
-P(X | \theta) = \prod_{i=1}^n P(x_i | \theta)
-$$
-似然函数衡量不同参数值对生成数据的“解释能力”。
+### Find MLE for linear model with stochastic noise
 
-### **生成观测数据的可能性**
+<img src="Linear_Regression.assets/image-20250123180811150.png" alt="image-20250123180811150" style="zoom:50%;" />
 
-“生成观测数据的可能性”指的是：给定模型和参数，观测到当前数据的概率大小。例如：
+(求解MLE 可得: linear model with stochastic noise which is normal distributed centered at 0 得到的 MLE，与标准的 linear model 得到的 MLS 最优解是等价的.
 
-- 抛硬币时，若硬币正面概率 p=0.6p = 0.6，连续抛了 10 次得到 6 次正面，那么观测到这种结果的可能性（似然）可以用概率公式计算。
+这是符合直觉的，因为一个正态分布的 noise 不影响参数的选择)
 
-------
+<img src="Linear_Regression.assets/image-20250123180955714.png" alt="image-20250123180955714" style="zoom: 67%;" />
 
-### 3. **Prior（先验概率）**
+### locally weighted linear regression 
 
-先验概率 P(θ)P(\theta) 表示在观测数据 XX 之前，参数 θ\theta 的概率分布。它反映了我们在未观察数据前对参数的主观认知或假设。
-
-- 先验类
-  - **非信息先验（Non-informative Prior）**：没有任何偏好，例如均匀分布。
-  - **信息先验（Informative Prior）**：基于先验知识选择分布，例如根据历史数据选择分布。
-
-
-
-P(θ∣X)=P(X∣θ)P(θ)P(X)P(\theta | X) = \frac{P(X | \theta) P(\theta)}{P(X)}
-
-- P(X∣θ)P(X | \theta) 是似然函数，表明参数 θ\theta 解释数据 XX 的能力。
-- P(θ)P(\theta) 是先验概率，表示对参数的先验假设。
-- P(θ∣X)P(\theta | X) 是后验概率，综合了似然和先验后对参数 θ\theta 的更新。
-
-------
-
-### 举例说明
-
-#### 抛硬币问题
-
-假设：
-
-- 硬币正面朝上的概率为 pp。
-- 抛 10 次硬币，观测到 7 次正面。
-
-1. **Prior（先验）**
-    在抛硬币前，假设 pp 的分布是均匀分布 P(p)=1P(p) = 1（所有值同等可能）。
-
-2. **Likelihood（似然）**
-    给定参数 pp，生成 7 次正面和 3 次反面的观测数据的可能性为：
-
-   P(X∣p)=(107)p7(1−p)3P(X | p) = \binom{10}{7} p^7 (1-p)^3
-
-3. **Posterior（后验）**
-    根据贝叶斯定理，后验分布为：
-
-   P(p∣X)=P(X∣p)P(p)∫01P(X∣p)P(p)dpP(p | X) = \frac{P(X | p) P(p)}{\int_0^1 P(X | p) P(p) dp}
-
-------
-
-### 总结
-
-- **Prior**：观测数据之前对参数的主观假设。
-- **Likelihood**：参数给定时，数据出现的可能性。
-- **Posterior**：结合观测数据后的参数分布。
-- **生成观测数据的可能性**是 Likelihood 的核心，描述模型对数据的解释能力。
+<img src="Linear_Regression.assets/image-20250123193833909.png" alt="image-20250123193833909" style="zoom:67%;" />
 
