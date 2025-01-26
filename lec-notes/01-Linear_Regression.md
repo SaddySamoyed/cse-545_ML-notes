@@ -3,7 +3,7 @@
 ### notation and expression
 我们使用以下 notation:
 
-<img src="Linear_Regression.assets/lec1-notation.png" alt="lec1-notation" style="zoom:50%;" />
+<img src="Linear_Regression.assets/lec1-notation.png" alt="lec1-notation" style="zoom: 25%;" />
 
 **(generalized) linear regression 的定义:**
 给定 $N$ 个 data points $\{(x^{(n)},y^{(n)}) \}_{n=1,\cdots, N}$ where each $x^{(n)}\in\mathbb{R}^d,y^{(n)}  \in\mathbb{R}$, 以及预先设定好的 $M$ 个 basis functions $\{ \phi_i(x)\}_{i=1,\cdots, M}$ 用以表示 $M$ 个 features;
@@ -15,7 +15,7 @@
 
 Remark:   注意 linear regression 指的是 $y$ 和参数 $w$ 之间是 linear 的, 而不是说 $y$ 和 input $x$ 之间是 linear 的. 我们可以选择 nonlinear 的 basis funtions 来 encode $x$ 来表示 features 的特性, 比如我们可以选择:
 
-<img src="Linear_Regression.assets/lec1-basis.png" alt="lec1-basis" style="zoom: 50%;" />
+<img src="Linear_Regression.assets/lec1-basis.png" alt="lec1-basis" style="zoom: 25%;" />
 
 
 
@@ -41,7 +41,7 @@ Remark:   注意 linear regression 指的是 $y$ 和参数 $w$ 之间是 linear 
 
 我们通过迭代降低 gradient 来降低 loss function 的值, 从而优化 weight vector.
 
-<img src="Linear_Regression.assets/lec1-descent.png" alt="lec1-descent" style="zoom:50%;" />
+<img src="Linear_Regression.assets/lec1-descent.png" alt="lec1-descent" style="zoom: 50%;" />
 
 
 
@@ -75,12 +75,12 @@ $$
 为了计算 closed form solution, 我们首先要给出 $\nabla E(w)$ 的 matrix form 表达式. \\
 这里首先引入 linear form 和 quadratic form  的 gradient:
 
-<img src="Linear_Regression.assets/lec2-diff.png" alt="lec2-diff" style="zoom:50%;" />
+<img src="Linear_Regression.assets/lec2-diff.png" alt="lec2-diff" style="zoom: 33%;" />
 
 
 我们发现: $E(w)$ 就是一个 $w$ 的 quadratic form, 一个 $w$ 的 linear form 和一个 const 的组合. 从而可以求出:
 
-<img src="Linear_Regression.assets/lec2-grad.png" alt="lec2-grad" style="zoom:50%;" />
+<img src="Linear_Regression.assets/lec2-grad.png" alt="lec2-grad" style="zoom: 33%;" />
 
 从而我们得到 closed form solution (if exists):
 
@@ -134,7 +134,7 @@ $\lambda$ 设置越大, 曲线越接近 constant. 比如 $\lambda := 1$, 则会
 
 #### gradient of regularized least square
 
-<img src="Linear_Regression.assets/image-20250121204803377.png" alt="image-20250121204803377" style="zoom:50%;" />
+<img src="Linear_Regression.assets/image-20250121204803377.png" alt="image-20250121204803377" style="zoom: 33%;" />
 
 
 
@@ -146,7 +146,7 @@ summary: regularization controls the tradeoff bewteen fitting error 和 expressi
 
 ### Review on Probability
 
-<img src="Linear_Regression.assets/image-20250121215444693.png" alt="image-20250121215444693" style="zoom:50%;" />
+<img src="Linear_Regression.assets/image-20250121215444693.png" alt="image-20250121215444693" style="zoom: 33%;" />
 
 #### Likelihood function
 
@@ -158,19 +158,19 @@ summary: regularization controls the tradeoff bewteen fitting error 和 expressi
 
 取得 maximum likelihood estimator 即: 在这个参数下, 我们得到的模型, 对于我们的训练数据而言, 取得其相对的 y 的概率密度最大.
 
-<img src="Linear_Regression.assets/image-20250123174328307.png" alt="image-20250123174328307" style="zoom: 67%;" />
+<img src="Linear_Regression.assets/image-20250123174328307.png" alt="image-20250123174328307" style="zoom: 50%;" />
 
 ### Find MLE for linear model with stochastic noise
 
-<img src="Linear_Regression.assets/image-20250123180811150.png" alt="image-20250123180811150" style="zoom:50%;" />
+<img src="Linear_Regression.assets/image-20250123180811150.png" alt="image-20250123180811150" style="zoom: 50%;" />
 
 (求解MLE 可得: linear model with stochastic noise which is normal distributed centered at 0 得到的 MLE，与标准的 linear model 得到的 MLS 最优解是等价的.
 
 这是符合直觉的，因为一个正态分布的 noise 不影响参数的选择)
 
-<img src="Linear_Regression.assets/image-20250123180955714.png" alt="image-20250123180955714" style="zoom: 67%;" />
+<img src="Linear_Regression.assets/image-20250123180955714.png" alt="image-20250123180955714" style="zoom: 50%;" />
 
 ### locally weighted linear regression 
 
-<img src="Linear_Regression.assets/image-20250123193833909.png" alt="image-20250123193833909" style="zoom:67%;" />
+<img src="Linear_Regression.assets/image-20250123193833909.png" alt="image-20250123193833909" style="zoom: 50%;" />
 
