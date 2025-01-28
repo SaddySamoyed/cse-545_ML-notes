@@ -1,0 +1,406 @@
+\documentclass[lang=cn,11pt]{elegantbook}
+\usepackage[utf8]{inputenc}
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath}%
+\usepackage{amssymb}%
+\usepackage{graphicx}
+\usepackage{pdfpages}
+
+\title{CSE 545: Machine Learning}
+\subtitle{25 Win, instructed by Honglak Lee}
+
+\begin{document}
+\frontmatter
+\tableofcontents
+\mainmatter
+
+\chapter{Linear Regression}
+\section{Derivation and Proof}
+
+\subsection{Derive the solution for \(w_0\) and \(w_1\) in linear regression}
+Consider the linear regression problem for 1D data, where we would like to learn a function \(h(x) = w_1x + w_0\) with parameters \(w_0\) and \(w_1\) to minimize the sum squared error:
+
+\[
+L = \frac{1}{2} \sum_{i=1}^{N} (y^{(i)} - h(x^{(i)}))^2
+\]
+
+for \(N\) pairs of data samples \((x^{(i)}, y^{(i)})\). Derive the solution for \(w_0\) and \(w_1\) for this 1D case of linear regression. Show the derivation to get the solution:
+
+\[
+w_0 = Y - w_1X,
+\]
+
+\[
+w_1 = \frac{\frac{1}{N} \sum_{i=1}^{N} x^{(i)} y^{(i)} - YX}{\frac{1}{N} \sum_{i=1}^{N} (x^{(i)})^2 - X^2},
+\]
+
+where \(X\) is the mean of \(\{x^{(1)}, x^{(2)}, \ldots, x^{(N)}\}\) and \(Y\) is the mean of \(\{y^{(1)}, y^{(2)}, \ldots, y^{(N)}\}\).
+
+\begin{proof}
+(As we know, this is a convex function of $w$ and the critical point for a convex function is a global min. So we )
+We first derive the optimal for $w_0$:
+\[
+\frac{\partial L}{\partial w_0}
+= \frac{\partial}{\partial w_0}
+   \Bigl[
+       \tfrac{1}{2}\sum_{i=1}^N \bigl(y^{(i)} - w_1 x^{(i)} - w_0\bigr)^2
+   \Bigr]
+\]
+for each \(i\), we have (by chain rule)
+
+\[
+\frac{\partial}{\partial w_0}
+\bigl(y^{(i)} - w_1 x^{(i)} - w_0\bigr)^2
+= 2\,\bigl(y^{(i)} - w_1 x^{(i)} - w_0\bigr)\,(-1)
+\]
+by setting the partial to 0:
+\begin{align}
+    \frac{\partial L}{\partial w_0}
+&= -\sum_{i=1}^N \bigl[y^{(i)} - (w_1 x^{(i)} + w_0)\bigr] = 0 \\
+\sum_{i=1}^N y^{(i)} 
+&= \sum_{i=1}^N \bigl(w_1 x^{(i)} + w_0\bigr)\\
+& = w_1 \sum_{i=1}^N x^{(i)} + N\,w_0
+\end{align}
+Then dividing by $1/N$ in both sides:
+\begin{align}
+    \frac{1}{N}\sum_{i=1}^N y^{(i)} 
+&= w_1 (\frac{1}{N}\sum_{i=1}^N x^{(i)}) + w_0 \\
+\overline{Y} &=     w_1   \overline{X} + w_0
+\end{align}
+Thus we have 
+
+\[
+w_0 = \overline{Y} - w_1 \, \overline{X}
+\tag{1}
+\]
+
+Next, we derive the optimal value of $w_1$.
+\[
+\frac{\partial L}{\partial w_1}
+= \frac{\partial}{\partial w_1}
+   \Bigl[
+       \tfrac{1}{2}\sum_{i=1}^N \bigl(y^{(i)} - w_1 x^{(i)} - w_0\bigr)^2
+   \Bigr].
+\]
+for each \(i\), we have (by chain rule):
+\[
+\frac{\partial}{\partial w_1}
+\bigl(y^{(i)} - w_1 x^{(i)} - w_0\bigr)^2
+= 2\,\bigl(y^{(i)} - w_1 x^{(i)} - w_0\bigr)\,(-\,x^{(i)}).
+\]
+
+So by setting the partial to 0:
+\begin{align}
+    \frac{\partial L}{\partial w_1}
+= -\sum_{i=1}^N 
+    \bigl[y^{(i)} - (w_1 x^{(i)} + w_0)\bigr] \, x^{(i)} &= 0\\
+\sum_{i=1}^N y^{(i)} x^{(i)}
+&= \sum_{i=1}^N (w_1 x^{(i)} + w_0)\, x^{(i)} \\
+\sum_{i=1}^N y^{(i)} x^{(i)}
+&= w_1 \sum_{i=1}^N (x^{(i)})^2 
+  \;+\; w_0 \sum_{i=1}^N x^{(i)}
+\end{align}
+Using (1) for $w_0$, and dividing by $1/N$ on both sides:
+\begin{align}
+\frac{1}{N}\sum_{i=1}^N x^{(i)} y^{(i)}
+& = w_1 \,\frac{1}{N}\sum_{i=1}^N (x^{(i)})^2 
+  \;+\; (\overline{Y} - w_1 \overline{X})\overline{X} \\
+&=  w_1 \left[\frac{1}{N}\sum_{i=1}^N (x^{(i)})^2 - X^2\right]
+  + \overline{Y} \overline{X}
+\end{align}
+Resolving for \(w_1\):
+\[
+w_1 
+= \frac{
+   \frac{1}{N}\sum_{i=1}^N x^{(i)} y^{(i)} - \overline{X} \overline{Y}
+}{
+   \frac{1}{N}\sum_{i=1}^N (x^{(i)})^2 - \overline{X}^2
+}
+\tag{2}
+\]
+This completes the solution for both $w_0$ and $w_1$.
+\end{proof}
+
+\subsection{positive definite matrices}
+Recall the definition and property of positive (semi-)definite matrix. Let \(A\) be a real, symmetric \(d \times d\) matrix. \(A\) is positive semi-definite (PSD) if, for all \(z \in \mathbb{R}^d\), \(z^\top A z \geq 0\). \(A\) is positive definite (PD) if, for all \(z \neq 0\), \(z^\top A z > 0\). We write \(A \succeq 0\) when \(A\) is PSD, and \(A \succ 0\) when \(A\) is PD.
+
+It is known that every real symmetric matrix \(A\) can be factorized via the eigenvalue decomposition:
+\(A = U \Lambda U^\top\), where \(U\) is a \(d \times d\) matrix such that \(UU^\top = U^\top U = I\) and \(\Lambda = \text{diag}(\lambda_1, \lambda_2, \ldots, \lambda_d)\). Multiplying on the right by \(U\), we see that \(AU = U \Lambda\). If we let \(u_i\) denote the \(i\)-th column of \(U\), we have \(Au_i = \lambda_i u_i\) for each \(i\); \(\lambda_i\) are eigenvalues of \(A\), and the corresponding columns of \(U\) are eigenvectors associated with \(\lambda_i\). The eigenvalues constitute the "spectrum" of \(A\).
+
+\begin{enumerate}
+    \item[i]. Prove \(A\) is PD if and only if \(\lambda_i > 0\) for each \(i\). (Note: "if and only if" means proving both directions.)
+\begin{proof}
+Let \(A\) be a real \(d\times d\), symmetric matrix, with eigen-decomposition
+\[
+A = U\Lambda U^\top
+\]
+where \(U\) is an orthogonal matrix and \(\Lambda = \mathrm{diag}(\lambda_1,\lambda_2,\dots,\lambda_d)\) is a diagonal matrix of the eigenvalues.
+
+\textbf{forward direction \(\Rightarrow\):}  Assume \(A\) is positive definite. Let \(u_i\) be an eigenvector of \(A\) with eigenvalue \(\lambda_i\). Then \[
+   u_i^\top A\,u_i 
+   = u_i^\top \,\bigl(\lambda_i u_i\bigr) 
+   = \lambda_i\,u_i^\top u_i
+   = \lambda_i\,\|u_i\|^2 >  0
+\]
+Since \(u_i\neq 0\), must have \(\|u_i\|^2 > 0\), and therefore \(\lambda_i > 0\). This holds for each $i$, so all eigenvalues are positive.
+
+\textbf{backward direction (\(\Leftarrow\)):} Conversely, assume \(\lambda_i > 0\) for every \(i\).  Let $z \not = 0 \in \mathbb{R}^d$ be arbitrary vector, then \[
+   z^\top A\,z 
+   = z^\top (U\,\Lambda\,U^\top)\,z 
+   = (U^\top z)^\top \Lambda \,(U^\top z)
+   \]
+   Let \(w = U^\top z\). Note that \(w \neq 0\) whenever \(z \neq 0\) (since \(U\) is invertible). Then: \[
+   z^\top A\,z 
+   = w^\top \Lambda\,w 
+   = \sum_{i=1}^d \lambda_i\, w_i^2.
+   \]
+   Since \(\lambda_i > 0\) and at least one \(w_i^2 \ge 0\) (since \(w\neq 0\)), we get 
+   \(\sum_{i=1}^d \lambda_i w_i^2 > 0.\)
+Therefore \(z^\top A\,z > 0\). Since $z$ is arbitrary, this finishes the proof that \(A \succ 0\).
+
+Thus, \(A\succ 0\) \(\Longleftrightarrow\) all eigenvalues \(\lambda_i>0\).\\\\
+\end{proof}
+
+
+    \item[ii]  Consider the linear regression problem where \(\Phi\) and \(y\) are as defined in class. The closed-form solution becomes \((\Phi^\top \Phi)^{-1} \Phi^\top y\). \\
+    Now consider a ridge regression problem with the regularization term \(\frac{1}{2\beta}\|w\|_2^2\). The symmetric matrix in the closed-form solution is \(\Phi^\top \Phi + \beta I\). Derive the eigenvalues and eigenvectors for \(\Phi^\top \Phi + \beta I\) with respect to the eigenvalues and eigenvectors of \(\Phi^\top \Phi\), denoted as \(\lambda_i\) and \(u_i\). Prove that the matrix \((\Phi^\top \Phi + \beta I)\) is PD for any \(\beta > 0\).
+\begin{proof}
+(1) Eigenvalues/eigenvectors of \(\Phi^\top \Phi + \beta I\): 
+This $\Phi^T\Phi$ is real symmetric, suppose \(\Phi^\top \Phi\) eigen-decomposes as:\[
+   \Phi^\top \Phi = U\,\Lambda\,U^\top
+   \]
+   Then \[
+   \Phi^\top \Phi + \beta I 
+   = U\,\Lambda\,U^\top + \beta\,I
+   \]
+We can rewrite:
+   \[
+   \beta\,I 
+   = \beta\,U\,U^\top
+   \]
+since \(U\,U^\top = I\). Hence, \[
+   \Phi^\top \Phi + \beta I 
+   = U\,\Lambda\,U^\top + \beta\,U\,U^\top
+   = U\,(\Lambda + \beta I)\,U^\top.
+   \]
+Thus the eigenvectors of \(\Phi^\top \Phi + \beta I\) are the same as those of \(\Phi^\top \Phi\) (the columns of \(U\)), and the eigenvalues are \(\lambda_i + \beta\).
+
+(2) Positivity of \(\Phi^\top \Phi + \beta I\):   
+Claim: for any matrix $A$, $A^T A$ is potisive semidefinite.
+Proof of claim: let $x$ be arbitary  nonzero input to $A^TA$, then
+$$x^T(A^TA)x=(Ax)^T(Ax)=||Ax||_2≥0$$
+Since \(\Phi^\top \Phi\) is positive semidefinite, its eigenvalues satisfy \(\lambda_i \ge 0\).(proved dually by (1)). Adding \(\beta I\) shifts each eigenvalue by \(\beta > 0\). Hence each eigenvalue of \(\Phi^\top \Phi + \beta I\) is \(\lambda_i + \beta > 0\). Therefore, \(\Phi^\top \Phi + \beta I\) is positive definite for any \(\beta > 0\), by (1).
+\end{proof}
+
+\end{enumerate}
+
+
+
+
+\subsection{Maximizing log-likelihood in logistic regression}
+In this sub-problem, logistic regression is used to predict the class label \(y \in \{-1, +1\}\) instead of \(y \in \{0, 1\}\). Show that maximizing the log-likelihood of logistic regression,
+
+\[
+\sum_{n=1}^{N} \log P(y^{(n)}|x^{(n)}),
+\]
+
+is equivalent to minimizing the following loss function:
+
+\[
+\sum_{n=1}^{N} \log \left( 1 + \exp(-y^{(n)} \cdot w^\top \phi(x^{(n)})) \right).
+\]
+[Hint: You can expand the log-likelihood as follows: 
+\[
+log P(y^{(n)} | x^{(n)} = I(y^{(n)} = 1) log P(y^{(n)} = 1 | x^{(n)}) + I(y^{(n)} = -1) log P(y^{(n)} = -1 | x^{(n)})
+\]
+and then plug in the class posterior probability of the logistic regression model.]
+\begin{proof}
+The log-likelihood for data \(\{(x^{(n)}, y^{(n)})\}_{n=1}^N\) is
+\[
+\log \prod_{n=1}^N P\bigl(y^{(n)} \mid x^{(n)}\bigr)
+\;=\;
+\sum_{n=1}^N \log P\bigl(y^{(n)} \mid x^{(n)}\bigr)
+\]
+Since 
+\[
+P(y=+1 \mid x) 
+= \sigma\bigl(w^\top \phi(x)\bigr)
+= \frac{1}{1 + \exp\bigl(-w^\top \phi(x)\bigr)}
+\]
+\[
+P(y=-1 \mid x) 
+= 1 - \sigma\bigl(w^\top \phi(x)\bigr)
+= \sigma\bigl(-\,w^\top \phi(x)\bigr)
+\]
+we can write:
+
+\[
+P\bigl(y^{(n)} \mid x^{(n)}\bigr)
+= \sigma\bigl(y^{(n)}\,w^\top \phi(x^{(n)})\bigr)
+\]
+Hence, the log-likelihood is:
+\[
+\sum_{n=1}^N \log \sigma\bigl(y^{(n)}\,w^\top \phi(x^{(n)})\bigr)
+\]
+Since \(\sigma(z) = 1 / [1 + \exp(-z)]\), \(
+\log \sigma(z)
+= -\log\bigl(1 + \exp(-z)\bigr)
+\), so 
+\[
+\log \sigma\bigl(y^{(n)}\,w^\top \phi(x^{(n)})\bigr)
+= -\log\bigl[1 + \exp\bigl(-\,y^{(n)}\,w^\top \phi(x^{(n)})\bigr)\bigr]
+\]
+Thus,
+
+\[
+\sum_{n=1}^N \log P\bigl(y^{(n)}\mid x^{(n)}\bigr)
+= \sum_{n=1}^N \log \sigma\bigl(y^{(n)}\,w^\top \phi(x^{(n)})\bigr)
+= -\sum_{n=1}^N \log\Bigl[1 + \exp\bigl(-\,y^{(n)}\,w^\top \phi(x^{(n)})\bigr)\Bigr]
+\]
+This finishes the proof that 
+\[\text{minimize}
+\sum_{n=1}^N \log P\bigl(y^{(n)}\mid x^{(n)}\bigr)
+\Longleftrightarrow
+\text{minimize}
+\sum_{n=1}^N \log\Bigl[1 + \exp\bigl(-\,y^{(n)}\,w^\top \phi(x^{(n)})\bigr)\Bigr].
+\]
+\end{proof}
+
+
+\section{Linear Regression on a Polynomial}
+In this problem, you will implement linear regression on a polynomial. Please have a look at the accompanied starter code linear regression.py and notebook linear regression.ipynb for instructions first. Please note that all the sub-questions without (Autograder) need to be answered in your writeup.
+
+\textbf{Sample data}: The files `q2xTrain.npy`, `q2xTest.npy`, `q2yTrain.npy` and `q2yTest.npy` specify a linear regression problem for a polynomial. `q2xTrain.npy` represent the inputs $(x^{(i)} ∈ \mathbb{R})$ and `q2yTrain.npy` represents the outputs $(y^{(i)} ∈ \mathbb{R})$ of the training set, with one training example per row.
+
+\subsection{GD and SGD}
+You will compare the following two optimization methods, in finding the coefficients of a polynomial of degree one (i.e. slope and intercept) that minimize the training loss.
+• Batch gradient descent (GD)
+• Stochastic gradient descent (SGD)
+Here, as we seen in the class, the training objective is defined as:
+$$
+E(w) = \frac{1}{2} \sum_{i=1}^N (\sum_{j=0}^{M-1}w_j \phi(x^{(i)})- y^{(i)})^2  = \frac{1}{2} (w^T\phi(x^{(i)}) - y^{(i)})^2
+$$
+
+\textbf{(a) }\textbf{[12 points] (Autograder)} Implement the GD and SGD optimization methods. For all the implementa￾tion details (e.g., function signature, initialization of weight vectors, etc.), follow the instruction given in the code files. Your score for this question will be graded by the correctness of the implementation.
+\textbf{(b) }\textbf{[3 points]} Please share the plot generated from the section 2(b) of your .ipynb file in your write-up, and then compare two optimization methods, GD and SGD. Which one takes less time and which one shows lower test objective $E(w_{test})$?
+
+
+\subsection{Over-fitting Study}
+Next, you will investigate the problem of over-fitting. Recall the figure from lecture that explored over-fitting as a function of the number of features (e.g., \( M \), the number of terms in a \((M - 1)\)-degree polynomial). To evaluate this behavior, we examine the Root-Mean-Square (RMS) Error defined below. (Note: we use the RMS error just for evaluation purposes, NOT as a training objective.)
+
+\[
+E_{\text{RMS}} = \sqrt{\frac{2E(w^*)}{N}}
+\]
+\pic[0.6]{assets/1(2.2).png}
+
+
+\textbf{(a) [8 points] (Autograder)} Implement the closed-form solution of linear regression (assuming all conditions are met) instead of iterative optimization methods. (Hint: we recommend using \texttt{np.linalg.inv} to compute the inverse of a matrix.)
+
+\textbf{(b) [2 points]} Regenerate the plot with the provided data. The sample training data can be generated with \((M - 1)\)-degree polynomial features (for \( M = 1, 2, \dots, 10 \)) from \texttt{q2xTrain.npy} and \texttt{q2yTrain.npy}. We assume the feature vector is:
+
+\[
+\phi(x^{(i)}) = (1, x^{(i)}, (x^{(i)})^2, \dots, (x^{(i)})^{M-1})
+\]
+
+for any value of \( M \). For the test curve, use the data in \texttt{q2xTest.npy} and \texttt{q2yTest.npy}. Note that the trend of your curve is not necessarily the same as the sample plot. Attach your plot to the \textbf{write-up}.
+
+\textbf{(c) [2 points]} In the \textbf{write-up}, discuss: Which degree polynomial would you say best fits the data? Was there evidence of under/over-fitting the data? Use your generated plots to justify your answer.
+
+
+
+\subsection{Regularization (Ridge Regression)}
+Finally, you will explore the role of regularization. Recall the image from lecture that explored the effect of the regularization factor \( \lambda \).
+\pic[0.6]{assets/1(2.3).png}
+
+\textbf{(a) [8 points] (Autograder)} Implement the closed-form solution of ridge regression. Specifically, use the following regularized objective function:
+
+\[
+\frac{1}{2} \sum_{i=1}^N (w^\top \phi(x^{(i)}) - y^{(i)})^2 + \frac{\lambda}{2} \|w\|_2^2
+\]
+
+to optimize the parameters \( w \).
+
+\textbf{(b) [2 points]} For the sample data, regenerate the plot (Figure 2) with \( \lambda \in \{10^{-5}, 10^{-4}, \dots, 10^{-1}, 10^0 (= 1)\} \). First, compute the \( E_{\text{RMS}} \) over the training data specified in \texttt{q2xTrain.npy} and \texttt{q2yTrain.npy} with \( \lambda \), and then measure the test error using \texttt{q2xTest.npy} and \texttt{q2yTest.npy}. Attach your (unregularized) \( E_{\text{RMS}} \) plot of both the training and test data obtained from 2(g) to the \textbf{write-up}. Note that the trend of your curve is not necessarily the same as the sample plot.
+
+\textbf{(c) [2 points]} Discuss: Which \( \lambda \) value seemed to work best for a ninth-degree polynomial (\( M = 10 \))? Use your generated plots to justify your answer. Provide your answer in the \textbf{write-up}.
+
+
+\section{Locally Weighted Linear Regression}
+
+Consider a linear regression problem in which we want to weight different training examples differently. Specifically, suppose we want to minimize:
+
+\[
+E_D(w) = \frac{1}{2} \sum_{i=1}^N r^{(i)}(w^\top x^{(i)} - y^{(i)})^2,
+\]
+
+where \( r^{(i)} \in \mathbb{R} \) is the “local” weight for the sample \( (x^{(i)}, y^{(i)}) \). In class, we worked on a special case where all the weights \( r^{(i)} \) are equal. In this problem, we generalize these ideas to the weighted setting and implement the locally weighted linear regression algorithm.
+
+\textbf{Notes:}
+1. The weight \( r^{(i)} \) can be different for each of the data points in the training data.
+2. For a 1-dimensional input \( x \) (provided in this problem), the model can be written as \( w_0 + w_1x \), where \( w_0 \) acts as the intercept term. This is naturally incorporated by extending \( x \) to include a constant term, such as \( x = [1, x]^\top \), in the formulation of the linear model.
+
+\textbf{(a) [3 points]} Show that \( E_D(w) \) can also be written as:
+
+\[
+E_D(w) = (w^\top X - y^\top)R(w^\top X - y^\top)^\top,
+\]
+
+for an appropriate diagonal matrix \( R \), where \( X \in \mathbb{R}^{D \times N} \) is a matrix whose \( i \)-th column is \( x^{(i)} \in \mathbb{R}^{D \times 1} \), and \( y \in \mathbb{R}^{N \times 1} \) is the vector whose \( i \)-th entry is \( y^{(i)} \). Here, in locally weighted linear regression, we use raw data directly without mapping to high-dimensional features (i.e., each input is represented as a \( D \)-dimensional input vector, not an \( M \)-dimensional feature vector). Hence, we use the notation \( X \) instead of \( \Phi \). Clearly state what the \( R \) matrix is.
+
+\textbf{(b) [7 points]} If all \( r^{(i)} \)'s equal 1, the normal equation for \( w \in \mathbb{R}^{D \times 1} \) becomes:
+
+\[
+XX^\top w = Xy,
+\]
+
+and the value of \( w^* \) that minimizes \( E_D(w) \) is given by:
+
+\[
+w^* = (XX^\top)^{-1}Xy.
+\]
+
+Now, by finding the derivative \( \nabla_w E_D(w) \) from part (a) and setting it to zero, generalize the normal equation and the closed-form solution to the locally weighted setting. Provide the new value of \( w^* \) that minimizes \( E_D(w) \) in a closed form as a function of \( X \), \( R \), and \( y \). (Hint: \( \nabla_w (RX^\top w) = XR^\top = XR \).)
+
+\textbf{(c) [8 points]} Suppose we have a training set \( \{(x^{(i)}, y^{(i)}); i = 1, \dots, N\} \) of \( N \) independent examples, where the \( y^{(i)} \)'s are observed with differing variances. Specifically, suppose:
+
+\[
+p(y^{(i)} | x^{(i)}; w) = \frac{1}{\sqrt{2\pi\sigma^{(i)}}} \exp\left(-\frac{(y^{(i)} - w^\top x^{(i)})^2}{2(\sigma^{(i)})^2}\right),
+\]
+
+i.e., \( y^{(i)} \) is a Gaussian random variable with mean \( w^\top x^{(i)} \) and variance \( (\sigma^{(i)})^2 \), where the \( \sigma^{(i)} \)'s are fixed, known constants. Show that finding the maximum likelihood estimate (MLE) of \( w \) reduces to solving a weighted linear regression problem \( E_D(w) \). Clearly state what the \( r^{(i)} \)'s are in terms of the \( \sigma^{(i)} \)'s.
+
+\textbf{(d) [12 points, Programming Assignment]} Use the files \texttt{q3x.npy}, which contains the inputs \( x^{(i)} \) (\( i = 1, \dots, N \)), and \texttt{q3y.npy}, which contains the outputs \( y^{(i)} \) for a linear regression problem (one training example per row).
+
+\begin{itemize}
+    \item \textbf{(i) [8 points] (Autograder)} Implement the closed-form solution for locally weighted linear regression (see the accompanied code).
+    \item \textbf{(ii) [2 points]} Use the implemented locally weighted linear regression solver on this dataset (using the weighted normal equations derived in part (b)) and plot the data and the curve resulting from your fit. When evaluating local regression at a query point \( x \) (real-valued in this problem), use weights:
+
+    \[
+    r^{(i)} = \exp\left(-\frac{(x - x^{(i)})^2}{2\tau^2}\right),
+    \]
+
+    with a bandwidth parameter \( \tau \in \{0.1, 0.3, 0.8, 2, 10\} \). Attach the plots generated in part (d)(ii) to your write-up.
+    \item \textbf{(iii) [2 points]} Discuss and comment briefly on what happens to the fit when \( \tau \) is too small or too large.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
