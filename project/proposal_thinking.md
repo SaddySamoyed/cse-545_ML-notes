@@ -173,3 +173,31 @@ general:
 
 [AROLinks to an external site.](https://huggingface.co/datasets/gowitheflow/ARO-Visual-Attribution)、[VALSELinks to an external site.](https://paperswithcode.com/dataset/valse)、[VL-CheckListLinks to an external site.](https://github.com/om-ai-lab/VL-CheckList)、[SugarCrepeLinks to an external site.](https://github.com/RAIVNLab/sugar-crepe)
 
+
+
+
+
+Knowledge-CLIP 通过引入 Knowledge Graph，提高了 CLIP 在语义对齐和推理任务上的表现，够提取实体之间的结构信息，并通过 KD Loss 蒸馏原始 CLIP 模型的知识，防止新任务训练过程中遗忘 CLIP 的原始能力。Knowledge-CLIP 原本是针对大型数据集的模型，依赖于 multimodel transformer, 但我们认为，Knowledge-CLIP 强大的知识驱动语义对齐能力是可以适应小型数据集，并且其**知识图谱增强（KG-enhanced learning）**，能够：
+
+- **补充小数据集中缺乏的关系信息**，避免模型过拟合于有限的数据分布。
+- **提高模型对对象属性、关系的理解能力**，使其更具泛化能力。
+- **通过先验知识弥补数据不足**，即使训练数据稀少，模型仍然能学习合理的对象属性关联。
+
+我们的计划是以 Knowledge-CLIP 为基础，我们现阶段的计划是基于 Knowledge-CLIP 进行尝试修改，让它能在小型数据集上达到良好的效果。我们打算保留 Knowledge-CLIP 的知识增强机制，但去掉其复杂的多模态 Transformer 结构，并结合 SimCLIP、AHNM 等更高效的优化策略，引入更轻量化的对比学习优化策略。
+
+###  Pipeline
+
+1. **数据增强**
+   - **知识图谱增强（KG-Augmented Data）**：用外部知识补充对象、属性、关系信息。
+   - **SimCLIP 相似性簇采样**：提高 minibatch 质量，增强 Hard Negatives。
+2. **编码器**
+   - **ViT-Small 作为图像编码器**
+   - **DistilBERT 作为文本编码器**
+   - 轻量化的模型结构，减少计算开销。
+3. **对比学习**
+   - **AHNM 负例采样**：动态选择 Hard Negatives，优化训练。
+   - **Fair Contrastive Loss (FCL)**：优化偏差，减少 Representation Bias。
+4. **参数高效微调**
+   - 采用 **LoRA（Low-Rank Adaptation）** 进行高效调优，减少训练资源需求。
+5. **模型评估**
+   - 采用 **零样本分类（Zero-shot Classification）** 和 **检索任务（Image-Text Retrieval）** 评估泛化能力。
