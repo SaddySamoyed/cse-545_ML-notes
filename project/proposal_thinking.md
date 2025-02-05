@@ -183,7 +183,16 @@ Knowledge-CLIP 通过引入 Knowledge Graph，提高了 CLIP 在语义对齐和�
 - **提高模型对对象属性、关系的理解能力**，使其更具泛化能力。
 - **通过先验知识弥补数据不足**，即使训练数据稀少，模型仍然能学习合理的对象属性关联。
 
-我们的计划是以 Knowledge-CLIP 为基础，我们现阶段的计划是基于 Knowledge-CLIP 进行尝试修改，让它能在小型数据集上达到良好的效果。我们打算保留 Knowledge-CLIP 的知识增强机制，但去掉其复杂的多模态 Transformer 结构，并结合 SimCLIP、AHNM 等更高效的优化策略，引入更轻量化的对比学习优化策略。
+我们的计划是以 Knowledge-CLIP 为基础，我们现阶段的计划是基于 Knowledge-CLIP 进行尝试修改，让它能在小型数据集上达到良好的效果。我们打算
+
+1. 保留 Knowledge-CLIP 的知识增强机制，但去掉其复杂的多模态 Transformer 结构，
+2. 使用轻量化编码器，比如图像编码器：从 **ViT-Large** 改为 **ViT-Small** ；文本编码器：从 CLIP 的 Transformer 改为 **DistilBERT** 等小型模型。
+
+3. 结合 SimCLIP、AHNM 等更高效的优化策略，引入更轻量化的对比学习优化策略；
+4. 冻结部分模型参数，只微调顶部层和投影头（Projection Head），减少小数据集上的过拟合风险。
+5. 在 Knowledge-CLIP 的多模态模块中使用 **Low-Rank Adaptation**，只调整小部分参数。
+6. 引入 Fair Contrastive Loss (FCL)，避免模型学习到数据中的不公平关联，减少 Representation Bias。
+
 
 ###  Pipeline
 
@@ -201,3 +210,56 @@ Knowledge-CLIP 通过引入 Knowledge Graph，提高了 CLIP 在语义对齐和�
    - 采用 **LoRA（Low-Rank Adaptation）** 进行高效调优，减少训练资源需求。
 5. **模型评估**
    - 采用 **零样本分类（Zero-shot Classification）** 和 **检索任务（Image-Text Retrieval）** 评估泛化能力。
+
+
+
+
+
+
+
+### **Proposed Approach:**
+
+#### **Overview**
+
+Knowledge-CLIP enhances CLIP's performance in **semantic alignment and reasoning tasks** by incorporating **Knowledge Graphs (KGs)**, which enable the extraction of structural information between entities. Additionally, it leverages **Knowledge Distillation (KD) Loss** to distill knowledge from the original CLIP model, preventing catastrophic forgetting when adapting to new tasks.
+
+Originally, Knowledge-CLIP was designed for large-scale datasets and heavily relies on a **multimodal transformer architecture**. However, we argue that its **knowledge-driven semantic alignment capability** can be effectively adapted to small-scale datasets. The **KG-enhanced learning** mechanism in Knowledge-CLIP provides several advantages in this context:
+
+- **Compensating for missing relational information** in small datasets, mitigating the risk of overfitting to a limited data distribution.
+- **Improving the model’s ability to understand object attributes and relationships**, thereby enhancing generalization.
+- **Leveraging prior knowledge to supplement data scarcity**, ensuring that the model can still learn meaningful entity-attribute associations even with limited training samples.
+
+------
+
+#### **Optimization Strategy**
+
+Our goal is to **modify Knowledge-CLIP** to ensure its effectiveness on small datasets while retaining its knowledge-enhanced learning capabilities. Specifically, we plan to:
+
+1. **Retain Knowledge-CLIP’s knowledge enhancement mechanism** while **removing its complex multimodal transformer structure** to reduce computational overhead.
+2. Replace the heavy encoders with lightweight alternatives
+   - **Image encoder**: Replace **ViT-Large** with **ViT-Small**.
+   - **Text encoder**: Replace CLIP’s Transformer with **DistilBERT** or other lightweight models.
+3. **Incorporate more efficient optimization strategies**, such as **SimCLIP** and **Adaptive Hard Negative Mining (AHNM)**, introducing a more lightweight contrastive learning optimization strategy.
+4. **Freeze part of the model parameters**, fine-tuning only the **top layers and projection head**, reducing overfitting risks associated with small datasets.
+5. **Apply Low-Rank Adaptation (LoRA)** within Knowledge-CLIP’s multimodal module, **adapting only a small subset of parameters** for efficient training.
+6. **Introduce Fair Contrastive Loss (FCL)** to prevent the model from learning spurious associations present in the dataset, thereby reducing **Representation Bias**.
+
+------
+
+### **Pipeline**
+
+1. **Data Augmentation**
+   - **KG-Augmented Data**: Utilize external knowledge to supplement missing object-attribute relationships.
+   - **SimCLIP-based similarity cluster sampling**: Improve **minibatch quality** and enhance **Hard Negatives**.
+2. **Lightweight Encoders**
+   - **ViT-Small as the image encoder**
+   - **DistilBERT as the text encoder**
+   - Reduce model complexity and computational cost.
+3. **Contrastive Learning**
+   - **Adaptive Hard Negative Mining (AHNM)**: Dynamically select **Hard Negatives** to optimize training.
+   - **Fair Contrastive Loss (FCL)**: Reduce **Representation Bias** and ensure fairer representation learning.
+4. **Parameter-Efficient Fine-Tuning**
+   - Apply **Low-Rank Adaptation (LoRA)** for efficient fine-tuning, reducing memory footprint.
+   - Freeze **lower model layers**, fine-tuning only **top layers and projection head** to improve adaptation efficiency.
+5. **Model Evaluation**
+   - Evaluate on **zero-shot classification** and **image-text retrieval** tasks to assess **generalization performance**.
