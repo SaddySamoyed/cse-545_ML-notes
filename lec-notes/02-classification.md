@@ -291,95 +291,95 @@ KNN 的优点是简洁，灵活，对于低维度 input 高效
 
 **Probabilistic Discriminative Models** 和 **Probabilistic Generative Models** 是两种概率模型，用于解决分类和预测问题，它们的主要区别在于建模的方式和目标：
 
+#### Probabilistic Discriminative Models
 
+**Probabilistic Discriminative Models** 建模 **conditional 概率分布** $P(y |x,w)$，**object 是 maximize conditional likelihood $L(w|x)$** , 即在给定 $x$ 的情况下, 输出随机变量 $y$ 的概率分布.
 
-softmax 和 
-
-------
-
-### **1. Probabilistic Discriminative Models: Softmax regression**
-
-- **定义**: 直接建模 **条件概率分布** P(y∣x,w)P(y \mid x, \mathbf{w})，即在给定输入 xx 的情况下预测输出 yy 的概率。
-
-- **目标**: 最大化训练数据的 **条件似然函数**： ∏iP(y(i)∣x(i),w)\prod_i P(y^{(i)} \mid x^{(i)}, \mathbf{w})
-
-- **本质**: 专注于输入 xx 和输出 yy 之间的决策边界，直接用于分类或回归任务。
-
-- 典型模型
-
-  :
-
-  - **Logistic Regression (逻辑回归)**: 用于二分类问题。
-  - **Softmax Regression (多分类回归)**: 逻辑回归的多类别扩展。
+- 例子: 比如 logistic regression 和 今天要讲的 **softmax regression (multiclass logistic regression)**
 
 - 优点
-
-  :
-
-  - 不需要对 P(x)P(x) 或 P(x,y)P(x, y) 建模。
-  - 计算效率高，训练相对简单。
+  - 不需要对 $P(x)$ 或 $P(x,y)$ 建模
+  - 计算效率高，训练相对简单
 
 - 缺点
 
-  :
+  - 对数据的整体生成过程没有建模，适用场景有限
 
-  - 对数据的整体生成过程没有建模，适用场景有限。
+#### Probabilistic Generative Models
 
-------
+**Probabilistic Generative Models** 建模 **joint 概率分布** $P(x,y | w)$，object 是 **maxmize joint likelihood** $L(w)$，可以通过建模数据生成过程，间接推断 $P(y|x)$；并且同时也可以自己生成数据 $x$. 
 
-### **2. Probabilistic Generative Models**
+- 例子
 
-- **定义**: 建模 **联合概率分布** P(x,y∣w)P(x, y \mid \mathbf{w})，即同时建模输入 xx 和输出 yy 的生成过程。
-
-- **目标**: 最大化训练数据的 **联合似然函数**： ∏iP(x(i),y(i)∣w)\prod_i P(x^{(i)}, y^{(i)} \mid \mathbf{w})
-
-- 本质
-
-  : 通过建模数据生成过程，间接推断 
-
-  P(y∣x)P(y \mid x)
-
-  。
-
-  - 使用贝叶斯法则： P(y∣x)=P(x,y)P(x)P(y \mid x) = \frac{P(x, y)}{P(x)}。
-
-- 典型模型
-
-  :
-
-  - **Gaussian Discriminant Analysis (高斯判别分析)**: 假设类条件分布 P(x∣y)P(x \mid y) 为高斯分布。
+  - **Gaussian Discriminant Analysis (高斯判别分析)**: 假设类条件分布 $P(x \mid y)$ 为高斯分布。
   - **Naive Bayes (朴素贝叶斯)**: 假设特征条件独立，简化计算。
 
 - 优点
-
-  :
 
   - 可以生成新数据 (生成模型)。
   - 对数据的分布有更全面的建模。
 
 - 缺点
 
-  :
-
   - 对数据分布假设更强 (如高斯假设)。
   - 计算量可能较大。
 
-------
-
-### **主要区别总结**:
-
-| 特性                 | Discriminative Models                   | Generative Models                        |
-| -------------------- | --------------------------------------- | ---------------------------------------- |
-| **建模目标**         | 条件概率 P(y∣x)P(y \mid x)              | 联合概率 P(x,y)P(x, y)                   |
-| **推断方式**         | 直接学习 P(y∣x)P(y \mid x)              | 使用贝叶斯法则间接推断 P(y∣x)P(y \mid x) |
-| **是否可生成新数据** | 否                                      | 是                                       |
-| **计算复杂性**       | 较低                                    | 较高                                     |
-| **代表模型**         | Logistic Regression, Softmax Regression | Gaussian Discriminant, Naive Bayes       |
-
-两种模型适用于不同的场景：Discriminative 模型在分类任务中表现更好，而 Generative 模型更适合需要了解数据分布或生成数据的任务。
+Note: 这个模型会生成 both $x$ 和 $y$，不过它仍需要 testing set, 用于评估模型在未知数据上的表现，即它根据 $x$ 生成 $y$ 的能力.
 
 
 
+### Softmax regression: multiclass classification
+
+先前我们的 logistic regression:
+
+![Screenshot 2025-02-08 at 22.52.42](02-classification.assets/Screenshot 2025-02-08 at 22.52.42.png)
+
+
+
+现在考虑 multiclass， $y$ 的 possible values 是 $1,\cdots, K$
+
+我们 set: 
+
+![Screenshot 2025-02-08 at 22.56.55](02-classification.assets/Screenshot 2025-02-08 at 22.56.55.png)
+
+#### setting the last weight vector $w_k$ to 0 vector 
+
+我们采取的策略是: 分配 $K-1$ 个 weight vector, 再用它们分别和 input features 的 dot product, 即 logit, 取 exponential 作为这个 class 在这个 $x$ 上的得分. 最后这个 "y = this class" 的条件概率被建模为: 这个 class 的得分 / 总得分.
+
+注意到: **有 $K$ 个 classes, 但是我们只分配 $K-1$ 个 weight vectors**, 获得了 $K-1$ 个 logit, 这是因为为了**维持这个条件概率函数建模的 well-definedness (符合定义的条件概率函数, 所有 classes 的概率和为 1)**, 我们必须对于最后一个 class, **固定地用 (1-前面 classes 的条件概率) 这个剩余值来建模, 即设置 $w_k = (0,\cdots,0)$ 恒定**. 
+
+这个做法是没有问题的, 因为经过前面 classes 的 logit 的作用, 这个 weight 为 0 的 class 的得分会自动适应, 间接地被学习到。(不过，只有最后一个 class 可以这么做，如果设置两个这样的 weight vector 为 0 的 classes, 那么它们就会自动平分剩余的条件概率, 从而这两个 classes 的条件概率永远相等.)
+
+
+
+注意：
+
+####  Softmax 的 weight vector 和 hyperplane 的关系
+
+在 Softmax 回归中，假设我们有 $K$ 个类别，每个类别 $k$ 对应一个权重向量 $\mathbf{w}_k$
+
+类别 \(k\) 的得分为：
+$$
+z_k = \mathbf{w}_k^T \phi(x)
+$$
+
+类别的预测概率由 Softmax 函数给出：
+$$
+P(y = k \mid x) = \frac{\exp(\mathbf{w}_k^T \phi(x))}{\sum_{j=1}^K \exp(\mathbf{w}_j^T \phi(x))}
+$$
+
+**决策边界的定义**：在 Softmax 回归中，类别 \(k\) 和类别 \(j\) 的决策边界是由以下条件确定的：
+$$
+\mathbf{w}_k^T \phi(x) = \mathbf{w}_j^T \phi(x) \quad \text{或者等价于} \quad (\mathbf{w}_k - \mathbf{w}_j)^T \phi(x) = 0
+$$
+
+单个权重向量 $\mathbf{w}_k$ 的意义: 定义了类别 $k$ 的特征偏好, 看作这一类别的“吸引中心”，在决策时决定 $x$ 离类别 $k$ 的相对距离。Softmax 回归的类别对之间一共有 $K(K-1)/2$ 条决策边界：每两个类别 k 和 j 的决策边界是一个超平面，该超平面的法向量是 $\mathbf{w}_k - \mathbf{w}_j$，而不是单个 $\mathbf{w}_k$，**一个输入被分配到距离最近的类别。**
+
+
+
+#### log-likelihood objective function of softmax regression
+
+<img src="02-classification.assets/Screenshot 2025-02-08 at 23.38.03.png" alt="Screenshot 2025-02-08 at 23.38.03" style="zoom:50%;" />
 
 
 
@@ -387,22 +387,26 @@ softmax 和
 
 
 
+### Probabilistic Generative model overview
+
+刚才我们说了，对于 probabilistic discriminative model, 我们要 model 的是 $p(C_k|x)$,
+
+而对于 probabilistic generative model, 我们要 model 的是 joint density function $p(x,C_k)$,
+
+方法: 我们**通过 learn $p(x|C_k)$ 以及 prior $p(C_k)$, 运用 Beyes rule 来 predict $p(x,C_k)$.**
 
 
 
+By Bayes: 
 
+<img src="02-classification.assets/Screenshot 2025-02-09 at 03.45.06.png" alt="Screenshot 2025-02-09 at 03.45.06" style="zoom:50%;" />
 
+从而, 我们可以把 model decompose 为
 
+1. $p(C_k)$
+2. $p(x|C_k)$
 
-
-
-
-
-
-
-
-
-
+的直接运算.
 
 
 
