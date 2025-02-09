@@ -287,11 +287,96 @@ KNN 的优点是简洁，灵活，对于低维度 input 高效
 
 ## Classification(lec 5)
 
+### Probabilistic Discriminative Models 和 Probabilistic Generative Models 的区别
+
+**Probabilistic Discriminative Models** 和 **Probabilistic Generative Models** 是两种概率模型，用于解决分类和预测问题，它们的主要区别在于建模的方式和目标：
 
 
 
+softmax 和 
 
+------
 
+### **1. Probabilistic Discriminative Models: Softmax regression**
+
+- **定义**: 直接建模 **条件概率分布** P(y∣x,w)P(y \mid x, \mathbf{w})，即在给定输入 xx 的情况下预测输出 yy 的概率。
+
+- **目标**: 最大化训练数据的 **条件似然函数**： ∏iP(y(i)∣x(i),w)\prod_i P(y^{(i)} \mid x^{(i)}, \mathbf{w})
+
+- **本质**: 专注于输入 xx 和输出 yy 之间的决策边界，直接用于分类或回归任务。
+
+- 典型模型
+
+  :
+
+  - **Logistic Regression (逻辑回归)**: 用于二分类问题。
+  - **Softmax Regression (多分类回归)**: 逻辑回归的多类别扩展。
+
+- 优点
+
+  :
+
+  - 不需要对 P(x)P(x) 或 P(x,y)P(x, y) 建模。
+  - 计算效率高，训练相对简单。
+
+- 缺点
+
+  :
+
+  - 对数据的整体生成过程没有建模，适用场景有限。
+
+------
+
+### **2. Probabilistic Generative Models**
+
+- **定义**: 建模 **联合概率分布** P(x,y∣w)P(x, y \mid \mathbf{w})，即同时建模输入 xx 和输出 yy 的生成过程。
+
+- **目标**: 最大化训练数据的 **联合似然函数**： ∏iP(x(i),y(i)∣w)\prod_i P(x^{(i)}, y^{(i)} \mid \mathbf{w})
+
+- 本质
+
+  : 通过建模数据生成过程，间接推断 
+
+  P(y∣x)P(y \mid x)
+
+  。
+
+  - 使用贝叶斯法则： P(y∣x)=P(x,y)P(x)P(y \mid x) = \frac{P(x, y)}{P(x)}。
+
+- 典型模型
+
+  :
+
+  - **Gaussian Discriminant Analysis (高斯判别分析)**: 假设类条件分布 P(x∣y)P(x \mid y) 为高斯分布。
+  - **Naive Bayes (朴素贝叶斯)**: 假设特征条件独立，简化计算。
+
+- 优点
+
+  :
+
+  - 可以生成新数据 (生成模型)。
+  - 对数据的分布有更全面的建模。
+
+- 缺点
+
+  :
+
+  - 对数据分布假设更强 (如高斯假设)。
+  - 计算量可能较大。
+
+------
+
+### **主要区别总结**:
+
+| 特性                 | Discriminative Models                   | Generative Models                        |
+| -------------------- | --------------------------------------- | ---------------------------------------- |
+| **建模目标**         | 条件概率 P(y∣x)P(y \mid x)              | 联合概率 P(x,y)P(x, y)                   |
+| **推断方式**         | 直接学习 P(y∣x)P(y \mid x)              | 使用贝叶斯法则间接推断 P(y∣x)P(y \mid x) |
+| **是否可生成新数据** | 否                                      | 是                                       |
+| **计算复杂性**       | 较低                                    | 较高                                     |
+| **代表模型**         | Logistic Regression, Softmax Regression | Gaussian Discriminant, Naive Bayes       |
+
+两种模型适用于不同的场景：Discriminative 模型在分类任务中表现更好，而 Generative 模型更适合需要了解数据分布或生成数据的任务。
 
 
 
