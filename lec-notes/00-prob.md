@@ -285,9 +285,168 @@ Note: 我们可以定义一个 $S$ 上到自身的可测函数  **$g: S \rightar
 
 我们这里考虑两个 prob spaces, 以及它们的 product probability space, with the product probability measure.
 
+
+
+### joint CDF
+
 我们定义 the joint cumulatibe distribution function of $X,Y$ 这两个 random varables on the product prob space 为:
 $$
 F_{XY}(x,y) := P(X \leq x, Y \leq y)
 $$
 通过取极限的行为，我们还可以用 这个 joint CDF 来获得单个 CDF：
+$$
+F_X (x)  = \lim_{y \rightarrow \infty} F_{XY}(x,y)
+$$
+$Y$ 同理.
 
+直观理解是：我们对 $Y$ 取 unboundedly large 的值，使得 $Y \leq y $ 这个约束变得无关紧要。
+
+
+
+我们于是 Naturaly 得到以下性质：
+
+<img src="00-prob.assets/Screenshot 2025-02-09 at 16.39.52.png" alt="Screenshot 2025-02-09 at 16.39.52" style="zoom: 50%;" />
+
+
+
+### joint pmf/pdf
+
+对于 $X,Y$ discrete random variables, 我们定义它们的 joint pmf $p_{XY}(x,y: S\times Q \rightarrow [0,1])$ 为:
+$$
+p_{XY} (x,y) = P(X=x,Y=y)
+$$
+显然我们有:
+$$
+\sum_S \sum_Q P_{XY}(x,y) = 1
+$$
+并且有:
+$$
+\sum_Q p_{XY}(x,y) = p_X(x)
+$$
+
+
+对于 X,Y countinuous random variables, 我们定义他们的 joint pdf $f_{XY}(x,y: S\times Q \rightarrow [0,1])$ 为:
+$$
+f_{XY} (x,y) = \frac{\partial^2F_{XY}(x,y)}{\partial x \partial y}
+$$
+显然有:
+$$
+\int \int_{x\in S} f_{XY}(x,y)dx = f_Y(y)
+$$
+
+
+### conditional distribution 与 Bayes' rule
+
+对于 discrete random variables $X:\Omega_1 \rightarrow S,Y:\Omega_2 \rightarrow Q$, 我们定义
+$$
+p_{Y|X}(y|x) := \frac{p_{XY}(x,y)}{p_X(x)}
+$$
+并且根据与贝叶斯定理，有：
+$$
+p_{Y|X}(y|x) := \frac{p_{XY}(x,y)}{p_X(x)} = \frac{p_{X|Y}(x|y) p_Y(y)}{\sum_Q P_{XY}(x|z)P_Y(z)}
+$$
+对于 countinuous random variables $X:\Omega_1 \rightarrow S,Y:\Omega_2 \rightarrow Q$ 我们定义
+$$
+f_{Y|X}(y|x) := \frac{f_{XY}(x,y)}{f_X(x)}
+$$
+并且根据与贝叶斯定理，有：
+$$
+f_{Y|X}(y|x) := \frac{f_{XY}(x,y)}{f_X(x)} = \frac{f_{X|Y}(x|y) f_Y(y)}{\int_Q P_{XY}(x|z)P_Y(z) d\mu_Y}
+$$
+这个 formula 对 ml 很重要：
+
+1. $f_{Y|X}(y|x)$ 是后验概率密度(postier)，表示在观察到 $X=x$ 后，我们对 $Y=y$ 的更新概率密度；
+2. ${f_{X|Y}(x|y)}$ 是似然函数，表示如果 $Y=y$ 为真，那么这个概率模型声称观察到 $X=x$ 的可能性；
+3. $f_Y(y)$ 是先验概率密度(prior)，表示在没有观察到 $X$ 的值前，我们对 $Y$ 的可能性的主观判断.
+
+
+
+这个 formula 告诉我们: postier 是和 prior 与似然函数的乘积 正相关的，
+
+在统计推断中，我们经常需要最大化似然函数，因而我们可以通过 posteier 和 prior 来做到这件事。（比如通过优化概率测度的建模的参数，使得后验概率更大） 
+
+
+
+
+
+
+
+
+
+### independence
+
+如果 $f_{XY} = f_X f_Y$，则称 $X,Y$ 是 indepentdent 的.
+
+容易看出，这个 independence 完全取决于我们的概率测度的建模
+
+
+
+显然有这一定理：
+
+如果 $X:\Omega_1 \rightarrow S,Y:\Omega_2 \rightarrow Q$, independent random vairables, 那么对于任意 $S,Q$ 中的可测集 $A,B$ 我们有
+$$
+P(X \in A, Y\in B) = P(X\in A) P(Y\in B)
+$$
+
+
+### expectation 和 covariance
+
+对于两个 random variables $X:\Omega_1 \rightarrow S,Y:\Omega_2 \rightarrow Q$ 我们取任意一个 **measurable function $g$ on the product space** $(S,Q)$ with respect to the product measure to itself, 即 $g:(S,Q) \rightarrow (S,Q)$ measurable, 那么 $g(X,Y):\Omega_1 \times \Omega_2 \rightarrow (S,Q)$.为一个 product random variable 
+
+我们定义这个 product random variable 的 expectation, 以及 covariance 为:
+
+![Screenshot 2025-02-09 at 17.13.07](00-prob.assets/Screenshot 2025-02-09 at 17.13.07.png)
+
+如果这两个 random variables 的 cov 为 0，则称它们是 unrelated 的.
+
+Note: **independent 是强于 unrelated 的条件**，**unrelated 只要求线性无关**，**但不排除非线性关系**，unrelated 的随机变量可能具有非线性依赖性（如平方、指数等）
+
+**独立一定不相关，不相关不一定独立。**
+
+
+
+两个随机变量的期望和协方差有以下性质：
+
+<img src="00-prob.assets/Screenshot 2025-02-09 at 17.18.31.png" alt="Screenshot 2025-02-09 at 17.18.31" style="zoom:50%;" />
+
+
+
+
+
+### multiple random variables
+
+把两个 prob spaces 的 product prob space 上的 product random variable 推广到 multiple 个 prob spaces 的 product prob space 上的 product random variable：
+
+
+
+![Screenshot 2025-02-09 at 17.26.26](00-prob.assets/Screenshot 2025-02-09 at 17.26.26.png)
+
+![Screenshot 2025-02-09 at 17.26.35](00-prob.assets/Screenshot 2025-02-09 at 17.26.35.png)
+
+![Screenshot 2025-02-09 at 17.26.48](00-prob.assets/Screenshot 2025-02-09 at 17.26.48.png)
+
+
+
+
+
+
+
+## random vector
+
+刚才我们虽然讨论的都是 abstract prob space 和 random variables 的情况，但是我们主要在 $\mathbb{R}$ 上讨论。现在我们讨论
+
+$X: \Omega \rightarrow \mathbb{R}^n$ 形式的 random variables, 称其为 random vector.
+
+
+
+这等价于 $n$ 个 $X_i: \Omega \rightarrow \mathbb{R}$ 的 product random variable. 这是 by product measure 的性质.
+
+![Screenshot 2025-02-09 at 17.32.22](00-prob.assets/Screenshot 2025-02-09 at 17.32.22.png)
+
+![Screenshot 2025-02-09 at 17.32.31](00-prob.assets/Screenshot 2025-02-09 at 17.32.31.png)
+
+
+
+
+
+![Screenshot 2025-02-09 at 17.32.40](00-prob.assets/Screenshot 2025-02-09 at 17.32.47.png)
