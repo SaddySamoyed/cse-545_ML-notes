@@ -247,16 +247,47 @@ $$
 E(X) := \int X(x)f_X(x)
 $$
 
-
-v
-
-
-
-
-
-Note: 我们可以定义一个 $S$ 上到自身的可测函数  **$g: S \rightarrow S$**，对随机变量 $X: \Omega \rightarrow S$ 加以复合，从而 $g(X):\Omega \rightarrow S$  也是一个随机变量
+而 variance 表示一个 random variable 上**每个 $x$ 的 mass/density 离这个随机变量的 weighted average 的距离 的平均值**. 即这个**随机变量作为一个函数有多么平稳**
+$$
+Var(X) := E((X-E(X))^2)
+$$
 
 
+### 期望和方差对于复合随机变量的properties
+
+Note: 我们可以定义一个 $S$ 上到自身的可测函数  **$g: S \rightarrow S$**，对随机变量 $X: \Omega \rightarrow S$ 加以复合，
+
+从而 **$g(X):\Omega \rightarrow S$  也是一个随机变量**
+
+对于复合型随机变量，我们有以下性质：
 
 
+
+<img src="00-prob.assets/Screenshot 2025-02-09 at 16.03.54.png" alt="Screenshot 2025-02-09 at 16.03.54" style="zoom:60%;" />
+
+<img src="00-prob.assets/Screenshot 2025-02-09 at 16.04.04.png" alt="Screenshot 2025-02-09 at 16.04.04" style="zoom: 67%;" />
+
+### 经典分布的期望和方差
+
+<img src="00-prob.assets/Screenshot 2025-02-09 at 16.05.24.png" alt="Screenshot 2025-02-09 at 16.05.24" style="zoom:50%;" />
+
+
+
+
+
+
+
+
+
+
+
+## product prob space and multiple random variables 
+
+我们这里考虑两个 prob spaces, 以及它们的 product probability space, with the product probability measure.
+
+我们定义 the joint cumulatibe distribution function of $X,Y$ 这两个 random varables on the product prob space 为:
+$$
+F_{XY}(x,y) := P(X \leq x, Y \leq y)
+$$
+通过取极限的行为，我们还可以用 这个 joint CDF 来获得单个 CDF：
 
