@@ -140,57 +140,95 @@ Note: linear regression with Gaussian noise 中的 output random variable $y$ �
 $$
 \nabla E(w) = \sum_{n=1}^N (\sigma^{(n)} - y^{(n)}) \phi(x^{(n)}) = \Phi^T (\sigma - y)
 $$
-和 linear regression 中差不多. 只是在 linear regression 中, 对 $h$ 中每一项施加了一个 sigmoid 函数就好.
+和 linear regression 中差不多. **只是在 linear regression 中, 对 $h$ 中每一项施加了一个 sigmoid 函数就好.**
 
 <img src="02-classification.assets/image-20250202185623408.png" alt="image-20250202185623408" style="zoom:9%;" />
 
 
 
-
 ### Newton's method
+
+我们下面讲一个优化方法. newton 法是寻找一个函数的 root 的数值方法. 
+
+$\mathbb{R}\rightarrow \mathbb{R}$ 情况:
+
+为了寻找 $x_*$ 使得 $f(x_*) = 0$ , 牛顿法迭代更新:
+$$
+x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}
+$$
+推导也很简洁, 我们使用一阶泰勒近似:
+
+<img src="02-classification.assets/image-20250208173307550.png" alt="image-20250208173307550" style="zoom:10%;" />
+
+看起来一步就出了, 但是我们仍要进行迭代, 因为这是一阶泰勒近似, 后面还有余项. 迭代就是不停地求出一阶近似结果.
+
+
+
+#### Newton's method in optimization: 求梯度零点
+
+我们对于 $E: \mathbb{R}^N \rightarrow \mathbb{R}$, 想要求其 stationary point, 即 $\nabla E = 0$ 处, 我们可以令 $f := \nabla E$, 然后使用 Newton's method 求出 $\nabla E$ 的零点. **因而这属于 second-order method. 它要求一个函数是 $C^2$ 的.** (严格而言, 据我们在分析课所知, 因为它的推导使用的是二阶泰勒近似).
+
+$\mathbb{R^n}\rightarrow \mathbb{R}$ 情况:
+$$
+x_{k+1} = x_k - H(x_k)^{-1} \nabla f(x_k)
+$$
+
+#### 推导
+
+<img src="02-classification.assets/image-20250208175328176.png" alt="image-20250208175328176" style="zoom:25%;" />
+
+Note: **for linear regression, Hessian 为 $\Phi^T\Phi$.**
+
+
+
+#### 和 gradient descent 的对比
 
 梯度下降（Gradient Descent, GD）和牛顿法（Newton's Method）都是优化算法，它们各有优缺点，适用于不同的场景。尽管梯度下降是更常见的方法，但牛顿法仍然有其独特的优势，因此仍然被使用。
 
-### 1. **收敛速度**
+1. **收敛速度**
 
 - **梯度下降**: 使用一阶导数（梯度）来更新参数，通常采用固定或自适应的步长（学习率）。它的收敛速度依赖于学习率的选择，可能需要较多的迭代才能接近最优解。
 - **牛顿法**: 使用二阶导数（Hessian 矩阵）来调整步长，可以在二次可微的情况下实现 **二阶收敛**，即每一步可以更接近最优解，因此通常比梯度下降收敛得更快。
 
-### 2. **步长的选择**
+2. **步长的选择**
 
 - **梯度下降**: 需要手动调整学习率，选择不当可能导致收敛速度慢或震荡，甚至不收敛。
 - **牛顿法**: 由于利用了二阶导数，能更智能地选择步长，不需要额外调节学习率，在某些情况下更加稳定。
 
-### 3. **计算成本**
+3. **计算成本**
 
 - **梯度下降**: 计算梯度的成本相对较低，尤其适用于高维度的大规模优化问题（如深度学习）。
 - **牛顿法**: 计算二阶 Hessian 矩阵及其逆矩阵的成本较高，尤其是在高维情况下，可能会非常耗费计算资源。
 
-### 4. **适用场景**
+4. **适用场景**
 
 - **梯度下降**: 适用于大规模优化问题，特别是数据维度很高的情况下（如机器学习、深度学习）。
 - **牛顿法**: 适用于小规模、高精度的优化问题，如凸优化、数值计算中的非线性方程求解。
 
-### 5. **逃离鞍点**
+5. **逃离鞍点**
 
 - **梯度下降**: 可能会卡在鞍点或局部极小值。
 - **牛顿法**: 由于 Hessian 矩阵的信息，能更好地区分局部极小值和鞍点，有助于避免停留在鞍点。
 
-### **结论**
-
-虽然梯度下降在大规模优化问题（如神经网络训练）中更受青睐，但牛顿法在需要高精度求解、二阶信息易于计算的情况下（如凸优化）仍然有优势。因此，在不同的应用场景下，我们可能会选择不同的优化方法，甚至结合两者（如拟牛顿法 Quasi-Newton Methods，如 BFGS 算法）。
 
 
+梯度下降在大规模优化问题（如神经网络训练）中更受青睐，牛顿法在需要高精度求解、二阶信息易于计算的情况下（如凸优化）仍然有优势。因此，在不同的应用场景下，我们可能会选择不同的优化方法，甚至结合两者（如拟牛顿法 Quasi-Newton Methods，如 BFGS 算法）。
 
 
 
 
 
+#### Applying Newton's method on logistic regression
+
+我们在 linear regression 中可以解出 closed-form sol. 但是, **logistic regression 是 non-linear 的, 不存在 closed form sol,** 所以我们需要通过迭代方法，比如**迭代使用 Newton's method 来获得 optimal sol.** 
+
+这个过程叫做 **iteratively reweighted least squares.** 
+
+推导 sketch:
 
 
 
-
-
+<img src="02-classification.assets/Screenshot 2025-02-08 at 18.01.34.png" alt="Screenshot 2025-02-08 at 18.01.34" style="zoom: 67%;" />
 
 
 
@@ -200,6 +238,54 @@ $$
 
 ### KNN(K-nerest neighbors)
 
+这是一个比起 logstic regression, 更加简单的分类算法.
+
+**它并不进行 learning！！**而是直接把 training set 原封不动拿来作为参照
+
+而是对于每个 query example, 
+
+1. 找到 $k$ 个 training set 中和它最近的点, 这个集合标记为 $KNN$
+2. 而后, predict 结果为它的 $KNN$ 中的众数 $y$. 即相邻的 training 点中最多的从属类.
+
+
+
+Note: 通过 adapt 这个预测公式, 我们也可以应用它到 regression 上。
+
+<img src="02-classification.assets/Screenshot 2025-02-08 at 18.11.36.png" alt="Screenshot 2025-02-08 at 18.11.36" style="zoom: 50%;" />
+
+
+
+#### hyper parameters
+
+1. **更大的 $k$ 可以获得更加 smooth 的 decision boundary.**
+
+2. **更大的 $N$ (training set size) 可以提高 performance.** 
+
+   ESL 13.3 定理: 当 $N\rightarrow \infty$ 时, 1-NN 分类器的 error 不会超过 optimal error 的两倍。
+
+1. distance metric 的选择也很重要.  (which $L_p$?)
+
+<img src="02-classification.assets/Screenshot 2025-02-08 at 18.15.04.png" alt="Screenshot 2025-02-08 at 18.15.04" style="zoom: 67%;" />
+
+#### Effectiveness analysis
+
+KNN 的优点是简洁，灵活，对于低维度 input 高效
+
+缺点是 expansive，对高维度 input 并不高效（都太远了），以及 not robust to irrelevant features. 容易收到 noise 影响。
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Classification(lec 5)
 
 
 
@@ -234,7 +320,26 @@ $$
 
 
 
-# Regularization (lec 7)
+
+
+
+
+
+## Classification (lec 6)
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Regularization (lec 7)
 
 
 
