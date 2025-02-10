@@ -391,30 +391,109 @@ $$
 
 刚才我们说了，对于 probabilistic discriminative model, 我们要 model 的是 $p(C_k|x)$,
 
-而对于 probabilistic generative model, 我们要 model 的是 joint density function $p(x,C_k)$,
-
-方法: 我们**通过 learn $p(x|C_k)$ 以及 prior $p(C_k)$, 运用 Beyes rule 来 predict $p(x,C_k)$.**
+而对于 probabilistic generative model, 我们要 model 的是 joint density function $p(x,C_k)$ （并同时得到 $p(x|C_k)$
 
 
+
+方法: 我们**通过 model 并 learn $p(X=x|C_k)$ 以及 prior $p(C_k)$ 的乘积 $p(x,C_k)$) **，**运用 Beyes rule 来 predict $p(x | C_k)$.**
 
 By Bayes: 
 
 <img src="02-classification.assets/Screenshot 2025-02-09 at 03.45.06.png" alt="Screenshot 2025-02-09 at 03.45.06" style="zoom:50%;" />
 
-从而, 我们可以把 model decompose 为
+对于固定的 $x$, 我们通过我们 model 的 $p(x|C_k)$ 以及 $p(C_k)$ for each $k$, 即 $p(C_k,x)$，从而得到 $p(C_k |x)$，即我们的预测结果
 
-1. $p(C_k)$
-2. $p(x|C_k)$
+以两个 classes 为例:  two classes: 
 
-的直接运算.
+<img src="02-classification.assets/Screenshot 2025-02-09 at 18.04.25.png" alt="Screenshot 2025-02-09 at 18.04.25" style="zoom:50%;" />
+
+<img src="02-classification.assets/Screenshot 2025-02-09 at 18.05.07.png" alt="Screenshot 2025-02-09 at 18.05.07" style="zoom:50%;" />
 
 
 
 
+
+### Gaussian Discriminant Analysis
+
+https://aman.ai/cs229/gda/
+
+https://kuleshov-group.github.io/aml-book/contents/lecture7-gaussian-discriminant-analysis.html
+
+GDA 是一种 probabilistic generative model, 它 model 每个 $p(C_k)$ 为 constant (比如使用 Bernoulli 分布)，并对每个 $C_k$, 把 $p(x | C_k)$ model 为一个 Gaussian distribution:
+
+![Screenshot 2025-02-09 at 18.36.36](02-classification.assets/Screenshot 2025-02-09 at 18.36.36.png)
+
+其中 $\Sigma$ 表示 covariance matrix of the $M$ features
+
+以 dim=2 为例：
+
+
+
+![Screenshot 2025-02-09 at 18.41.59](02-classification.assets/Screenshot 2025-02-09 at 18.41.59.png)
+
+
+
+recall: **cov matrix 一定半正定，并且对称。**
+
+
+
+
+
+**最 basic 的 GDA 假设所有 classes 的 covariance 都是相等的。**
+
+于是 follows: decision boundary 是 linear 的
+
+![Screenshot 2025-02-09 at 19.22.59](02-classification.assets/Screenshot 2025-02-09 at 19.22.59.png)
+
+<img src="02-classification.assets/Screenshot 2025-02-09 at 19.33.22.png" alt="Screenshot 2025-02-09 at 19.33.22" style="zoom: 45%;" />
+
+
+
+
+
+
+
+
+
+#### 计算 log odds 的表达式
+
+<img src="02-classification.assets/Screenshot 2025-02-09 at 19.35.36.png" alt="Screenshot 2025-02-09 at 19.35.36" style="zoom:50%;" />
+
+其表达式为: 
+
+![Screenshot 2025-02-09 at 19.36.16](02-classification.assets/Screenshot 2025-02-09 at 19.36.16.png)
+
+
+
+#### Learning GDA<img src="02-classification.assets/Screenshot 2025-02-09 at 19.34.30.png" alt="Screenshot 2025-02-09 at 19.34.30" style="zoom:50%;" />
+
+（假设所有数据 i.i.d.）
+
+
+
+
+
+#### GDA 参数一览
+
+<img src="02-classification.assets/Screenshot 2025-02-09 at 19.44.51.png" alt="Screenshot 2025-02-09 at 19.44.51" style="zoom:50%;" />
+
+因而 GDA 对 data 的 distribution 有很多的假设。logistic regression 则只有 2M 个参数。
+
+一览：
+
+<img src="02-classification.assets/Screenshot 2025-02-09 at 19.48.13.png" alt="Screenshot 2025-02-09 at 19.48.13" style="zoom:50%;" />
+
+
+
+<img src="02-classification.assets/Screenshot 2025-02-09 at 20.07.06.png" alt="Screenshot 2025-02-09 at 20.07.06" style="zoom:50%;" />
+
+<img src="02-classification.assets/Screenshot 2025-02-09 at 20.07.34.png" alt="Screenshot 2025-02-09 at 20.07.34" style="zoom:50%;" />
 
 
 
 ## Classification (lec 6)
+
+### Naive Bayes
 
 
 
