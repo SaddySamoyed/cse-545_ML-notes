@@ -488,71 +488,21 @@ where
 \textbf{(a) [3 points]} Find the Hessian H of $\ell(w)$.
 \begin{solution}
     \textbf{of 1(a):}\\
-    We first calculate \textbf{the gradient of $\ell(w):\mathbb{R}^n\rightarrow \mathbb{R}$:}
-\[
-\nabla_w \ell(w) = \sum_{i=1}^{N} y^{(i)}\nabla_w \log h(x^{(i)}) +  (1 - y^{(i)})\nabla_w \log (1 - h(x^{(i)})) 
-\]
-where \( h(x) = \sigma(w^\top x) \). 
-\[
-\nabla_w \log h(x^{(i)}) = \frac{1}{h(x^{(i)})} \frac{\partial h(x^{(i)})}{\partial w}
-\]
-and
-\[
-\frac{\partial h(x^{(i)})}{\partial w} = \frac{\partial}{\partial w} \sigma(w^\top x^{(i)})
-\]
-recall for sigmoid function:
-\[
-\frac{d\sigma(z)}{dz} = \sigma(z)(1 - \sigma(z))
-\]
-So
-\[
-\frac{\partial  h(x^{(i)})}{\partial w} =  h(x^{(i)}) (1 - h(x^{(i)})) x^{(i)}
-\]
-This confirms:
-\[
-\nabla_w \log p^{(i)} = \frac{h(x^{(i)}) (1 - h(x^{(i)})) x^{(i)}}{h(x^{(i)})}
-= (1 - h(x^{(i)})) x^{(i)}
-\]
-Similarly we can get
-\[
-\nabla_w\log (1 - h(x^{(i)})) = -h(x^{(i)}) x^{(i)}
-\]Combining the two parts, we get:
-\[
+ We know that: \[
 \nabla \ell(w) = \sum_{i=1}^{N} (y^{(i)} - h(x^{(i)})) x^{(i)}
-\]
-By vectorization form: \[
-\nabla \ell(w) = X^\top (y - h)
-\]
+\] by derivation in class.
 The Hessian is obtained by differentiating the gradient:
 \[
-H = D(\nabla f)(x) 
+H = \frac{\partial}{\partial w} (\nabla \ell)(w)  = -\sum_{i=1}^{N} \frac{\partial}{\partial w}  ( h(x^{(i)}) x^{(i)})
 \]
 
-Since:
 
-\[
-\frac{\partial p^{(i)}}{\partial w} = p^{(i)} (1 - p^{(i)}) x^{(i)},
+
+
+Since we have:  \[
+ \nabla_w h(x^{(i)}) =h(x^{(i)}) (1 -h(x^{(i)})) x^{(i)}
 \]
 
-the Hessian is:
-
-\[
-H = -\sum_{i=1}^{N} p^{(i)} (1 - p^{(i)}) x^{(i)} x^{(i)^\top}
-\]
-
-which can be expressed in matrix form as:
-
-\[
-H = - X^\top D X
-\]
-
-where \( D \) is an \( N \times N \) diagonal matrix with elements:
-
-\[
-D_{ii} = p^{(i)} (1 - p^{(i)}).
-\]
-d
-    
 \end{solution}
 
 
@@ -571,6 +521,11 @@ for any vector $z$.
     \sum_{i} \sum_{j} z_i x_i x_j z_j = (x^\top z)^2.
 \end{equation}
 Note that $(x^\top z)^2 \geq 0$.
+
+
+
+
+
 
 \subsection{Newton's Method Update Rule}
 
