@@ -24,3 +24,4 @@ $$
 $$
 H_f(x) = \frac{\partial}{\partial x}(\nabla f) (x)
 $$
+<img src="gradient and Heissan.assets/image-20250211123059651.png" alt="image-20250211123059651" style="zoom:30%;" />
