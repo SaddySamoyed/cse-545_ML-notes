@@ -118,7 +118,7 @@ $$
 
 
 
-#### minimizing neg log likelihood function
+#### minimizing neg log likelihood function: 计算梯度
 
 我们回忆: linear model with stochastic noise 中, 每个 input $x^{(n)}$ 对应的预测结果也是一个 distribution of corresponding $y$  to it. 只不过在该模型中, 我们是假定 noise 遵守一定 prior 的分布规律 (比如正态分布), 而固定住方差用参数 $w$ 表示分布中心的不同, 从而通过 minimizing neg log likelihood function 的方式修改 $w$。得到最符合现有样本的分布规律，从而确定从 input $x$ 到 output [distribution of $y$] 的映射模型.
 
@@ -194,6 +194,40 @@ $$
 <img src="02-classification.assets/image-20250208175328176.png" alt="image-20250208175328176" style="zoom:25%;" />
 
 Note: **for linear regression, Hessian 为 $\Phi^T\Phi$.**
+
+
+
+### 求 gradient 和 Heissan
+
+Note: 
+
+对于 $f:\mathbb{R}^n \rightarrow \mathbb{R}$,
+$$
+\nabla f: \mathbb{R}^n \rightarrow \mathbb{R^n}
+$$
+把一个点的值映射到这个点的导数的转置
+
+而 Hessian 则是:
+$$
+H_f(x) = D(\nabla f) (x)
+$$
+对 $\nabla f$ 的求导.
+
+
+
+梯度的链式法则:
+
+<img src="02-classification.assets/Screenshot 2025-02-11 at 11.43.16.png" alt="Screenshot 2025-02-11 at 11.43.16" style="zoom:50%;" />
+
+
+
+
+
+
+
+
+
+
 
 
 
