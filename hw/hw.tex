@@ -5,6 +5,8 @@
 \usepackage{amssymb}%
 \usepackage{graphicx}
 \usepackage{pdfpages}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 \title{CSE 545: Machine Learning}
 \subtitle{25 Win, instructed by Honglak Lee}
@@ -46,14 +48,14 @@ We first derive the optimal for $w_0$:
        \tfrac{1}{2}\sum_{i=1}^N \bigl(y^{(i)} - w_1 x^{(i)} - w_0\bigr)^2
    \Bigr]
 \]
-for each \(i\), we have (by chain rule)
+For each \(i\), we have (by chain rule)
 
 \[
 \frac{\partial}{\partial w_0}
 \bigl(y^{(i)} - w_1 x^{(i)} - w_0\bigr)^2
 = 2\,\bigl(y^{(i)} - w_1 x^{(i)} - w_0\bigr)\,(-1)
 \]
-by setting the partial to 0:
+Setting the partial to 0:
 \begin{align}
     \frac{\partial L}{\partial w_0}
 &= -\sum_{i=1}^N \bigl[y^{(i)} - (w_1 x^{(i)} + w_0)\bigr] = 0 \\
@@ -73,7 +75,6 @@ Thus we have
 w_0 = \overline{Y} - w_1 \, \overline{X}
 \tag{1}
 \]
-
 Next, we derive the optimal value of $w_1$.
 \[
 \frac{\partial L}{\partial w_1}
@@ -153,11 +154,8 @@ Since \(u_i\neq 0\), must have \(\|u_i\|^2 > 0\), and therefore \(\lambda_i > 0\
    z^\top A\,z 
    = w^\top \Lambda\,w 
    = \sum_{i=1}^d \lambda_i\, w_i^2.
-   \]
-   Since \(\lambda_i > 0\) and at least one \(w_i^2 \ge 0\) (since \(w\neq 0\)), we get 
-   \(\sum_{i=1}^d \lambda_i w_i^2 > 0.\)
-Therefore \(z^\top A\,z > 0\). Since $z$ is arbitrary, this finishes the proof that \(A \succ 0\).
-
+   \]Since \(\lambda_i > 0\) and at least one \(w_i^2 \ge 0\) (since \(w\neq 0\)), we get  \(\sum_{i=1}^d \lambda_i w_i^2 > 0.\)\\
+Therefore \(z^\top A\,z > 0\). Since $z$ is arbitrary, finishing the proof that \(A \succ 0\).\\
 Thus, \(A\succ 0\) \(\Longleftrightarrow\) all eigenvalues \(\lambda_i>0\).\\\\
 \end{proof}
 
@@ -166,34 +164,30 @@ Thus, \(A\succ 0\) \(\Longleftrightarrow\) all eigenvalues \(\lambda_i>0\).\\\\
     Now consider a ridge regression problem with the regularization term \(\frac{1}{2\beta}\|w\|_2^2\). The symmetric matrix in the closed-form solution is \(\Phi^\top \Phi + \beta I\). Derive the eigenvalues and eigenvectors for \(\Phi^\top \Phi + \beta I\) with respect to the eigenvalues and eigenvectors of \(\Phi^\top \Phi\), denoted as \(\lambda_i\) and \(u_i\). Prove that the matrix \((\Phi^\top \Phi + \beta I)\) is PD for any \(\beta > 0\).
 \begin{proof}
 (1) Eigenvalues/eigenvectors of \(\Phi^\top \Phi + \beta I\): 
-This $\Phi^T\Phi$ is real symmetric, suppose \(\Phi^\top \Phi\) eigen-decomposes as:\[
+Since $\Phi^T\Phi$ is real symmetric, suppose \(\Phi^\top \Phi\) eigen-decomposes as:\[
    \Phi^\top \Phi = U\,\Lambda\,U^\top
-   \]
-   Then \[
+   \]Then \[
    \Phi^\top \Phi + \beta I 
    = U\,\Lambda\,U^\top + \beta\,I
    \]
-We can rewrite:
-   \[
+We can rewrite \(
    \beta\,I 
    = \beta\,U\,U^\top
-   \]
-since \(U\,U^\top = I\). Hence, \[
+   \)since \(U\,U^\top = I\). Hence, \[
    \Phi^\top \Phi + \beta I 
    = U\,\Lambda\,U^\top + \beta\,U\,U^\top
    = U\,(\Lambda + \beta I)\,U^\top.
    \]
 Thus the eigenvectors of \(\Phi^\top \Phi + \beta I\) are the same as those of \(\Phi^\top \Phi\) (the columns of \(U\)), and the eigenvalues are \(\lambda_i + \beta\).
 
-(2) Positivity of \(\Phi^\top \Phi + \beta I\):   
-Claim: for any matrix $A$, $A^T A$ is potisive semidefinite.
-Proof of claim: let $x$ be arbitary  nonzero input to $A^TA$, then
+(2) Positivity of \(\Phi^\top \Phi + \beta I\):  \\
+\textbf{Claim: for any matrix $A$, $A^T A$ is potisive semidefinite.}\\
+\noindent Proof of claim: let $x$ be arbitary  nonzero input to $A^TA$, then
 $$x^T(A^TA)x=(Ax)^T(Ax)=||Ax||_2≥0$$
-Since \(\Phi^\top \Phi\) is positive semidefinite, its eigenvalues satisfy \(\lambda_i \ge 0\).(proved dually by (1)). Adding \(\beta I\) shifts each eigenvalue by \(\beta > 0\). Hence each eigenvalue of \(\Phi^\top \Phi + \beta I\) is \(\lambda_i + \beta > 0\). Therefore, \(\Phi^\top \Phi + \beta I\) is positive definite for any \(\beta > 0\), by (1).
+Therefore \(\Phi^\top \Phi\) is positive semidefinite, so its eigenvalues \(\lambda_i \ge 0\) (for the same reasoning as the proof in in(i).) Adding \(\beta I\) shifts each eigenvalue by \(\beta > 0\). Hence each eigenvalue of \(\Phi^\top \Phi + \beta I\) is \(\lambda_i + \beta > 0\). Therefore, \(\Phi^\top \Phi + \beta I\) is positive definite for any \(\beta > 0\), by (i).
 \end{proof}
 
 \end{enumerate}
-
 
 
 
@@ -211,7 +205,7 @@ is equivalent to minimizing the following loss function:
 \]
 [Hint: You can expand the log-likelihood as follows: 
 \[
-log P(y^{(n)} | x^{(n)} = I(y^{(n)} = 1) log P(y^{(n)} = 1 | x^{(n)}) + I(y^{(n)} = -1) log P(y^{(n)} = -1 | x^{(n)})
+log P(y^{(n)} | x^{(n)}) = I(y^{(n)} = 1) log P(y^{(n)} = 1 | x^{(n)}) + I(y^{(n)} = -1) log P(y^{(n)} = -1 | x^{(n)})
 \]
 and then plug in the class posterior probability of the logistic regression model.]
 \begin{proof}
@@ -225,43 +219,39 @@ Since
 \[
 P(y=+1 \mid x) 
 = \sigma\bigl(w^\top \phi(x)\bigr)
-= \frac{1}{1 + \exp\bigl(-w^\top \phi(x)\bigr)}
 \]
 \[
 P(y=-1 \mid x) 
 = 1 - \sigma\bigl(w^\top \phi(x)\bigr)
-= \sigma\bigl(-\,w^\top \phi(x)\bigr)
 \]
-we can write:
-
+and $\sigma(-a) = 1 - \sigma(a)$, so we can write:
 \[
 P\bigl(y^{(n)} \mid x^{(n)}\bigr)
 = \sigma\bigl(y^{(n)}\,w^\top \phi(x^{(n)})\bigr)
 \]
-Hence, the log-likelihood is:
+Hence the log-likelihood is:
 \[
 \sum_{n=1}^N \log \sigma\bigl(y^{(n)}\,w^\top \phi(x^{(n)})\bigr)
 \]
 Since \(\sigma(z) = 1 / [1 + \exp(-z)]\), \(
 \log \sigma(z)
 = -\log\bigl(1 + \exp(-z)\bigr)
-\), so 
+\), we have 
 \[
 \log \sigma\bigl(y^{(n)}\,w^\top \phi(x^{(n)})\bigr)
 = -\log\bigl[1 + \exp\bigl(-\,y^{(n)}\,w^\top \phi(x^{(n)})\bigr)\bigr]
 \]
 Thus,
-
 \[
 \sum_{n=1}^N \log P\bigl(y^{(n)}\mid x^{(n)}\bigr)
 = \sum_{n=1}^N \log \sigma\bigl(y^{(n)}\,w^\top \phi(x^{(n)})\bigr)
 = -\sum_{n=1}^N \log\Bigl[1 + \exp\bigl(-\,y^{(n)}\,w^\top \phi(x^{(n)})\bigr)\Bigr]
 \]
 This finishes the proof that 
-\[\text{minimize}
+\[\text{maximizing}
 \sum_{n=1}^N \log P\bigl(y^{(n)}\mid x^{(n)}\bigr)
 \Longleftrightarrow
-\text{minimize}
+\text{minimizing}
 \sum_{n=1}^N \log\Bigl[1 + \exp\bigl(-\,y^{(n)}\,w^\top \phi(x^{(n)})\bigr)\Bigr].
 \]
 \end{proof}
@@ -280,10 +270,17 @@ Here, as we seen in the class, the training objective is defined as:
 $$
 E(w) = \frac{1}{2} \sum_{i=1}^N (\sum_{j=0}^{M-1}w_j \phi(x^{(i)})- y^{(i)})^2  = \frac{1}{2} (w^T\phi(x^{(i)}) - y^{(i)})^2
 $$
-
-\textbf{(a) }\textbf{[12 points] (Autograder)} Implement the GD and SGD optimization methods. For all the implementa￾tion details (e.g., function signature, initialization of weight vectors, etc.), follow the instruction given in the code files. Your score for this question will be graded by the correctness of the implementation.
-\textbf{(b) }\textbf{[3 points]} Please share the plot generated from the section 2(b) of your .ipynb file in your write-up, and then compare two optimization methods, GD and SGD. Which one takes less time and which one shows lower test objective $E(w_{test})$?
-
+\noindent \textbf{(a) }\textbf{[12 points] (Autograder)} Implement the GD and SGD optimization methods. For all the implementation details (e.g., function signature, initialization of weight vectors, etc.), follow the instruction given in the code files. Your score for this question will be graded by the correctness of the implementation.\\
+\noindent \textbf{(b) }\textbf{[3 points]} Please share the plot generated from the section 2(b) of your .ipynb file in your write-up, and then compare two optimization methods, GD and SGD. Which one takes less time and which one shows lower test objective $E(w_{test})$?
+\begin{solution}
+\pic[0.6]{assets/1(2b).png}
+"GD version took 0.00 seconds\\
+GD Test objective = 2.7017\\
+SGD version took 0.06 seconds\\
+SGD Test objective = 2.6796"\\
+In our example, GD takes shorter time than SGD. One reason it that we have extremely small scale of 20 data points, so we can make full use of parallel computing. Through vectorization, for the 200 epoches, we takes about 200 computation. But for SGD, we iterate through the whole data set every time, so we takes about 200*20 = 4000 computations. But for larger sample scale and more schochastic choice of data points each epoch (instead of going through the whole dataset), SDG could take shorter time.\\
+SGD performs a little bit better on test objective than GD. It could help escape local minima and more possibly lead to better global solution.
+\end{solution}
 
 \subsection{Over-fitting Study}
 Next, you will investigate the problem of over-fitting. Recall the figure from lecture that explored over-fitting as a function of the number of features (e.g., \( M \), the number of terms in a \((M - 1)\)-degree polynomial). To evaluate this behavior, we examine the Root-Mean-Square (RMS) Error defined below. (Note: we use the RMS error just for evaluation purposes, NOT as a training objective.)
@@ -294,8 +291,7 @@ E_{\text{RMS}} = \sqrt{\frac{2E(w^*)}{N}}
 \pic[0.6]{assets/1(2.2).png}
 
 
-\textbf{(a) [8 points] (Autograder)} Implement the closed-form solution of linear regression (assuming all conditions are met) instead of iterative optimization methods. (Hint: we recommend using \texttt{np.linalg.inv} to compute the inverse of a matrix.)
-
+\noindent \textbf{(a) [8 points] (Autograder)} Implement the closed-form solution of linear regression (assuming all conditions are met) instead of iterative optimization methods. (Hint: we recommend using \texttt{np.linalg.inv} to compute the inverse of a matrix.)\\
 \textbf{(b) [2 points]} Regenerate the plot with the provided data. The sample training data can be generated with \((M - 1)\)-degree polynomial features (for \( M = 1, 2, \dots, 10 \)) from \texttt{q2xTrain.npy} and \texttt{q2yTrain.npy}. We assume the feature vector is:
 
 \[
@@ -303,9 +299,16 @@ E_{\text{RMS}} = \sqrt{\frac{2E(w^*)}{N}}
 \]
 
 for any value of \( M \). For the test curve, use the data in \texttt{q2xTest.npy} and \texttt{q2yTest.npy}. Note that the trend of your curve is not necessarily the same as the sample plot. Attach your plot to the \textbf{write-up}.
+\begin{solution}
+\pic[0.6]{assets/1(2d).png}
+\end{solution}
+
 
 \textbf{(c) [2 points]} In the \textbf{write-up}, discuss: Which degree polynomial would you say best fits the data? Was there evidence of under/over-fitting the data? Use your generated plots to justify your answer.
-
+\begin{solution}
+As $M$ become larger, the training and testing $E_{RMS}$ both went down before $M = 6$, stayed still for $M=6$ through $M=8$, and after $M$ went beyong $8$, the training $E_{RMS}$ kept on going down, but the testing $E_{RMS}$ suddenly went up. This is probably the point where over-fitting began.\\
+    I would say $M=6$, i.e. the $5$ degree polynomial best fits the data. This is because $M=6$ reaches both the lowest training and testing $E_{RMS}$.
+\end{solution}
 
 
 \subsection{Regularization (Ridge Regression)}
@@ -313,16 +316,19 @@ Finally, you will explore the role of regularization. Recall the image from lect
 \pic[0.6]{assets/1(2.3).png}
 
 \textbf{(a) [8 points] (Autograder)} Implement the closed-form solution of ridge regression. Specifically, use the following regularized objective function:
-
 \[
 \frac{1}{2} \sum_{i=1}^N (w^\top \phi(x^{(i)}) - y^{(i)})^2 + \frac{\lambda}{2} \|w\|_2^2
 \]
-
-to optimize the parameters \( w \).
+to optimize the parameters \( w \).\\
 
 \textbf{(b) [2 points]} For the sample data, regenerate the plot (Figure 2) with \( \lambda \in \{10^{-5}, 10^{-4}, \dots, 10^{-1}, 10^0 (= 1)\} \). First, compute the \( E_{\text{RMS}} \) over the training data specified in \texttt{q2xTrain.npy} and \texttt{q2yTrain.npy} with \( \lambda \), and then measure the test error using \texttt{q2xTest.npy} and \texttt{q2yTest.npy}. Attach your (unregularized) \( E_{\text{RMS}} \) plot of both the training and test data obtained from 2(g) to the \textbf{write-up}. Note that the trend of your curve is not necessarily the same as the sample plot.
+\pic[0.6]{assets/1(2g).png}
 
 \textbf{(c) [2 points]} Discuss: Which \( \lambda \) value seemed to work best for a ninth-degree polynomial (\( M = 10 \))? Use your generated plots to justify your answer. Provide your answer in the \textbf{write-up}.
+\begin{solution}
+    I think $\lambda = 0.0001$, i.e. $\log_{10} \lambda = -4$ seemed to work best for a ninth-degree polynomial. As shown in the plot, when fixing $M=10$,  $\log_{10} \lambda = -4$ has the lowest testing error, and the training error is stable around the point. It shows that this regularization coefficient both can prevent over-fitting and keep descent expressibility of the model.
+\end{solution}
+
 
 
 \section{Locally Weighted Linear Regression}
@@ -346,6 +352,34 @@ E_D(w) = (w^\top X - y^\top)R(w^\top X - y^\top)^\top,
 \]
 
 for an appropriate diagonal matrix \( R \), where \( X \in \mathbb{R}^{D \times N} \) is a matrix whose \( i \)-th column is \( x^{(i)} \in \mathbb{R}^{D \times 1} \), and \( y \in \mathbb{R}^{N \times 1} \) is the vector whose \( i \)-th entry is \( y^{(i)} \). Here, in locally weighted linear regression, we use raw data directly without mapping to high-dimensional features (i.e., each input is represented as a \( D \)-dimensional input vector, not an \( M \)-dimensional feature vector). Hence, we use the notation \( X \) instead of \( \Phi \). Clearly state what the \( R \) matrix is.
+\begin{proof}
+    
+\textbf{Let \( R_0 \in \mathbb{R}^{N \times N} \) be the diagonal matrix with \( r^{(i)} \) as the \( i \)-th diagonal element.}
+Note that the residual vector is:
+\[
+(w^\top X - y^\top)^\top = X^\top w - y
+\]
+Then we have:
+$$
+R_0(X^\top w - y) =  \begin{bmatrix} r^{(1)}(w^\top x^{(1)} - y^{(1)}) \\ \cdots \\r^{(N)}(w^\top x^{(N)} - y^{(N)})
+\\ \end{bmatrix}
+$$
+Therefore the error function is:
+\begin{align*}
+  E_D(w) &= \frac{1}{2} \sum_{i=1}^N r^{(i)}(w^\top x^{(i)} - y^{(i)})^2 \\
+  &= 
+\frac{1}{2}\begin{bmatrix} (w^\top x^{(1)} - y^{(1)}) \\ \cdots \\(w^\top x^{(N)} - y^{(N)})
+\\ \end{bmatrix}^T \begin{bmatrix} r^{(1)}(w^\top x^{(1)} - y^{(1)}) \\ \cdots \\r^{(N)}(w^\top x^{(N)} - y^{(N)})
+\\ \end{bmatrix} \\
+&=  \frac{1}{2}(X^\top w - y)^T (R_0(X^\top w - y))\\
+&= \frac{1}{2}(w^\top X - y^\top) R_0 (w^\top X - y^\top)^T
+\end{align*}
+We let $R := \frac{1}{2} R_0$, then we have 
+$$
+E_D(w) = (w^\top X - y^\top) R (w^\top X - y^\top)^T
+$$
+
+\end{proof}
 
 \textbf{(b) [7 points]} If all \( r^{(i)} \)'s equal 1, the normal equation for \( w \in \mathbb{R}^{D \times 1} \) becomes:
 
@@ -360,6 +394,34 @@ w^* = (XX^\top)^{-1}Xy.
 \]
 
 Now, by finding the derivative \( \nabla_w E_D(w) \) from part (a) and setting it to zero, generalize the normal equation and the closed-form solution to the locally weighted setting. Provide the new value of \( w^* \) that minimizes \( E_D(w) \) in a closed form as a function of \( X \), \( R \), and \( y \). (Hint: \( \nabla_w (RX^\top w) = XR^\top = XR \).)
+\begin{solution}
+
+    Define $$
+    z := X^Tw - y
+    $$
+    Notice we have:
+    $$
+   z =  (w^\top X - y^\top)^\top 
+    $$
+And we define $F(z):= z^T R z$, then we have $E(w) = F(z)$.\\
+Here we denote the derivative of a function: $f:\mathbb{R}^n \rightarrow \mathbb{R}^m$ by $D(f)$. \\
+By chain rule of differentiation:
+\begin{align}
+D(E(w)) &= D(F(z)) D(z(w))      \\
+& = D_z(z^T Rz) D_w(X^T w  - y) \\
+&= (2Rz)^T X^T \\
+&= (2XRz)^T
+\end{align}
+Thus
+$$
+\nabla E(w) = D(E(w))^T = 2XRz = 2XR(X^T w - y)
+$$
+
+Then setting $ \nabla E(u)= 0$, we have $2XRX^T w =  XRy$, so 
+$$w_{*} = \frac{1}{2}(XRX^T)^{-1} XRy$$
+This is the solution.
+\end{solution}
+
 
 \textbf{(c) [8 points]} Suppose we have a training set \( \{(x^{(i)}, y^{(i)}); i = 1, \dots, N\} \) of \( N \) independent examples, where the \( y^{(i)} \)'s are observed with differing variances. Specifically, suppose:
 
@@ -369,19 +431,377 @@ p(y^{(i)} | x^{(i)}; w) = \frac{1}{\sqrt{2\pi\sigma^{(i)}}} \exp\left(-\frac{(y^
 
 i.e., \( y^{(i)} \) is a Gaussian random variable with mean \( w^\top x^{(i)} \) and variance \( (\sigma^{(i)})^2 \), where the \( \sigma^{(i)} \)'s are fixed, known constants. Show that finding the maximum likelihood estimate (MLE) of \( w \) reduces to solving a weighted linear regression problem \( E_D(w) \). Clearly state what the \( r^{(i)} \)'s are in terms of the \( \sigma^{(i)} \)'s.
 
+\begin{proof}
+The log-likelihood for all data points is:
+\begin{align*}
+\log p(y | X; w) &= \log  \prod_{n=1}^N \frac{1}{\sqrt{2\pi\sigma^{(i)}}}  \exp\left(-\frac{(y^{(i)} - w^\top x^{(i)})^2}{2(\sigma^{(i)})^2}\right)    \\
+&= \sum_{i=1}^N \log \left( \frac{1}{\sqrt{2\pi\sigma^{(i)}}} \right) - \sum_{i=1}^N \frac{(y^{(i)} - w^\top x^{(i)})^2}{2 (\sigma^{(i)})^2}   \\
+&  =   -\frac{1}{2} \sum_{i=1}^N \log \left( 2\pi\sigma^{(i)} \right) - \sum_{i=1}^N \frac{(y^{(i)} - w^\top x^{(i)})^2}{2 (\sigma^{(i)})^2}  
+\end{align*}
+Since the left part is constant, we have:
+\begin{align*}
+    \nabla_w \log p(y | X; w) &=  -\nabla_w  \sum_{i=1}^N \frac{(y^{(i)} - w^\top x^{(i)})^2}{2 (\sigma^{(i)})^2}   \\
+\end{align*}
+Therefore, finding the MLE of $w$ reduces to minimizing $\nabla_w  \sum_{i=1}^N \frac{(y^{(i)} - w^\top x^{(i)})^2}{2 (\sigma^{(i)})^2}$\\
+\textbf{Notice that $\sum_{i=1}^N \frac{(y^{(i)} - w^\top x^{(i)})^2}{2 (\sigma^{(i)})^2}$ is just the $E_D(w)$ in (a),(b), with each $r^{(i)} = \frac{1}{2(\sigma^{(i)})^2}$. }\\
+This reduces the problem to solving a weighted linear regression problem \( E_D(w) \).
+\end{proof}
+
+
+
 \textbf{(d) [12 points, Programming Assignment]} Use the files \texttt{q3x.npy}, which contains the inputs \( x^{(i)} \) (\( i = 1, \dots, N \)), and \texttt{q3y.npy}, which contains the outputs \( y^{(i)} \) for a linear regression problem (one training example per row).
 
 \begin{itemize}
     \item \textbf{(i) [8 points] (Autograder)} Implement the closed-form solution for locally weighted linear regression (see the accompanied code).
     \item \textbf{(ii) [2 points]} Use the implemented locally weighted linear regression solver on this dataset (using the weighted normal equations derived in part (b)) and plot the data and the curve resulting from your fit. When evaluating local regression at a query point \( x \) (real-valued in this problem), use weights:
-
     \[
     r^{(i)} = \exp\left(-\frac{(x - x^{(i)})^2}{2\tau^2}\right),
     \]
 
     with a bandwidth parameter \( \tau \in \{0.1, 0.3, 0.8, 2, 10\} \). Attach the plots generated in part (d)(ii) to your write-up.
+\pic[0.6]{assets/1(3d).png}
+
+
+
     \item \textbf{(iii) [2 points]} Discuss and comment briefly on what happens to the fit when \( \tau \) is too small or too large.
+    \begin{solution}
+\noindent      When \( \tau \) is too small (e.g., \( \tau = 0.1 \)), the weights become extremely localized. So the nearest training points to \( x \) contribute significantly. As a result, the model becomes overly sensitive to local variations and noise, leading to a highly fluctuating model, causing overfit.\\
+ \noindent       When \( \tau \) is too large (e.g., \( \tau = 10.0 \)), the weights become almost uniform across all data points, since the exponential term decays very slowly. So the model almost reduces to becomes global linear regression. The weights then does not take effect.
+    \end{solution}
+
 \end{itemize}
+
+
+\chapter{classification}
+
+\section{Logistic Regression}
+
+Consider the log-likelihood function for logistic regression:
+\begin{equation}
+    \ell(w) = \sum_{i=1}^{N} \left[ y^{(i)} \log h(x^{(i)}) + (1 - y^{(i)}) \log (1 - h(x^{(i)})) \right],
+\end{equation}
+where 
+\begin{equation}
+    h(x) = \sigma(w^\top x) = \frac{1}{1 + \exp(-w^\top x)}
+\end{equation}
+\subsection{Hessian of $\ell(w)$}
+\textbf{(a) [3 points]} Find the Hessian H of $\ell(w)$.
+\begin{solution}
+    \textbf{of 1(a):}\\
+    We first calculate \textbf{the gradient of $\ell(w):\mathbb{R}^n\rightarrow \mathbb{R}$:}
+\[
+\nabla_w \ell(w) = \sum_{i=1}^{N} y^{(i)}\nabla_w \log h(x^{(i)}) +  (1 - y^{(i)})\nabla_w \log (1 - h(x^{(i)})) 
+\]
+where \( h(x) = \sigma(w^\top x) \). 
+\[
+\nabla_w \log h(x^{(i)}) = \frac{1}{h(x^{(i)})} \frac{\partial h(x^{(i)})}{\partial w}
+\]
+and
+\[
+\frac{\partial h(x^{(i)})}{\partial w} = \frac{\partial}{\partial w} \sigma(w^\top x^{(i)})
+\]
+recall for sigmoid function:
+\[
+\frac{d\sigma(z)}{dz} = \sigma(z)(1 - \sigma(z))
+\]
+So
+\[
+\frac{\partial  h(x^{(i)})}{\partial w} =  h(x^{(i)}) (1 - h(x^{(i)})) x^{(i)}
+\]
+This confirms:
+\[
+\nabla_w \log p^{(i)} = \frac{h(x^{(i)}) (1 - h(x^{(i)})) x^{(i)}}{h(x^{(i)})}
+= (1 - h(x^{(i)})) x^{(i)}
+\]
+Similarly we can get
+\[
+\nabla_w\log (1 - h(x^{(i)})) = -h(x^{(i)}) x^{(i)}
+\]Combining the two parts, we get:
+\[
+\nabla \ell(w) = \sum_{i=1}^{N} (y^{(i)} - h(x^{(i)})) x^{(i)}
+\]
+By vectorization form: \[
+\nabla \ell(w) = X^\top (y - h)
+\]
+The Hessian is obtained by differentiating the gradient:
+\[
+H = D(\nabla f)(x) 
+\]
+
+Since:
+
+\[
+\frac{\partial p^{(i)}}{\partial w} = p^{(i)} (1 - p^{(i)}) x^{(i)},
+\]
+
+the Hessian is:
+
+\[
+H = -\sum_{i=1}^{N} p^{(i)} (1 - p^{(i)}) x^{(i)} x^{(i)^\top}
+\]
+
+which can be expressed in matrix form as:
+
+\[
+H = - X^\top D X
+\]
+
+where \( D \) is an \( N \times N \) diagonal matrix with elements:
+
+\[
+D_{ii} = p^{(i)} (1 - p^{(i)}).
+\]
+d
+    
+\end{solution}
+
+
+
+
+\subsection{Show that $H$ is negative semi-definite and thus $\ell$ is concave and has no local maxima other than the global one}
+
+That is, show that
+\begin{equation}
+    z^\top H z \leq 0
+\end{equation}
+for any vector $z$. 
+
+\textbf{Hint:} You might want to start by showing the fact that
+\begin{equation}
+    \sum_{i} \sum_{j} z_i x_i x_j z_j = (x^\top z)^2.
+\end{equation}
+Note that $(x^\top z)^2 \geq 0$.
+
+\subsection{Newton's Method Update Rule}
+
+Using the $H$ you calculated in part (a), write down the update rule implied by Newton’s method for optimizing $\ell(w)$. 
+
+\textbf{Hint:} It could be a single-line equation:
+\begin{equation}
+    w = \text{YOUR ANSWER}.
+\end{equation}
+
+\subsection{Implement Newton’s Method for Binary Classification}
+
+Now use the update rule in (c) (and not a library function) to implement Newton’s method and apply it to a binary classification problem, following the guide in \texttt{logistic\_regression.ipynb}. Your \texttt{ipynb} file SHOULD include all the outputs.
+
+\subsection{Final Coefficients}
+
+What are the coefficients $w$, including the intercept term, resulting from your code? Please provide your answer in your writeup.
+
+\subsection{Final Plot}
+
+Please share the final plot from \texttt{logistic\_regression.ipynb} in your writeup.
+
+
+
+\section{Softmax Regression via Gradient Ascent}
+
+Gradient ascent is an algorithm used to find parameters that maximize a certain expression (contrary to
+gradient descent, which is used to minimize an expression). For some function $f(w)$, gradient ascent finds
+\begin{equation}
+    w^* = \arg\max_w f(w)
+\end{equation}
+according to the following pseudo-code:
+
+\begin{algorithm}
+\caption{Gradient Ascent}
+\begin{algorithmic}[1]
+    \State $w^* \gets$ random
+    \Repeat
+        \State $w^* \gets w^* + \alpha \nabla_w f(w^*)$
+    \Until{convergence}
+    \State \Return $w^*$
+\end{algorithmic}
+\end{algorithm}
+
+Softmax regression is a multiclass classification algorithm. 
+
+Given a labeled dataset \(D = \{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(N)}, y^{(N)})\}\), where $y^{(i)} \in \{1, 2, ...,K\}$ (total $K$ classes), softmax regression computes the probability that an example $x$ belongs to a class $k$:
+\begin{equation}
+    p(y = k | x, w) = \frac{\exp(w_k^\top \phi(x))}{\sum_{j=1}^{K} \exp(w_j^\top \phi(x))}.
+\end{equation}
+
+The above expression is over-parametrized, meaning that there is more than one unique $\{w_1,w_2, ...,w_K\}$ that gives identical probability measures for $p(y = k|x,w)$. A unique solution can be obtained using only $K-1$ weight vectors $w = \{w_1,w_2, ...,w_{K-1}\}$ and fixing $w_K = 0$:
+\begin{equation}
+    p(y = k|x,w) = \frac{\exp(w_k^\top \phi(x))}{1 + \sum_{j=1}^{K-1} \exp(w_j^\top \phi(x))}, \quad \forall k = \{1, 2, ...,K - 1\}
+\end{equation}
+\begin{equation}
+    p(y = K|x,w) = \frac{1}{1 + \sum_{j=1}^{K-1} \exp(w_j^\top \phi(x))}.
+\end{equation}
+
+We define the likelihood of the $i$th training example $p(y^{(i)}|x^{(i)},w)$ as:
+\begin{equation}
+    p(y^{(i)}|x^{(i)},w) = \prod_{k=1}^{K} \left[ p(y^{(i)} = k|x^{(i)},w) \right]^{I\{y^{(i)}=k\}},
+\end{equation}
+where $I\{\cdot\}$ is the indicator function. The full likelihood is given by:
+\begin{equation}
+    L(w) = \prod_{i=1}^{N} p(y^{(i)}|x^{(i)},w) = \prod_{i=1}^{N} \prod_{k=1}^{K} \left[ p(y^{(i)} = k|x^{(i)},w) \right]^{I\{y^{(i)}=k\}}.
+\end{equation}
+
+The log-likelihood is then:
+\begin{equation}
+    l(w) = \log L(w) = \sum_{i=1}^{N} \sum_{k=1}^{K} \log \left( \left[ p(y^{(i)} = k|x^{(i)},w) \right]^{I\{y^{(i)}=k\}} \right).
+\end{equation}
+
+\subsection{Gradient Ascent Update Rule}
+
+Derive the gradient ascent update rule for the log-likelihood:
+\begin{equation}
+    \nabla_{w_m} l(w) = \sum_{i=1}^{N} \phi(x^{(i)}) \left[I\{y^{(i)} = m\} - p(y^{(i)} = m | x^{(i)}, w)\right].
+\end{equation}
+
+\textbf{Hint:} Consider cases for $y^{(i)} = k = m$ and $y^{(i)} \neq m$ using the Kronecker delta $\delta_{km}$.
+
+\subsection{Implement Gradient Ascent}
+
+Using the gradient computed in part (a), implement gradient ascent for softmax regression, following the guide in \texttt{softmax\_regression.ipynb}. Your code should be implemented in \texttt{softmax\_regression.py}. Ensure all outputs are included in \texttt{softmax\_regression.ipynb}.
+
+Softmax regression classifies an example $x$ as:
+\begin{equation}
+    y = \arg\max_{y'} p(y'|x,w).
+\end{equation}
+
+\subsection{Test Accuracy}
+
+Train your classifier on the given training data and report the accuracy on the test data.
+
+
+
+\section{Gaussian Discriminant Analysis}
+
+Suppose we are given a dataset $\{(x^{(i)}, y^{(i)}); i = 1, ..., N\}$ consisting of $N$ independent examples, where $x^{(i)} \in \mathbb{R}^M$ are $M$-dimensional vectors, and $y^{(i)} \in \{0, 1\}$. We model the joint distribution as follows:
+
+\begin{equation}
+    p(y^{(i)}) = \phi^{y^{(i)}} (1 - \phi)^{1 - y^{(i)}}
+\end{equation}
+
+\begin{equation}
+    p(x^{(i)}|y^{(i)}=0) = \frac{1}{(2\pi)^{M/2} |\Sigma|^{1/2}} \exp\left(-\frac{1}{2} (x^{(i)} - \mu_0)^\top \Sigma^{-1} (x^{(i)} - \mu_0)\right)
+\end{equation}
+
+\begin{equation}
+    p(x^{(i)}|y^{(i)}=1) = \frac{1}{(2\pi)^{M/2} |\Sigma|^{1/2}} \exp\left(-\frac{1}{2} (x^{(i)} - \mu_1)^\top \Sigma^{-1} (x^{(i)} - \mu_1)\right)
+\end{equation}
+
+where the parameters are $\phi, \Sigma, \mu_0$, and $\mu_1$.
+
+\subsection{Posterior Distribution}
+
+Show that the posterior probability $p(y=1|x;\phi,\Sigma,\mu_0,\mu_1)$ can be written as a logistic function:
+
+\begin{equation}
+    p(y=1|x;\phi,\Sigma,\mu_0,\mu_1) = \frac{1}{1 + \exp(-w^\top \hat{x})}
+\end{equation}
+
+where $\hat{x}$ is an $(M+1)$-dimensional vector obtained by appending $x_0=1$ to $x$, and $w$ is a function of $\phi,\Sigma,\mu_0,\mu_1$.
+
+\subsection{Maximum Likelihood Estimation}
+
+The maximum likelihood estimates for $\phi, \mu_0$, and $\mu_1$ are given by:
+
+\begin{equation}
+    \phi_{ML} = \frac{1}{N} \sum_{i=1}^{N} I\{y^{(i)} = 1\}
+\end{equation}
+
+\begin{equation}
+    \mu_{0,ML} = \frac{\sum_{i=1}^{N} I\{y^{(i)} = 0\} x^{(i)}}{\sum_{i=1}^{N} I\{y^{(i)} = 0\}}
+\end{equation}
+
+\begin{equation}
+    \mu_{1,ML} = \frac{\sum_{i=1}^{N} I\{y^{(i)} = 1\} x^{(i)}}{\sum_{i=1}^{N} I\{y^{(i)} = 1\}}
+\end{equation}
+
+Prove that maximizing the log-likelihood with respect to these parameters results in these estimates.
+
+\subsection{MLE for $\Sigma$ in One Dimension}
+
+For $M=1$, let $\Sigma = \sigma^2$ be a scalar. Show that maximizing the log-likelihood with respect to $\Sigma$ yields:
+
+\begin{equation}
+    \Sigma_{ML} = \frac{1}{N} \sum_{i=1}^{N} (x^{(i)} - \mu_{y^{(i)}})^2.
+\end{equation}
+
+\subsection{MLE for $\Sigma$ in Higher Dimensions}
+
+For general $M > 1$, show that maximizing the log-likelihood with respect to $\Sigma$ results in:
+
+\begin{equation}
+    \Sigma_{ML} = \frac{1}{N} \sum_{i=1}^{N} (x^{(i)} - \mu_{y^{(i)}})(x^{(i)} - \mu_{y^{(i)}})^\top.
+\end{equation}
+
+\textbf{Hint:} Use the matrix gradient properties:
+\begin{equation}
+    \nabla_X \log |X| = X^{-1}
+\end{equation}
+\begin{equation}
+    \nabla_X (a^\top X^{-1} a) = -X^{-1} a a^\top X^{-1}.
+\end{equation}
+
+
+
+\section{Naive Bayes for Classifying SPAM}
+
+\subsection{Naive Bayes with Bayesian Smoothing}
+
+Recall that Naive Bayes can be solved with MLE, in which we count the occurrences of each feature (or word). Adding Laplace smoothing, we get:
+
+\begin{equation}
+    P(C_i) = \phi_i = \frac{N_{C_i}}{\sum_{i'} N_{C_{i'}}}
+\end{equation}
+
+\begin{equation}
+    P(x_j | C_i) = \mu_i^j = \frac{N_{C_i}^j + \alpha}{\sum_{j'} N_{C_i}^{j'} + \alpha M}
+\end{equation}
+
+where $M$ is the total number of features (or words), $N_{C_i}^j$ is the count of occurrences of $x_j$ with class $C_i$, and $\alpha > 0$ is the Laplace smoothing hyperparameter. We also denote $K$ as the number of classes.
+
+Show that Laplace smoothing is equivalent to solving the MAP estimate of Naive Bayes, where we have a prior on the values of $\mu$ which follow a symmetric Dirichlet distribution:
+
+\begin{equation}
+    P(\mu) = \frac{1}{Z} \prod_{i=1}^{K} \prod_{j=1}^{M} (\mu_i^j)^\alpha
+\end{equation}
+
+where $Z$ is a normalizing constant.
+
+\textbf{Hint:} You may use the Naive Bayes likelihood and MLE derivations from lecture without proof.
+
+\subsection{Implementing a SPAM Classifier}
+
+We will use Naive Bayes to build a spam classifier that distinguishes between spam and non-spam emails based on the subject line and body of each message. The classifier uses tokens as features.
+
+\subsubsection{Implementing the Classifier}
+
+Implement a Naive Bayes classifier using the multinomial event model and Laplace smoothing. Train your parameters with the dataset \texttt{MATRIX.TRAIN}, classify the test dataset \texttt{MATRIX.TEST}, and compute the accuracy using the evaluation function. Implement your code in \texttt{naive\_bayes\_spam.py} and submit it along with \texttt{naive\_bayes\_spam.ipynb}. Ensure all outputs are included in the notebook.
+
+\subsubsection{Finding the Most Indicative Tokens}
+
+Some tokens may be particularly indicative of spam emails. One way to measure how indicative a token $i$ is for the spam class is:
+
+\begin{equation}
+    \log \left( \frac{P(\text{token}_i | \text{SPAM})}{P(\text{token}_i | \text{NOTSPAM})} \right)
+\end{equation}
+
+Using the parameters obtained in part (a), find the five tokens most indicative of spam. Report these tokens in your writeup.
+
+\subsubsection{Evaluating Different Training Sets}
+
+Train different Naive Bayes classifiers using different training sets \texttt{MATRIX.TRAIN.*}. Evaluate each classifier using \texttt{MATRIX.TEST} and report their classification accuracies.
+
+\subsubsection{Training Data Size vs. Accuracy}
+
+Provide the final training data size-accuracy plot and include it in your writeup.
+
+\subsubsection{Best Training Set Size}
+
+Which training set size gives the best classification accuracy? Provide your analysis in your writeup.
+
+
+
+
+
+
+
 
 
 
