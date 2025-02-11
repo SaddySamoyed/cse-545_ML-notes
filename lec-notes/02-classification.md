@@ -217,7 +217,7 @@ $$
 
 梯度的链式法则:
 
-<img src="02-classification.assets/Screenshot 2025-02-11 at 11.43.16.png" alt="Screenshot 2025-02-11 at 11.43.16" style="zoom:50%;" />
+
 
 
 
