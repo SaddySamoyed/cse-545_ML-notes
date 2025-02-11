@@ -4,9 +4,9 @@
 
 我们已经学习了一种 supervised learning: regression. 现在学习第二种 supervised learning: classification
 
-![image-20250202161526265](02-classification.assets/image-20250202161526265.png)
+<img src="02-classification.assets/image-20250202161526265.png" alt="image-20250202161526265" style="zoom:22%;" />
 
-![image-20250202161540962](02-classification.assets/image-20250202161540962.png)
+<img src="02-classification.assets/image-20250202161540962.png" alt="image-20250202161540962" style="zoom:25%;" />
 
 
 
@@ -134,7 +134,7 @@ Note: linear regression with Gaussian noise 中的 output random variable $y$ �
 
 现在我们计算一下 gradient:
 
-![image-20250202184909119](02-classification.assets/image-20250202184909119.png)
+<img src="02-classification.assets/image-20250202184909119.png" alt="image-20250202184909119" style="zoom:50%;" />
 
 因而:
 $$
@@ -143,6 +143,22 @@ $$
 和 linear regression 中差不多. **只是在 linear regression 中, 对 $h$ 中每一项施加了一个 sigmoid 函数就好.**
 
 <img src="02-classification.assets/image-20250202185623408.png" alt="image-20250202185623408" style="zoom:9%;" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
