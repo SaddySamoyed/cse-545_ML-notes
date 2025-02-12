@@ -1,4 +1,303 @@
-![image-20250211130134753](hw2.assets/image-20250211130134753.png)
+# 1 [23 points] Logistic regression
+
+![Screenshot 2025-02-11 at 15.52.52](hw2.assets/Screenshot 2025-02-11 at 15.52.52.png)
+
+### (a) Find the Hessian of $\ell(w)$
+
+<img src="hw2.assets/image-20250211154432178.png" alt="image-20250211154432178" style="zoom:25%;" />
+
+<img src="hw2.assets/image-20250211154451368.png" alt="image-20250211154451368" style="zoom:30%;" />
+
+<img src="hw2.assets/image-20250211154634735.png" alt="image-20250211154634735" style="zoom:43%;" />
+
+
+
+### (b) Prove the $H$ is negative semi-definite![Screenshot 2025-02-11 at 15.45.37](hw2.assets/Screenshot 2025-02-11 at 15.45.37.png)
+
+<img src="hw2.assets/image-20250211154706259.png" alt="image-20250211154706259" style="zoom:43%;" />
+
+
+
+### (c) updae rule by Newton's method
+
+![Screenshot 2025-02-11 at 15.45.50](hw2.assets/Screenshot 2025-02-11 at 15.45.50.png)
+
+<img src="hw2.assets/image-20250211154720829.png" alt="image-20250211154720829" style="zoom:15%;" />
+
+
+
+![Screenshot 2025-02-11 at 19.31.41](hw2.assets/Screenshot 2025-02-11 at 19.31.41.png)
+
+### (e) coefficients from the code
+
+![Screenshot 2025-02-11 at 15.52.25](hw2.assets/Screenshot 2025-02-11 at 15.52.25.png)
+
+Answer:
+
+<img src="hw2.assets/Screenshot 2025-02-11 at 15.54.17.png" alt="Screenshot 2025-02-11 at 15.54.17" style="zoom:40%;" />
+
+
+
+### (f) plot from the code
+
+![Screenshot 2025-02-11 at 15.53.18](hw2.assets/Screenshot 2025-02-11 at 15.53.18.png)
+
+Answer:
+
+<img src="hw2.assets/output.png" alt="output" style="zoom:75%;" />
+
+
+
+
+
+
+
+# 2 [27 points] Softmax Regression via Gradient Ascent
+
+![Screenshot 2025-02-11 at 15.54.57](hw2.assets/Screenshot 2025-02-11 at 15.54.57.png)
+
+![Screenshot 2025-02-11 at 15.55.11](hw2.assets/Screenshot 2025-02-11 at 15.55.11.png)
+
+![Screenshot 2025-02-11 at 15.55.23](hw2.assets/Screenshot 2025-02-11 at 15.55.23.png)
+
+
+
+### (a) Derive the gradient ascent update rule for log-likelihood
+
+![Screenshot 2025-02-11 at 15.56.15](hw2.assets/Screenshot 2025-02-11 at 15.56.15.png)![Screenshot 2025-02-11 at 19.19.46](hw2.assets/Screenshot 2025-02-11 at 19.19.46.png)
+
+<img src="hw2.assets/image-20250211175640958.png" alt="image-20250211175640958" style="zoom:42%;" />
+
+<img src="hw2.assets/image-20250211175702303.png" alt="image-20250211175702303" style="zoom:45%;" />
+
+
+
+![Screenshot 2025-02-11 at 19.31.09](hw2.assets/Screenshot 2025-02-11 at 19.31.09.png)
+
+### (c) report accuracy
+
+![Screenshot 2025-02-11 at 17.58.14](hw2.assets/Screenshot 2025-02-11 at 17.58.14.png)
+
+<img src="hw2.assets/Screenshot 2025-02-11 at 18.51.02.png" alt="Screenshot 2025-02-11 at 18.51.02" style="zoom:80%;" />
+
+
+
+
+
+# 3 Gaussian Discriminate Analysis
+
+### (a) $p(y=1|x;\phi,\Sigma,\mu_0,\mu_1)$ is a form of logistic function
+
+![Screenshot 2025-02-11 at 19.58.58](hw2.assets/Screenshot 2025-02-11 at 19.58.58.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### (b) MLE of $\phi,\mu_0,\mu_1$
+
+![Screenshot 2025-02-11 at 20.00.04](hw2.assets/Screenshot 2025-02-11 at 20.00.04.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### (c) MLE of $\Sigma$ when $M=1$
+
+![Screenshot 2025-02-11 at 20.02.48](hw2.assets/Screenshot 2025-02-11 at 20.02.48.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### (d) MLE of $\Sigma$ when $M>1$ 
+
+![Screenshot 2025-02-11 at 20.03.29](hw2.assets/Screenshot 2025-02-11 at 20.03.29.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 4 Naive Bayes foe Classifuing SPAM
+
+### (a) Naive Bayes with Bayesian Smoothing
+
+![Screenshot 2025-02-11 at 19.40.56](hw2.assets/Screenshot 2025-02-11 at 19.40.56.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### (b) SPAM classifier
+
+![Screenshot 2025-02-11 at 19.44.33](hw2.assets/Screenshot 2025-02-11 at 19.44.33.png)
+
+![Screenshot 2025-02-11 at 19.44.43](hw2.assets/Screenshot 2025-02-11 at 19.44.43.png)
+
+   - For each email \(\mathbf{x}\), we compute:
+     $$
+     \log P(\text{spam} \mid \mathbf{x}) \approx \log \phi + \sum_j \bigl(\mathbf{x}[j] \cdot \log(\mu_{\text{spam}}[j])\bigr)
+     $$
+     $$
+     \log P(\text{nonspam} \mid \mathbf{x}) \approx \log(1-\phi) + \sum_j \bigl(\mathbf{x}[j] \cdot \log(\mu_{\text{nonspam}}[j])\bigr)
+     $$
+   - We label the email as spam (`1`) if $log P(\text{spam} \mid \mathbf{x}) > \log P(\text{nonspam} \mid \mathbf{x})$, otherwise non-spam (`0`).
+
+
+
+
+
+
+
+
+
+
+
+
+
+![Screenshot 2025-02-11 at 19.45.28](hw2.assets/Screenshot 2025-02-11 at 19.45.28.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+![Screenshot 2025-02-11 at 19.45.36](hw2.assets/Screenshot 2025-02-11 at 19.45.36.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+![Screenshot 2025-02-11 at 19.45.46](hw2.assets/Screenshot 2025-02-11 at 19.45.46.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+![Screenshot 2025-02-11 at 19.45.54](hw2.assets/Screenshot 2025-02-11 at 19.45.54.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
