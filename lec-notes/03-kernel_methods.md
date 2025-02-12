@@ -1,6 +1,4 @@
-
-
-## Regularization (lec 7)
+# Regularization (lec 7)
 
 
 
@@ -198,6 +196,96 @@ $$
 
 
 expecred loss = (bias)^2 + variance + noise
+
+
+
+
+
+
+
+
+
+# Intro to Kernel methods (lec 8)
+
+## 总述
+
+kernel trick: 将 input vector $x$ 通过 kernel function 转化为 (possibly 更多维度的) feature vector,（甚至可以 **infinite dim**）；这个 map 可以增加维度，以及增加 nonlinearity
+
+
+
+
+
+
+
+<img src="03-kernel_methods.assets/Screenshot 2025-02-12 at 01.48.54.png" alt="Screenshot 2025-02-12 at 01.48.54" style="zoom: 50%;" />
+
+<img src="03-kernel_methods.assets/Screenshot 2025-02-12 at 01.49.04.png" alt="Screenshot 2025-02-12 at 01.49.04" style="zoom:50%;" />
+
+
+
+
+
+
+
+
+
+
+
+<img src="03-kernel_methods.assets/Screenshot 2025-02-12 at 01.49.23.png" alt="Screenshot 2025-02-12 at 01.49.23" style="zoom:50%;" />
+
+
+
+### 有效要求1: feature 维度大于数据维度时
+
+
+
+<img src="03-kernel_methods.assets/Screenshot 2025-02-12 at 01.50.24.png" alt="Screenshot 2025-02-12 at 01.50.24" style="zoom:50%;" />
+
+
+
+<img src="03-kernel_methods.assets/Screenshot 2025-02-12 at 01.50.40.png" alt="Screenshot 2025-02-12 at 01.50.40" style="zoom:50%;" />
+
+
+
+
+
+### 有效要求2: objective gradient 可以用 features vector 的 inner product (K 的 entries) 表示
+
+![Screenshot 2025-02-12 at 01.52.43](03-kernel_methods.assets/Screenshot 2025-02-12 at 01.52.43.png)
+
+即：**如果优化过程中只依赖于数据点间的相似性（即内积）**，那么 Kernel 方法可以用 Kernel Trick 进行高效计算。
+
+**如果优化目标需要显式计算高维特征的值，而不是内积**，那么 Kernel 方法无法直接应用。
+
+​	
+
+# SVM (lec 9)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Kernelized SVM (lec 10)
+
+
 
 
 
