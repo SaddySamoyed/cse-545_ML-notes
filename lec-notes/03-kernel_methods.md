@@ -289,3 +289,7 @@ kernel trick: 将 input vector $x$ 通过 kernel function 转化为 (possibly �
 
 
 
+
+
+
+
