@@ -86,51 +86,37 @@ Answer:
 
 # 3 Gaussian Discriminate Analysis
 
+![Screenshot 2025-02-12 at 13.56.47](hw2.assets/Screenshot 2025-02-12 at 13.56.47.png)
+
 ### (a) $p(y=1|x;\phi,\Sigma,\mu_0,\mu_1)$ is a form of logistic function
 
 ![Screenshot 2025-02-11 at 19.58.58](hw2.assets/Screenshot 2025-02-11 at 19.58.58.png)
 
 
 
+<img src="hw2.assets/image-20250212155747716.png" alt="image-20250212155747716" style="zoom:33%;" />
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<img src="hw2.assets/image-20250212155808119.png" alt="image-20250212155808119" style="zoom:33%;" />
 
 ### (b) MLE of $\phi,\mu_0,\mu_1$
 
 ![Screenshot 2025-02-11 at 20.00.04](hw2.assets/Screenshot 2025-02-11 at 20.00.04.png)
 
+<img src="hw2.assets/image-20250212171037615.png" alt="image-20250212171037615" style="zoom:20%;" />
+
+<img src="hw2.assets/image-20250212171441838.png" alt="image-20250212171441838" style="zoom:33%;" /><img src="hw2.assets/image-20250212171500753.png" alt="image-20250212171500753" style="zoom:18%;" />
 
 
 
 
 
+<img src="hw2.assets/image-20250213105249367.png" alt="image-20250213105249367" style="zoom:30%;" /><img src="hw2.assets/image-20250213105315270.png" alt="image-20250213105315270" style="zoom:45%;" />
 
 
 
 
+
+<img src="hw2.assets/image-20250213121355995.png" alt="image-20250213121355995" style="zoom:30%;" /><img src="hw2.assets/image-20250213121418179.png" alt="image-20250213121418179" style="zoom:40%;" />
 
 
 
@@ -144,13 +130,7 @@ Answer:
 
 ### (c) MLE of $\Sigma$ when $M=1$
 
-![Screenshot 2025-02-11 at 20.02.48](hw2.assets/Screenshot 2025-02-11 at 20.02.48.png)
-
-
-
-
-
-
+![Screenshot 2025-02-11 at 20.02.48](hw2.assets/Screenshot 2025-02-11 at 20.02.48.png)<img src="hw2.assets/image-20250213124648657.png" alt="image-20250213124648657" style="zoom:38%;" /><img src="hw2.assets/image-20250213124743239.png" alt="image-20250213124743239" style="zoom:20%;" />
 
 
 
@@ -166,6 +146,9 @@ Answer:
 
 ![Screenshot 2025-02-11 at 20.03.29](hw2.assets/Screenshot 2025-02-11 at 20.03.29.png)
 
+<img src="hw2.assets/image-20250213140106599.png" alt="image-20250213140106599" style="zoom: 40%;" />
+
+<img src="hw2.assets/image-20250213140229519.png" alt="image-20250213140229519" style="zoom: 43%;" />
 
 
 
@@ -181,16 +164,11 @@ Answer:
 
 
 
-
-
-
-# 4 Naive Bayes foe Classifuing SPAM
+# 4 Naive Bayes for Classifying SPAM
 
 ### (a) Naive Bayes with Bayesian Smoothing
 
 ![Screenshot 2025-02-11 at 19.40.56](hw2.assets/Screenshot 2025-02-11 at 19.40.56.png)
-
-
 
 
 
