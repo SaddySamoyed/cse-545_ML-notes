@@ -170,11 +170,11 @@ Answer:
 
 ![Screenshot 2025-02-11 at 19.40.56](hw2.assets/Screenshot 2025-02-11 at 19.40.56.png)
 
+<img src="hw2.assets/image-20250213181957281.png" alt="image-20250213181957281" style="zoom:50%;" />
 
+<img src="hw2.assets/image-20250213182010534.png" alt="image-20250213182010534" style="zoom:50%;" />
 
-
-
-
+<img src="hw2.assets/image-20250213182022870.png" alt="image-20250213182022870" style="zoom:45%;" />
 
 
 
@@ -204,16 +204,6 @@ Answer:
      \log P(\text{nonspam} \mid \mathbf{x}) \approx \log(1-\phi) + \sum_j \bigl(\mathbf{x}[j] \cdot \log(\mu_{\text{nonspam}}[j])\bigr)
      $$
    - We label the email as spam (`1`) if $log P(\text{spam} \mid \mathbf{x}) > \log P(\text{nonspam} \mid \mathbf{x})$, otherwise non-spam (`0`).
-
-
-
-
-
-
-
-
-
-
 
 
 
