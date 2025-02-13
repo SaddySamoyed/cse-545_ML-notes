@@ -207,27 +207,15 @@ Answer:
 
 
 
-![Screenshot 2025-02-11 at 19.45.28](hw2.assets/Screenshot 2025-02-11 at 19.45.28.png)
-
-
-
-
-
-
-
-
-
-
+![Screenshot 2025-02-11 at 19.45.28](hw2.assets/Screenshot 2025-02-11 at 19.45.28.png)<img src="hw2.assets/Screenshot 2025-02-13 at 18.22.05.png" alt="Screenshot 2025-02-13 at 18.22.05" style="zoom:80%;" />
 
 
 
 ![Screenshot 2025-02-11 at 19.45.36](hw2.assets/Screenshot 2025-02-11 at 19.45.36.png)
 
+report is as below:
 
-
-
-
-
+<img src="hw2.assets/Screenshot 2025-02-13 at 18.24.03.png" alt="Screenshot 2025-02-13 at 18.24.03" style="zoom:80%;" />
 
 
 
@@ -237,9 +225,7 @@ Answer:
 
 ![Screenshot 2025-02-11 at 19.45.46](hw2.assets/Screenshot 2025-02-11 at 19.45.46.png)
 
-
-
-
+<img src="hw2.assets/image-20250213182450737.png" alt="image-20250213182450737" style="zoom:60%;" />
 
 
 
@@ -251,15 +237,7 @@ Answer:
 
 ![Screenshot 2025-02-11 at 19.45.54](hw2.assets/Screenshot 2025-02-11 at 19.45.54.png)
 
-
-
-
-
-
-
-
-
-
+Answer: 1400 mail data training set provides the best classification accuracy of 98.375%. By looking at our optimal solution of $\mu_i^j = \frac{N_{C_i}^j + \alpha}{\sum_{j'=1}^{M} (N_{C_i}^{j'} + \alpha)}$ and $ \phi_i = \frac{N_{C_i}}{\sum_{i'} N_{C_{i'}}}$, we can see that the classification is a direct reflection of how frequent a word in one email occurs in spam/nonspam emails. So more data gives more generality. 
 
 
 
