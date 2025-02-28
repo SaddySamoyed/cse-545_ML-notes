@@ -56,3 +56,16 @@
 
 ![image-20250228160631764](hw3.assets/image-20250228160631764.png)
 
+
+
+
+
+### report
+
+Training:
+
+![Screenshot 2025-02-28 at 16.47.33](hw3.assets/Screenshot 2025-02-28 at 16.47.33.png)
+
+![image-20250228164833928](hw3.assets/image-20250228164833928.png)
+
+![Screenshot 2025-02-28 at 16.47.49](hw3.assets/Screenshot 2025-02-28 at 16.47.49.png)
