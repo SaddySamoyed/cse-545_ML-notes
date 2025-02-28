@@ -1317,8 +1317,8 @@ For technical correctness, you might want to start with writing the gradient wit
 \end{equation}
 where $\frac{\partial L}{\partial Y^{(n)}_j}$ is the gradient with respect to the $j$-th element of the $n$-th sample in $Y$ with $1 \leq n \leq N$ and $1 \leq j \leq D_{out}$.
 
-\textbf{Hint for } $\frac{\partial L}{\partial W}$:
-Please note that we use a "matrix/vector" notation $\frac{\partial L}{\partial W}$ to denote a matrix in $\mathbb{R}^{D_{in} \times D_{out}}$, where the element in the $i$-th row and $j$-th column is:
+\subsection*{calculate $\frac{\partial L}{\partial W}$}
+\textbf{Hint: }Please note that we use a "matrix/vector" notation $\frac{\partial L}{\partial W}$ to denote a matrix in $\mathbb{R}^{D_{in} \times D_{out}}$, where the element in the $i$-th row and $j$-th column is:
 \begin{equation}
     \frac{\partial L}{\partial W_{i,j}},
 \end{equation}
@@ -1326,19 +1326,26 @@ and $W_{i,j}$ is the $(i,j)$-th element of $W$ with \( 1 \leq i \leq D_{in} \) a
 \frac{\partial L}{\partial W_{i,j}} = \sum_{n=1}^{N} \frac{\partial L}{\partial Y_j^{(n)}} \frac{\partial Y_j^{(n)}}{\partial W_{i,j}}
 \]
 \begin{solution}
-    \pic[0.55]{hw3.assets/image-20250228154829176.png}
+    \pic[0.50]{hw3.assets/image-20250228154829176.png}
+    Thus we conclude: \[
+    \frac{\partial L}{\partial W} = X^\top (\frac{\partial L }{\partial Y})
+    \]
 \end{solution}
 
-\textbf{Hint for \( \frac{\partial L}{\partial b} \)}
-Please note that \( \frac{\partial L}{\partial b} \) is a vector in \( \mathbb{R}^{1 \times D_{out}} \). You may want to start by using the formula:\[
+\subsection*{calculate $\frac{\partial L}{\partial b}$}
+\textbf{Hint:} Please note that \( \frac{\partial L}{\partial b} \) is a vector in \( \mathbb{R}^{1 \times D_{out}} \). You may want to start by using the formula:\[
 \frac{\partial L}{\partial b_j} = \sum_{n=1}^{N} \sum_{m=1}^{D_{out}} \frac{\partial L}{\partial Y_m^{(n)}} \frac{\partial Y_m^{(n)}}{\partial b_j}
 \]and then move on to derive \( \frac{\partial L}{\partial b} \).
 \begin{solution}
-    \pic[0.55]{hw3.assets/image-20250228154836718.png}
+    \pic[0.5]{hw3.assets/image-20250228154836718.png}
+Thus we conclude: \[
+    \frac{\partial L}{\partial b} = 1_N^\top (\frac{\partial L}{\partial Y})
+    \]
 \end{solution}
 
-\textbf{Hint for \( \frac{\partial L}{\partial X} \)}
-Please note that \( \frac{\partial L}{\partial X} \) is a matrix in \( \mathbb{R}^{N \times D_{in}} \). In order to derive this gradient, you can start by using the formula: \[
+
+\subsection*{calculate $\frac{\partial L}{\partial X}$}
+\textbf{Hint:} Please note that \( \frac{\partial L}{\partial X} \) is a matrix in \( \mathbb{R}^{N \times D_{in}} \). In order to derive this gradient, you can start by using the formula: \[
 \frac{\partial L}{\partial X_i^{(n)}} = \sum_{n'=1}^{N} \sum_{m=1}^{D_{out}} \frac{\partial L}{\partial Y_m^{(n')}} \frac{\partial Y_m^{(n')}}{\partial X_i^{(n)}}
 \]
 Following this, you can say that: \[
@@ -1348,7 +1355,10 @@ because the \( n \)-th sample in \( X \) is only related to the \( n \)-th sampl
 \frac{\partial Y_m^{(n')}}{\partial X_i^{(n)}} = 0 \quad \text{for all } n' \neq n.
 \]
 \begin{solution}
-    \pic[0.5]{hw3.assets/image-20250228154854204.png}
+    \pic[0.50]{hw3.assets/image-20250228154854204.png}
+     Thus we conclude: \[
+    \frac{\partial L}{\partial X} =  (\frac{\partial L} {\partial Y}) W^\top
+    \]
 \end{solution}
 
 \subsection{ReLU [3 points]}
@@ -1362,6 +1372,9 @@ You can observe that \( Y \) will have the same shape as \( X \).\\
 \begin{solution}
     \pic[0.5]{hw3.assets/image-20250228160625293.png}
     \pic[0.5]{hw3.assets/image-20250228160631764.png}
+     Thus we conclude: \[
+    \frac{\partial L}{\partial X} =  (\frac{\partial L} {\partial Y}) \odot \mathbb{I}\{X>0\}
+    \]
 \end{solution}
 
 
