@@ -1326,13 +1326,16 @@ and $W_{i,j}$ is the $(i,j)$-th element of $W$ with \( 1 \leq i \leq D_{in} \) a
 \frac{\partial L}{\partial W_{i,j}} = \sum_{n=1}^{N} \frac{\partial L}{\partial Y_j^{(n)}} \frac{\partial Y_j^{(n)}}{\partial W_{i,j}}
 \]
 \begin{solution}
-    of 
+    \pic[0.55]{hw3.assets/image-20250228154829176.png}
 \end{solution}
 
 \textbf{Hint for \( \frac{\partial L}{\partial b} \)}
 Please note that \( \frac{\partial L}{\partial b} \) is a vector in \( \mathbb{R}^{1 \times D_{out}} \). You may want to start by using the formula:\[
 \frac{\partial L}{\partial b_j} = \sum_{n=1}^{N} \sum_{m=1}^{D_{out}} \frac{\partial L}{\partial Y_m^{(n)}} \frac{\partial Y_m^{(n)}}{\partial b_j}
 \]and then move on to derive \( \frac{\partial L}{\partial b} \).
+\begin{solution}
+    \pic[0.55]{hw3.assets/image-20250228154836718.png}
+\end{solution}
 
 \textbf{Hint for \( \frac{\partial L}{\partial X} \)}
 Please note that \( \frac{\partial L}{\partial X} \) is a matrix in \( \mathbb{R}^{N \times D_{in}} \). In order to derive this gradient, you can start by using the formula: \[
@@ -1344,6 +1347,9 @@ Following this, you can say that: \[
 because the \( n \)-th sample in \( X \) is only related to the \( n \)-th sample in \( Y \) and: \[
 \frac{\partial Y_m^{(n')}}{\partial X_i^{(n)}} = 0 \quad \text{for all } n' \neq n.
 \]
+\begin{solution}
+    \pic[0.5]{hw3.assets/image-20250228154854204.png}
+\end{solution}
 
 \subsection{ReLU [3 points]}
 
@@ -1352,8 +1358,10 @@ y = \text{ReLU}(x) = \max(0, x).
 \]
 You can observe that \( Y \) will have the same shape as \( X \).\\
 \textbf{Express \( \frac{\partial L}{\partial X} \) in terms of \( \frac{\partial L}{\partial Y} \), where \( \frac{\partial L}{\partial X} \) has the same shape as \( X \).\\}
-\textbf{Hint:} You may need to use the element-wise product to express \( \frac{\partial L}{\partial X} \). Please feel free to introduce the indicator function \( I[\cdot] \).
-
+\textbf{Hint:} You may need to use the element-wise product to express \( \frac{\partial L}{\partial X} \). Please feel free to introduce the indicator function \( \mathbb{I}[\cdot] \).
+\begin{solution}
+    \pic[0.5]{hw3.assets/image-20250228160501706.png}
+\end{solution}
 
 
 \subsection{Autograder Implementation [14 points]}
