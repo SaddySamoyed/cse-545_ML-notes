@@ -18,15 +18,15 @@
 
 
 
+# 4
 
 
 
+![Screenshot 2025-02-28 at 12.50.19](hw3.assets/Screenshot 2025-02-28 at 12.50.19.png)
 
 
 
-
-
-
+![image-20250228125032675](hw3.assets/image-20250228125032675.png)
 
 
 
