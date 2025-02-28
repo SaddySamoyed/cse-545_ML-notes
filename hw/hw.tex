@@ -495,6 +495,26 @@ The Hessian is obtained by differentiating the gradient:
 \[
 H = \frac{\partial}{\partial w} (\nabla \ell)(w)  = -\sum_{i=1}^{N} \frac{\partial}{\partial w}  ( h(x^{(i)}) x^{(i)})
 \]
+Since \[
+h(x^{(i)}) x^{(i)}  = \begin{bmatrix}
+    h(x^{(i)}) x_1^{(i)}\\
+    \cdots\\
+    h(x^{(i)}) x_M^{(i)}
+\end{bmatrix}
+\]
+We have: \[
+\frac{\partial}{\partial w}  ( h(x^{(i)}) x^{(i)}) = \begin{bmatrix}
+\frac{\partial(h(x^{(i)}) x_1^{(i)})}{\partial w}\\
+    \cdots\\
+    \frac{\partial(h(x^{(i)}) x_M^{(i)})}{\partial w}
+\end{bmatrix} = \begin{bmatrix}
+x_1^{(i)} \frac{\partial h(x^{(i)})}{\partial w}\\
+    \cdots\\
+    x_M^{(i)} \frac{\partial h(x^{(i)})}{\partial w}
+\end{bmatrix} = x^{(i)} \frac{\partial h(x^{(i)})}{\partial w}  \text{ (, this is the outer product)}
+\]
+
+
 
 
 
@@ -508,7 +528,7 @@ Since we have:  \[
 
 
 
-\subsection{Show that $H$ is negative semi-definite and thus $\ell$ is concave and has no local maxima other than the global one}
+\subsection{$H$ is negative semi-definite and thus $\ell$ is concave and has no local maxima other than the global one}
 
 That is, show that
 \begin{equation}
@@ -587,16 +607,16 @@ The above expression is over-parametrized, meaning that there is more than one u
 
 We define the likelihood of the $i$th training example $p(y^{(i)}|x^{(i)},w)$ as:
 \begin{equation}
-    p(y^{(i)}|x^{(i)},w) = \prod_{k=1}^{K} \left[ p(y^{(i)} = k|x^{(i)},w) \right]^{I\{y^{(i)}=k\}},
+    p(y^{(i)}|x^{(i)},w) = \prod_{k=1}^{K} \left[ p(y^{(i)} = k|x^{(i)},w) \right]^{\mathbb{I}\{y^{(i)}=k\}},
 \end{equation}
 where $I\{\cdot\}$ is the indicator function. The full likelihood is given by:
 \begin{equation}
-    L(w) = \prod_{i=1}^{N} p(y^{(i)}|x^{(i)},w) = \prod_{i=1}^{N} \prod_{k=1}^{K} \left[ p(y^{(i)} = k|x^{(i)},w) \right]^{I\{y^{(i)}=k\}}.
+    L(w) = \prod_{i=1}^{N} p(y^{(i)}|x^{(i)},w) = \prod_{i=1}^{N} \prod_{k=1}^{K} \left[ p(y^{(i)} = k|x^{(i)},w) \right]^{\mathbb{I}\{y^{(i)}=k\}}
 \end{equation}
 
 The log-likelihood is then:
 \begin{equation}
-    l(w) = \log L(w) = \sum_{i=1}^{N} \sum_{k=1}^{K} \log \left( \left[ p(y^{(i)} = k|x^{(i)},w) \right]^{I\{y^{(i)}=k\}} \right).
+    l(w) = \log L(w) = \sum_{i=1}^{N} \sum_{k=1}^{K} \log \left( \left[ p(y^{(i)} = k|x^{(i)},w) \right]^{\mathbb{I}\{y^{(i)}=k\}} \right)
 \end{equation}
 
 \subsection{Gradient Ascent Update Rule}
@@ -605,7 +625,6 @@ Derive the gradient ascent update rule for the log-likelihood:
 \begin{equation}
     \nabla_{w_m} l(w) = \sum_{i=1}^{N} \phi(x^{(i)}) \left[I\{y^{(i)} = m\} - p(y^{(i)} = m | x^{(i)}, w)\right].
 \end{equation}
-
 \textbf{Hint:} Consider cases for $y^{(i)} = k = m$ and $y^{(i)} \neq m$ using the Kronecker delta $\delta_{km}$.
 
 \subsection{Implement Gradient Ascent}
@@ -716,10 +735,68 @@ Show that Laplace smoothing is equivalent to solving the MAP estimate of Naive B
 \begin{equation}
     P(\mu) = \frac{1}{Z} \prod_{i=1}^{K} \prod_{j=1}^{M} (\mu_i^j)^\alpha
 \end{equation}
-
 where $Z$ is a normalizing constant.
-
 \textbf{Hint:} You may use the Naive Bayes likelihood and MLE derivations from lecture without proof.
+\begin{proof}
+    To finf $\mu_{map}$, by def, is to find $\mu$: that maximizes  \begin{align}
+       \max _{\mu = \bigcup_{k=1}^K      \{\mu_1^k, \cdots, \mu_M^k\} }  &p(\mu \mid x,y) \\
+       s.t.  \;\;  &\sum_1^M \mu_j^k = 1,  \quad \forall k=1,\cdots, K
+    \end{align}
+    Note: $$\arg\max _{\mu} \;  p(\mu \mid x,y) = \arg\max_{\mu}  \; p(x,y \mid \mu) \, p(\mu) = \arg \max_\mu [\log p(x,y \mid \mu )  + \log p(\mu)]$$
+By Naive Bayes assumption, we can generalize our deduction of $p(x,y \mid \mu)$ of two classes to multiple classes:
+\[
+   p(x, y \mid \mu) = \prod_{i=1}^{K} \prod_{j=1}^{M} (\mu_i^j)^{N_{C_i}^j}
+   \] Taking the log, we have: \[
+   \log p(x, y \mid \mu) = \sum_{i=1}^{K} \sum_{j=1}^{M} N_{C_i}^j \log \mu_i^j
+   \]
+And by the distribution assumtion of $\mu$ that $P(\mu) = \frac{1}{Z} \prod_{i=1}^{K} \prod_{j=1}^{M} (\mu_i^j)^\alpha$, we have: \[
+   \log p(\mu) = \sum_{i=1}^{K} \sum_{j=1}^{M} \alpha \log \mu_i^j  -\log Z
+   \]
+Constant $\log Z$ can be ignored in the optimization. Thus our goal is equialent to find the $\mu$ that maximizes: \begin{align}
+     \max_{\mu}  & \;\log p(\mu \mid x, y) = \sum_{i=1}^{K} \sum_{j=1}^{M} (N_{C_i}^j + \alpha) \log \mu_i^j \\
+     & s.t. \;\;    \sum_{j=1}^{M} \mu_k^j = 1, \quad \forall k
+\end{align}
+By the Lagrange multiplier method, we construct the Lagrange function : \[
+   \mathcal{L}(\mu, \lambda) = \sum_{i=1}^{K} \sum_{j=1}^{M} (N_{C_i}^j + \alpha) \log \mu_i^j + \sum_{i=1}^{K} \lambda_i \left( 1 - \sum_{j=1}^{M} \mu_i^j \right)
+  \]
+
+   对 \(\mu_i^j\) 求偏导：
+   \[
+   \frac{\partial \mathcal{L}}{\partial \mu_i^j} = \frac{N_{C_i}^j + \alpha}{\mu_i^j} - \lambda_i = 0
+   \]
+   解得：
+   \[
+   \mu_i^j = \frac{N_{C_i}^j + \alpha}{\lambda_i}
+   \]
+
+   由归一化条件：
+   \[
+   \sum_{j=1}^{M} \mu_i^j = 1
+   \]
+   代入：
+   \[
+   \sum_{j=1}^{M} \frac{N_{C_i}^j + \alpha}{\lambda_i} = 1
+   \]
+   解出：
+   \[
+   \lambda_i = \sum_{j=1}^{M} (N_{C_i}^j + \alpha)
+   \]
+
+   最终得到：
+   \[
+   \mu_i^j = \frac{N_{C_i}^j + \alpha}{\sum_{j'=1}^{M} (N_{C_i}^{j'} + \alpha)}
+   \]
+
+This is exactly the same as the formula we obtained by Laplace smoothing   \[
+   P(x_j | C_i) = \mu_i^j= \frac{N_{C_i}^j + \alpha}{\sum_{j'} N_{C_i}^{j'} + \alpha M}
+   \]
+This finishes the proof
+    
+\end{proof}
+
+
+
+
 
 \subsection{Implementing a SPAM Classifier}
 
@@ -755,6 +832,354 @@ Which training set size gives the best classification accuracy? Provide your ana
 
 
 
+\chapter{on kernel methods and neural network}
+
+
+\section{Direct Construction of Valid Kernels}
+
+In class, we saw that by choosing a kernel $k(x, z) = \phi(x)^\top \phi(z)$, we can implicitly map data to a high-dimensional space, and have the SVM algorithm work in that space. \textbf{One way to generate kernels is to explicitly define the mapping $\phi$ to a higher dimensional space, and then work out the corresponding $k$.}
+
+However, in this question, we are interested in \textbf{direct construction of kernels}. Suppose we have a function $k(x, z)$ that gives an appropriate similarity measure (similar to inner product) for our learning problem, and consider plugging $k$ into a kernelized algorithm (like SVM) as the kernel function. In order for $k(x, z)$ to be a valid kernel, it must correspond to an inner product in some higher dimensional space resulting from some feature mapping $\phi$. In addition, Mercer's theorem states that $k(x, z)$ is a (Mercer) kernel if and only if for any finite set
+\[
+ \{ x^{(1)}, \dots, x^{(N)} \},
+\]
+the matrix $K \in \mathbb{R}^{N \times N}$ given by
+\[
+ K_{ij} = k(x^{(i)}, x^{(j)})
+\]
+is symmetric and positive semi-definite.\\
+
+Now comes the questions.\\
+Let $k_1, k_2$ be kernels over $\mathbb{R}^D \times \mathbb{R}^D$, let $a \in \mathbb{R}^+$ be a positive real number, let $f : \mathbb{R}^D \to \mathbb{R}$ be a real-valued function, let $\phi : \mathbb{R}^D \to \mathbb{R}^M$ be a function mapping from $\mathbb{R}^D$ to $\mathbb{R}^M$, let $k_3$ be a kernel over $\mathbb{R}^M \times \mathbb{R}^M$, and let $p : \mathbb{R} \to \mathbb{R}$ be a polynomial with positive coefficients.
+
+For each of the functions $k$ below, \textbf{state whether it is necessarily a kernel}. If you think it is a kernel, please prove it; if you think it is not, please prove it or give a counterexample. You can use both definitions (\textbf{inner product of feature map or PSD}) when proving the validity of the kernel. If you once proved a property in one sub-question (e.g., you proved Q1.(a)), then it is okay to use it in other questions, e.g., Q1.(f), by mentioning that you proved that property in Q1.(a); please make sure to provide the proof at least once. However, you are \textbf{not} allowed to use the ‘results’ from the ‘Constructing kernels’ slide without proving them yourself.
+
+(Recall \textbf{Feature-map definition}: \(k(\mathbf{x}, \mathbf{z})\) is a kernel if there exists a (possibly high-dimensional) mapping \(\phi(\mathbf{x})\) such that \[
+     k(\mathbf{x}, \mathbf{z}) \;=\; \langle \phi(\mathbf{x}), \,\phi(\mathbf{z})\rangle
+   \]
+\textbf{PSD definition}: \textbf{\(k\) is a kernel iff for any finite set of points \(\{\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)}\}\), the \(N \times N\) matrix } \[
+      K \quad \text{with} \quad K_{ij} \;=\; k\bigl(\mathbf{x}^{(i)}, \mathbf{x}^{(j)}\bigr) \]
+   is symmetric and p.s.d. (i.e., \(\mathbf{v}^\top K \,\mathbf{v} \ge 0\) for all \(\mathbf{v}\in \mathbb{R}^N\)).)\\\\
+\begin{enumerate}
+    \item \textbf{[(a)]} [2 points] $k(x, z) = k_1(x, z) + k_2(x, z)$
+\textbf{Yes}, this is a kernel.
+\begin{proof}
+Since \(k_1\) is a kernel, then there exists a \(\phi_1(\mathbf{x})\) such that \[
+  k_1(\mathbf{x}, \mathbf{z}) = \langle \phi_1(\mathbf{x}), \,\phi_1(\mathbf{z}) \rangle
+\]
+Similarly, there exists a \(\phi_2(\mathbf{x})\) such that \[
+  k_2(\mathbf{x}, \mathbf{z}) = \langle \phi_2(\mathbf{x}), \,\phi_2(\mathbf{z}) \rangle
+\]
+Define a combined feature map
+\[
+  \phi(\mathbf{x}) =\bigl(\,\phi_1(\mathbf{x}),\;\phi_2(\mathbf{x})\bigr)
+\]
+concatenatint the two vectors. Then \[
+  \langle \phi(\mathbf{x}), \phi(\mathbf{z}) \rangle  =\langle \phi_1(\mathbf{x}), \phi_1(\mathbf{z})\rangle  +  \langle \phi_2(\mathbf{x}), \phi_2(\mathbf{z})\rangle 
+= k_1(\mathbf{x}, \mathbf{z}) + k_2(\mathbf{x}, \mathbf{z})
+\]
+Hence \(k_1 + k_2\) is a kernel.
+\end{proof}
+    \item \textbf{[(b)]} [2 points] $k(x, z) = k_1(x, z) - k_2(x, z)$
+\textbf{No}, this is not necessarily a valid kernel.
+\begin{proof}
+Consider the followng counterex.
+Take linear and const kernel. \[
+   k_1(x, z) = x z
+   \]
+This is a valid kernel because it corresponds to the standard dot product. \[
+   k_2(x, z) = c
+   \]
+where constant \( c > 0 \). This is a valid kernel because it produces a rank-1 positive semi-definite matrix. \\
+Then for $k = k_1 - k_2$ as the difference, we have the Gram matrix:  \[
+  K :=  K_1 - K_2=   \begin{bmatrix}
+  1 & -1 \\
+  -1 & 1
+  \end{bmatrix}  -  \begin{bmatrix}
+  2 & 2 \\
+  2 & 2
+  \end{bmatrix}   =
+  \begin{bmatrix}
+  -1 & -3 \\
+  -3 & -1
+  \end{bmatrix}  \]
+with the eigenvalues ok $K$\[
+\lambda = -1 \pm 3 = \{-4, 2\}
+\]
+Thus the matrix is not positive semi-definite, meaning \( K \) is not a valid kernel.
+\end{proof}
+    \item \textbf{[(c)]} [2 points] $k(x, z) = -a k_1(x, z)$
+\textbf{No}, this is not necesssarily a valid kernel.
+\begin{proof}
+If \(k_1\) is PSD, then for any finite set \(\{\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)}\}\), the Gram matrix \(K_1\) of \(k_1\) is PSD, so all of its eigenvalues are \(\ge 0\).  Since \textbf{positive $a$}, then multiplying by \(-a\) simply multiplies all eigenvalues by \(-a\).  That makes the resulting matrix have nonpositive eigenvalues and thus not be PSD unless it is the all-zero matrix.  
+\end{proof}
+    \item \textbf{[(d)] }[2 points] $k(x, z) = f(x)f(z)$
+\textbf{Yes}, this is necessarily a kernel.
+\begin{proof}
+Consider the 1-dim feature map
+\[
+  \phi(\mathbf{x}) \;=\; f(\mathbf{x})
+\]
+Then
+\[
+  \langle \phi(\mathbf{x}), \,\phi(\mathbf{z}) \rangle  = f(\mathbf{x}) \cdot f(\mathbf{z})
+\]
+is precisely \(k(\mathbf{x}, \mathbf{z})\).  As long as \(f(\mathbf{x})\) is a well-defined real-valued function, this construction is valid, so \(f(\mathbf{x})\,f(\mathbf{z})\) is a kernel.
+\end{proof}
+    \item \textbf{[(e)]} [3 points] $k(x, z) = k_3(\phi(x), \phi(z))$
+\textbf{Yes}, this is necessarily a kernel.
+\begin{proof}
+  Since \(k_3\) is a kernel on \(\mathbb{R}^M\), there is some feature map \(\psi \) s.t.
+\[
+  k_3(\mathbf{u}, \mathbf{v}) \;=\; \langle \psi(\mathbf{u}), \psi(\mathbf{v}) \rangle
+  \quad \text{for all } \mathbf{u},\mathbf{v} \in \mathbb{R}^M
+\]
+Now let \(\mathbf{u} = \phi(\mathbf{x})\) and \(\mathbf{v} = \phi(\mathbf{z})\).  Define  \[
+  \tilde{\phi}(\mathbf{x}) :=  \psi\bigl(\phi(\mathbf{x})\bigr)
+\]
+Then
+\[
+  k(\mathbf{x}, \mathbf{z}) = k_3\bigl(\phi(\mathbf{x}), \phi(\mathbf{z})\bigr) \langle \psi(\phi(\mathbf{x})), \,\psi(\phi(\mathbf{z})) \rangle =  \langle \tilde{\phi}(\mathbf{x}), \,\tilde{\phi}(\mathbf{z}) \rangle
+\]
+Thus \(k\) is a kernel.  
+\end{proof}
+    \item \textbf{[(f)]} [3 points] $k(x, z) = p(k_1(x, z))$
+Yes, this is necessarily a kernel.
+\begin{proof}
+For the polynomial $p$,
+\[  p(t) \;=\; \sum_{m=0}^M c_m\,t^m 
+  \quad \text{ each } c_m \ge 0
+\]Then
+\[
+k(x, z)   = p\!\bigl(k_1(\mathbf{x}, \mathbf{z})\bigr)  = \sum_{m=0}^M c_m \bigl(k_1(\mathbf{x}, \mathbf{z})\bigr)^m
+\]
+From the conclusion of (g) we know that product of two kernels is a kernel. Thus \[\bigl(k_1(\mathbf{x}, \mathbf{z})\bigr)^m\] is a kernel. And multiplying a matrix by a potive number multiply all its eigenvalues by it, thus keeping its positive definiteness. Thus each $c_m \bigl(k_1(\mathbf{x}, \mathbf{z})\bigr)^m $ is also a kernel.
+
+Also, from the conclusion of (a) we know that addition of two kernels is a kernel.  \(k(x, z)   = p\!\bigl(k_1(\mathbf{x}, \mathbf{z})\bigr)  = \sum_{m=0}^M c_m \bigl(k_1(\mathbf{x}, \mathbf{z})\bigr)^m\) is a kernel.
+\end{proof}
+    \item \textbf{[(g)]} [3 points] $k(x, z) = k_1(x, z) k_2(x, z)$
+\textbf{Yes}. This is necessarily a valid kernel.
+\begin{proof}
+We have
+\begin{align}
+    k(x, z) &= k_1(x, z) k_2(x, z) \\
+    & =  \langle \phi_1(\mathbf{x}), \phi_1(\mathbf{z}) \rangle \cdot
+           \langle \phi_2(\mathbf{x}), \phi_2(\mathbf{z}) \rangle  \\
+        &=   \sum_{i} \Bigl(f_i(\mathbf{x})\,f_i(\mathbf{z})\Bigr)\times 
+        \sum_{j}\Bigl(g_j(\mathbf{x})\,g_j(\mathbf{z})\Bigr)\\
+        &= \sum_{i} \sum_{j}
+   \Big( f_i(\mathbf{x})\,f_i(\mathbf{z}) \Big) 
+   \Big( g_j(\mathbf{x})\,g_j(\mathbf{z}) \Big)\\
+   & = \bigl\langle \phi_1(\mathbf{x}) \otimes \phi_2(\mathbf{x}), \;
+            \phi_1(\mathbf{z}) \otimes \phi_2(\mathbf{z})
+ \bigr\rangle
+\end{align}
+Therefore by defefing: \begin{align}
+\phi(\mathbf{x}) &:= \phi_1(\mathbf{x}) \otimes \phi_2(\mathbf{x}) 
+\end{align}
+We shall have: \[
+ k(x, z) = \bigl\langle \phi(\mathbf{x}), \phi(\mathbf{x}) \bigl\rangle 
+\]
+\end{proof}
+    \item \textbf{[(h)] }[4 points] For this sub-problem, you are not required to check if $k$ is a valid kernel. Instead, given a kernel $k(x, z) = (x^\top z + 1)^2$, find a feature map $\phi$ associated with $k(x, z)$ such that $k(x, z) = \phi(x)^\top \phi(z)$. You may assume $D = 2$ for this subproblem.
+\begin{proof}
+Assume $D=2$. We expand: \[
+  (\mathbf{x}^{\top}\mathbf{z} + 1)^2 = (x_1z_1 + x_2z_2 + 1)^2   = x_1^2\,z_1^2      + 2\,x_1z_1x_2z_2      + x_2^2\,z_2^2     + 2\,x_1z_1    + 2\,x_2z_2       + 1\]
+We want to write this as an inner product of feature maps.  Consider:
+\[
+  \phi(\mathbf{x}) := \Bigl(\sqrt{2}\;x_1x_2,\sqrt{2}\,x_1,\sqrt{2}\,x_2,x_1^2,x_2^2,1\Bigr)
+\]
+Indeed, check the dot product:
+\begin{align}
+\phi(\mathbf{x})^\top\,\phi(\mathbf{z}) &= (\sqrt{2}x_1x_2)(\sqrt{2}z_1z_2)  +(\sqrt{2}x_1)(\sqrt{2}z_1) \\
+& + (\sqrt{2}x_2)(\sqrt{2}z_2) + (x_1^2)(z_1^2)+ (x_2^2)(z_2^2) + 1 \\
+& =   2\,x_1x_2\,z_1z_2
+  + 2\,x_1\,z_1+ 2\,x_2\,z_2
+  + x_1^2\,z_1^2 + x_2^2\,z_2^2 +  1
+\end{align}
+which matches the polynomial expansion exactly.  Thus 
+\[
+  k(\mathbf{x}, \mathbf{z}) = \phi(\mathbf{x})^\top\phi(\mathbf{z})
+\]
+\end{proof}
+    \item \textbf{[(i)]} [3 points, extra credit] Prove that the Gaussian Kernel, \[
+        k(x, z) = \exp \left( -\frac{\|x - z\|^2}{2\sigma^2} \right)
+    \]
+    can be expressed as $k(x, z) = \phi(x)^\top \phi(z)$, where $\phi(\cdot)$ is an infinite-dimensional vector. Specifically, find -the explicit closed form of an infinite dimensional feature vector $\phi$. (Note: you cannot directly apply Mercer's theorem here as $\phi$ is an infinite dimensional vector.)
+    \textbf{Hints:}
+    \begin{itemize}
+        \item $\|x - z\|^2 = x^\top x + z^\top z - 2x^\top z$. It might be useful to consider Power Series: $\exp(x) = \sum\limits_{n=0}^{\infty} \frac{1}{n!} x^n$.
+        \item You might find the formula in slide page 16 of Lecture 8 helpful.
+        \item Each element of $\phi(x)$ can be written as an explicit formula over $x$ without any limits or infinite summations.
+    \end{itemize}
+\end{enumerate}
+\begin{proof}
+We have \[
+  k(\mathbf{x}, \mathbf{z}) := \exp\Bigl(-\tfrac{\|\mathbf{x} - \mathbf{z}\|^2}{2\sigma^2}\Bigr)
+\]Rewrite \[    \|\mathbf{x}-\mathbf{z}\|^2 
+       = \mathbf{x}^\top\mathbf{x} + \mathbf{z}^\top\mathbf{z}   - 2\mathbf{x}^\top\mathbf{z}
+   \]Hence\[
+     k(\mathbf{x}, \mathbf{z})= \exp\Bigl(-\tfrac{\mathbf{x}^\top \mathbf{x}}{2\sigma^2}\Bigr)
+           \exp\Bigl(-\tfrac{\mathbf{z}^\top \mathbf{z}}{2\sigma^2}\Bigr)
+\exp\Bigl(\tfrac{\mathbf{x}^\top \mathbf{z}}{\sigma^2}\Bigr)
+   \]Expand the exponential of the dot product by Taylor series:\[
+     \exp\Bigl(\tfrac{\mathbf{x}^\top\mathbf{z}}{\sigma^2}\Bigr) = \sum_{n=0}^{\infty} \frac{1}{n!}\Bigl(\tfrac{\mathbf{x}^\top \mathbf{z}}{\sigma^2}\Bigr)^n
+   \]
+And we also take the multinomial expansion of \(\bigl(\mathbf{x}^\top \mathbf{z}\bigr)^n\): \[
+     (\mathbf{x}^\top \mathbf{z})^n
+     \;=\; \sum_{|\alpha|=n} \frac{n!}{\alpha_1!\cdots \alpha_D!}\, 
+           x_1^{\alpha_1}\cdots x_D^{\alpha_D}\;
+           z_1^{\alpha_1}\cdots z_D^{\alpha_D}
+   \]
+(where the sum is over all multi-indices \(\alpha = (\alpha_1,\dots,\alpha_D)\) with \(\alpha_1 + \dots + \alpha_D = n\).)
+Therefore we have: \[      \Bigl(\dots, \frac{\mathbf{x}^\alpha}{\sigma^{|\alpha|}\,\sqrt{\alpha!}},
+               \dots\Bigr)_{\alpha\in \mathbb{N}^D} ^\top   \Bigl(\dots, \frac{\mathbf{z}^\alpha}{\sigma^{|\alpha|}\,\sqrt{\alpha!}},
+               \dots\Bigr)_{\alpha\in \mathbb{N}^D} =  \sum_{n=0}^{\infty} \frac{1}{n!}\Bigl(\tfrac{\mathbf{x}^\top \mathbf{z}}{\sigma^2}\Bigr)^n =   \exp\Bigl(\tfrac{\mathbf{x}^\top\mathbf{z}}{\sigma^2}\Bigr) 
+\]
+(where \(\mathbf{x}^\alpha = x_1^{\alpha_1} \cdots x_D^{\alpha_D}\) and \(\alpha! = \alpha_1!\cdots \alpha_D!\))\\
+Thus by taking \[
+  \phi(\mathbf{x}) :=\exp\Bigl(-\tfrac{\|\mathbf{x}\|^2}{2\sigma^2}\Bigr)
+        \Bigl(\dots,\frac{\mathbf{x}^\alpha}{\sigma^{|\alpha|}\,\sqrt{\alpha!}},
+               \dots\Bigr)_{\alpha\in \mathbb{N}^D}
+\]
+We finally have: 
+\[  k(x, z) = \exp \left( -\frac{\|x - z\|^2}{2\sigma^2} \right) =   \phi(\mathbf{x})^\top\phi(\mathbf{z}) \]
+This proves that the Gaussian kernel is the inner product in an infinite(countable)-dimensional feature space.
+\end{proof}
+
+
+
+
+\section{Implementing Soft Margin SVM by Optimizing Primal Objective}
+Support Vector Machines (SVM) is a discriminative model for classification. Although it is possible to develop SVMs that do K-class classifications, we will restrict ourselves to binary classification in this question, where the class label is either $+1$ (positive) or $-1$ (negative). \textbf{SVM is not a probabilistic algorithm}; in other words, in its usual construction, it does not optimize a probability measure as a likelihood. SVM tries to find the "best" hyperplane that maximally separates the positive class from the negative class.
+
+Recall that the objective function for maximizing the soft margin is equivalent to the following minimization problem: \begin{align}
+    \min_{w, b, \xi} & \quad \frac{1}{2} \|w\|^2 + C \sum_{i=1}^{N} \xi^{(i)} \\
+    \text{subject to} & \quad y^{(i)} (w^T \phi(x^{(i)}) + b) \geq 1 - \xi^{(i)}, \quad \forall i = 1, \dots, N \\
+    & \quad \xi^{(i)} \geq 0, \quad \forall i = 1, \dots, N
+\end{align}
+The above is known as the primal objective of SVM. Notice the two constraints on the slack variables $\xi^{(i)}$, which must satisfy both of these conditions while minimizing the sum of $\xi^{(i)}$ times $C$. The constrained minimization is equivalent to the following minimization involving the hinge loss term:
+\begin{align}
+    \min_{w, b} E(w, b) &= \frac{1}{2} \|w\|^2 + C \sum_{i=1}^{N} \max(0, 1 - y^{(i)}(w^T \phi(x^{(i)}) + b))
+\end{align}
+\subsection{Derivatives of the Loss Function}
+Find the derivatives of the loss function $E(w, b)$ with respect to the parameters $w, b$. Show that: \begin{align}
+    \nabla_w E(w, b) &= w - C \sum_{i=1}^{N} \mathbb{I}[y^{(i)} (w^T \phi(x^{(i)}) + b) < 1] y^{(i)} \phi(x^{(i)})
+\end{align}\begin{align}
+    \frac{\partial}{\partial b} E(w, b) &= -C \sum_{i=1}^{N} \mathbb{I}[y^{(i)} (w^T \phi(x^{(i)}) + b) < 1] y^{(i)}
+\end{align}
+where $\mathbb{I}[\cdot]$ is the indicator function. If $f(x) = \max(0, x)$, then assume that \begin{align}
+    \frac{\partial f}{\partial x} = \begin{cases} 1, & x > 0 \\ 0, & \text{otherwise} \end{cases}
+\end{align}
+
+
+
+
+
+\subsection{SVM Batch Gradient Descent Implementation}
+Implement the SVM algorithm using batch gradient descent, following part 1 of 'soft margin svm.ipynb'. In previous assignments, you have implemented gradient descent while minimizing over one variable. Minimizing over two variables (w, b) is not different. Both gradients are computed from current parameter values, and then parameters are simultaneously updated. (Note: it is a common mistake to implement gradient descent over multiple parameters by updating the first parameter, then computing the derivative w.r.t second parameter using the updated value of the first parameter. In fact, updating one parameter then computing the gradient of the second parameter using the updated value of the first parameter, is a different optimization algorithm, known as Coordinate Descent.)
+
+Example pseudocode for optimizing $w$ and $b$ is given by Algorithm \ref{alg:svm_gd}.
+\begin{algorithm}
+\caption{SVM Batch Gradient Descent}
+\label{alg:svm_gd}
+\begin{algorithmic}
+    \State $w^* \gets 0$
+    \State $b^* \gets 0$
+    \For{$j = 1$ to NumEpochs}
+        \State $w_{\text{grad}} \gets \nabla_w E (w^*, b^*)$
+        \State $b_{\text{grad}} \gets \frac{\partial}{\partial b} E (w^*, b^*)$
+        \State $w^* \gets w^* - \eta(j) w_{\text{grad}}$
+        \State $b^* \gets b^* - \eta(j) b_{\text{grad}}$
+    \EndFor
+    \State \Return $w^*, b^*$
+\end{algorithmic}
+\end{algorithm}
+
+
+Throughout this question, we set $C = 5$, NumEpochs = 100, and the learning rate $\eta$ as a constant, i.e., $\eta(j) = 1e^{-3}$.
+(Remarks: In this problem, we only asked you to implement batch gradient descent for primal SVM, but it’s quite straightforward to implement stochastic gradient descent in a very similar way (although you may need to decay the learning rate and set the initial learning rate properly). Unlike stochastic gradient descent, we don’t need to decay the learning rate for convergence. )
+
+\subsection*{report parameters}
+Run gradient descent over the training data 5 times, once for each of the NumEpochs = \{1, 3, 10, 30, 100\}. For each run, report the trained parameters $(w, b)$ and the test classification accuracy.
+
+
+\section{Asymmetric Cost SVM} 
+Consider applying an SVM to a supervised learning problem where the cost of a false positive (mistakenly predicting \(+1\) when the label is \(-1\)) is different from the cost of a false negative (predicting \(-1\) when the label is \(+1\)). The asymmetric cost SVM models these asymmetric costs by posing the following optimization problem:
+
+\begin{align}
+    \min_{w,b,\xi} \quad & \frac{1}{2} w^\top w + C_0 \sum_{i: y^{(i)} = -1} \xi^{(i)} + C_1 \sum_{i: y^{(i)} = 1} \xi^{(i)} \\
+    \text{s.t.} \quad & y^{(i)}(w^\top x^{(i)} + b) \geq 1 - \xi^{(i)}, \quad \forall i = 1, \dots, N \\
+    & \xi^{(i)} \geq 0, \quad \forall i = 1, \dots, N
+\end{align}
+
+Here, \(C_0\) is the cost of a false positive; \(C_1\) is the cost of a false negative. (Both \(C_0\) and \(C_1\) are fixed, known constants.)
+
+\subsection{Lagrangian Formulation [4 points]}
+We will find the dual optimization problem. First, write down the Lagrangian. Use \(\alpha^{(i)}\) and \(\mu^{(i)}\) to denote the Lagrange multipliers corresponding to the two constraints (\(\alpha^{(i)}\) for the first constraint, and \(\mu^{(i)}\) for the second constraint (slack variables)) in the primal optimization problem above.
+\begin{solution} 
+Write the problem into the standard form:  \begin{align}
+    \min_{w,b,\xi} \quad & \frac{1}{2} w^\top w + C_0 \sum_{i: y^{(i)} = -1} \xi^{(i)} + C_1 \sum_{i: y^{(i)} = 1} \xi^{(i)} \\
+    \text{s.t.} \quad &  -\Big(y^{(i)}(w^\top x^{(i)} + b)  - 1 + \xi^{(i)} \Big)\leq 0 \quad \forall i = 1, \dots, N \\
+    & - \xi^{(i)} \leq 0, \quad \forall i = 1, \dots, N
+\end{align}
+Thus the Lagrangian is: 
+\[
+\mathcal{L}(w, b, \xi, \alpha, \mu) = \frac{1}{2} w^\top w + \sum_{i=1}^{N} C^{(i)} \xi^{(i)} - \sum_{i=1}^{N} \alpha^{(i)} \left[y^{(i)} (w^\top x^{(i)} + b) - 1 + \xi^{(i)} \right] - \sum_{i=1}^{N} \mu^{(i)} \xi^{(i)}
+\]where \[
+C^{(i)} = C_0 \mathbb{I}[y^{(i)} = -1] + C_1 \mathbb{I}[y^{(i)} = 1]
+\]
+\end{solution}
+
+
+\subsection{Derivatives for Dual Optimization [6 points]}
+Calculate the following derivatives with respect to the primal variables:
+\begin{solution} \begin{align}
+      \nabla_w \mathcal{L}(w, b, \xi, \alpha, \mu) &=  w  - \sum_{i=1}^{N} \alpha^{(i)}  y^{(i)} \nabla_w (w^\top x^{(i)} + b)  \\
+      &= w - \sum_{i=1}^{N} \alpha^{(i)} y^{(i)} x^{(i)}
+\end{align}\begin{align}
+    \frac{\partial \mathcal{L}(w,b,\xi,\alpha,\mu)}{\partial b} &= - \sum_{i=1}^{N} \alpha^{(i)}  y^{(i)}  \frac{\partial (w^\top x^{(i)} + b)}{\partial b} \\
+    &= -\sum_{i=1}^{N} \alpha^{(i)} y^{(i)} (0+\frac{\partial b}{\partial b}) \\
+    &= -\sum_{i=1}^{N} \alpha^{(i)} y^{(i)}
+ \end{align}\begin{align}
+    \nabla_{\xi^{(i)}} \mathcal{L}(w, b, \xi, \alpha, \mu) &= \sum_{j=1}^{N} C^{(j)}   \nabla_{\xi^{(i)}} \xi^{(j)} - \sum_{j=1}^{N} \alpha^{(j)} \nabla_{\xi^{(i)}}\left(- 1 + \xi^{(j)} \right) - \sum_{j=1}^{N} \mu^{(j)}\nabla_{\xi^{(i)}} \xi^{(j)} \\
+    & =  C^{(i)} - \alpha^{(i)} - \mu^{(i)} \quad \text{(since } \nabla_{\xi^{(i)}} \xi^{(j)} = 1 \text{ if } i=j;  = 0 \text{ otherwise)} 
+\end{align}
+\end{solution}
+
+\subsection{Dual Optimization Problem [10 points]}
+Find the dual optimization problem. You should write down the dual optimization problem in the following form. Try to simplify your answer as much as possible. In particular, to obtain full credit, the Lagrange multipliers \( \mu^{(i)} \) should not appear in your simplified form of the dual.
+\begin{solution}
+Here the dual optimization problem is: \[
+    \max_{\mu, \alpha : \alpha_i \geq 0  \; \forall i} \min_{w, b, \xi}  \mathcal{L}(w,b,\xi,\alpha,\mu)
+    \] So we need to first find $\min_{w, b, \xi}  \mathcal{L}(w,b,\xi,\alpha,\mu)$. This can be done by setting the gradients to 0.
+For fixed $\mu, \alpha$, taking the stationary conditions:\[
+\nabla_w \mathcal{L}(w, b, \xi, \alpha, \mu) = 0 \implies   w^* = \sum_{i=1}^{N} \alpha^{(i)} y^{(i)} x^{(i)}
+   \]\[
+  \frac{\partial \mathcal{L}(w,b,\xi,\alpha,\mu)}{\partial b} = 0 \implies   \sum_{i=1}^{N} \alpha^{(i)} y^{(i)} = 0 \text{ as constraint}
+   \]\[
+\text{each } \nabla_{\xi^{(i)}} \mathcal{L}(w, b, \xi, \alpha, \mu) = 0 \implies    \alpha^{(i)} + \mu^{(i)} = C^{(i)} \;\forall i
+   \]
+Since \( \mu^{(i)} \geq 0 \), this imposes the constraint: \[
+   0 \leq \alpha^{(i)} \leq C^{(i)} \;\;\forall i
+   \]
+Thus \begin{align}
+    \mathcal{L}(w^*,b^*,\xi^*,\alpha,\mu) &=   \frac{1}{2} w^\top w + \sum_{i=1}^{N} C^{(i)} \xi^{(i)} - \sum_{i=1}^{N} \alpha^{(i)} \left[y^{(i)} (w^\top x^{(i)} + b) - 1 + \xi^{(i)} \right] - \sum_{i=1}^{N} \mu^{(i)} \xi^{(i)} \\
+    & = \frac{1}{2} w^\top w + \sum_{i=1}^{N} \Big(C^{(i)} - \mu^{(i)} \Big)\xi^{(i)} - \sum_{i=1}^{N} \alpha^{(i)} \left[y^{(i)} (w^\top x^{(i)} + b) - 1 + \xi^{(i)} \right] \\
+    &= \frac{1}{2} w^\top w + \sum_{i=1}^{N}   \alpha^{(i)} \xi^{(i)} 
+    - \sum_{i=1}^{N} \alpha^{(i)} \left[y^{(i)} (w^\top x^{(i)} + b)\right]  +\sum_{i=1}^{N} \alpha^{(i)}  - \sum_{i=1}^{N} \alpha^{(i)}\xi^{(i)}   \\
+    & = \frac{1}{2} w^\top w +\sum_{i=1}^{N} \alpha^{(i)}  - \sum_{i=1}^{N} \alpha^{(i)} \left[y^{(i)} (w^\top x^{(i)} )\right] -  b \sum_{i=1}^{N} \alpha^{(i)} y^{(i)} \\
+    &= \frac{1}{2} w^\top w +\sum_{i=1}^{N} \alpha^{(i)} - w^\top\sum_{i=1}^{N} \alpha^{(i)} y^{(i)} x^{(i)}  - 0 \\
+    &= \frac{1}{2} w^\top w +\sum_{i=1}^{N} \alpha^{(i)} - w^\top w\\
+    &= \sum_{i=1}^{N} \alpha^{(i)}  - \frac{1}{2} w^\top w \\
+    & = \sum_{i=1}^{N} \alpha^{(i)} - \frac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha^{(i)} \alpha^{(j)} y^{(i)} y^{(j)} x^{(i)\top} x^{(j)}
+\end{align}
+Thus the dual optimization problem is:  \begin{align}
+    \max_{\alpha} \quad & W(\alpha) = \sum_{i=1}^{N} \alpha^{(i)} - \frac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha^{(i)} \alpha^{(j)} y^{(i)} y^{(j)} x^{(i)\top} x^{(j)} \\
+    \text{s.t.}\quad &\sum_{i=1}^{N} \alpha^{(i)} y^{(i)} = 0, \\
+    & 0 \leq \alpha^{(i)} \leq C^{(i)}, \quad \forall i = 1, \dots, N
+\end{align}
+\end{solution}
 
 
 
@@ -762,10 +1187,182 @@ Which training set size gives the best classification accuracy? Provide your ana
 
 
 
+\section{SVMs with Convex Optimization}
+
+In this problem, you will practice training SVMs on toy data. You will learn how to use the popular 
+Scikit-Learn library’s SVM implementation and how to use the convex optimization library CVXOPT to 
+train an SVM by directly solving the dual optimization problem.
+
+\subsection{write the dual of SVM into quadratic programming [4 points]}
+Recall from lecture that the (kernelized) dual optimization problem of SVMs can be written as follows:
+\begin{align}
+\max_{\alpha} \quad & \sum_{n=1}^{N} \alpha_n - \frac{1}{2} \sum_{n=1}^{N} \sum_{m=1}^{N} \alpha_n \alpha_m y_n y_m k(x_n, x_m) \\
+\text{subject to} \quad & 0 \leq \alpha_n \leq C, \quad \sum_{n=1}^{N} \alpha_n y_n = 0
+\end{align}
+where there are $N$ training examples, $x^{(i)} \in \mathbb{R}^D$, $y^{(i)} \in \{-1, 1\}$, 
+k is a kernel function $k : \mathbb{R}^D \times \mathbb{R}^D \to \mathbb{R}$, 
+$\alpha \in \mathbb{R}^N$, and $C \in \mathbb{R}$.
+
+To solve this problem using CVXOPT, we will use the quadratic programming solver \texttt{cvxopt.solvers.qp}. 
+Given matrices $P, G, A$ and vectors $q, h, b$, CVXOPT can solve the following optimization problem (quadratic programming):
+
+\begin{align}
+\min_{v} \quad & \frac{1}{2} v^\top P v + q^\top v \\
+\text{subject to} \quad & G v \preceq h, \quad A v = b
+\end{align}
+
+Find values for matrices $P, G, A$ and vectors $q, h, b$ in terms of $x^{(i)}, y^{(i)}, k(x^{(i)}, x^{(j)})$ and $C$ such that
+the solution of the SVM dual problem ($\alpha$ in Equation 5) is equal to the solution of the CVXOPT equation 
+($v$ in Equation 6).
+
+\textbf{Hint 1:} A maximization problem can be the same as a minimization when applying a sign change:
+\begin{align}
+\min_x f(x) = \max_x -f(x).
+\end{align}
+\textbf{Hint 2:} The constraint $0 \leq \alpha_n \leq C$ can be separated into two constraints:
+\begin{align}
+-\alpha_n \leq 0, \quad \alpha_n \leq C.
+\end{align}
+\begin{solution}
+the maximization problem is the same as the below minimization:
+\begin{align}
+\min_{v} \quad & -\sum_{n=1}^{N} \alpha_n + \frac{1}{2} \sum_{n=1}^{N} \sum_{m=1}^{N} \alpha_n P_{mn} \alpha_m  \\
+\text{subject to} \quad & 0 \leq \alpha_n \leq C, \quad \sum_{n=1}^{N} \alpha_n y_n = 0
+\end{align}
+    Consider let $(P_{nm}) := y_n y_m k(x_n, x_m)$, then \[
+-\sum_{n=1}^{N} \alpha_n + \frac{1}{2} \sum_{n=1}^{N} \sum_{m=1}^{N} \alpha_n \alpha_m y_n y_m k(x_n, x_m)  = -\sum_{n=1}^{N} \alpha_n + \frac{1}{2} \sum_{n=1}^{N} \sum_{m=1}^{N} \alpha_n P_{mn} \alpha_m 
+    \]
+Thus for by defining the input vector $v:= (\alpha_1, \cdots, \alpha_N)^\top $, we have: \[
+-\sum_{n=1}^{N} \alpha_n + \frac{1}{2} \sum_{n=1}^{N} \sum_{m=1}^{N} \alpha_n \alpha_m y_n y_m k(x_n, x_m)   = \mathbf{-1}_N\cdot v - \frac{1}{2}v^\top P  v
+\]
+For \(\alpha_n \ge 0\), i.e. \(-\alpha_n \le 0\), we take \(G_1 = -I\) (the negative identity matrix) and vector \(h_1 = \mathbf{0}_N\); and for \(\alpha_n \le C\), we take \(G_2 = I\) (the identity matrix) and vector \(h_2 = C\mathbf{1}_N\), concatenate the two matrices and vectors as:
+\[
+  G = \begin{pmatrix} -I_N \\ I_N \end{pmatrix},\quad   h = \begin{pmatrix} \mathbf{0}_N \\ C\mathbf{1}_N \end{pmatrix}
+  \], then we can transform the constraint \( 0 \leq \alpha_n \leq C\) into: \[
+Gv  \preceq h
+\]
+This is because \(-\alpha_n \le 0\) and \(\alpha_n \le C\) for all $\alpha_n$ is imposed by the positive semi-definiteness of this matrix.\\
+And the constraint \(   \sum_{n=1}^{N} \alpha_n y_n = 0\) can be imposed by  \(  A\alpha = 0\) by taking  \[
+   A := [y_1, y_2, \dots, y_N]
+   \]
+as a 1 \(\times\) N row vector. ( and  \(b := 0\))
+
+Then we can write it into: \begin{align}
+\min_{v} \quad & \frac{1}{2} v^\top P v + q^\top v \\
+\text{subject to} \quad & G v \preceq h, \quad A v = b
+\end{align}
+where \((P_{nm}) := y_n y_m k(x_n, x_m),\quad    G = \begin{pmatrix} -I_N \\ I_N \end{pmatrix},\quad   h = \begin{pmatrix} \mathbf{0}_N \\ C\mathbf{1}_N \end{pmatrix},\quad    A := [y_1, y_2, \dots, y_N],\quad q=\mathbf{-1}_N, \quad b= 0\)
+\end{solution}
+
+
+\subsection{implementing SVM with cvxopt [10 points]}
+(Autograder) Use your derivation above to complete the code in the \texttt{svm.py} file.
+\subsection{draw decision boundary [4 points]}
+(Autograder)  In the notebook, you will implement drawing a decision boundary on a simple dataset and
+identify support vectors from the solutions to the optimization problems. Include the test performance on 
+each dataset and the generated visualizations of the CVXOPT SVMs in your submission writeup (generated in \texttt{svm.ipynb}).
 
 
 
+\section{Neural Network Layer Implementation}
 
+In this problem, you will implement various neural network layers. Let $X, Y$ represent the input and output of the layers, respectively. We use row-major notation (i.e., each row of $X$ and $Y$ corresponds to one data sample) to align with the multi-dimensional array structure of NumPy. Furthermore, $L$ is the scalar-valued loss function of $Y$.
+
+For the Fully-Connected Layer and ReLU, you should include your derivation of the gradient in your written solution.
+
+\textbf{Important Note:} Any indices involved ($i, j$, etc.) in the mathematical notation start from 1, not 0. However, in your code, you should use 0-based indexing (standard NumPy notation).
+
+\subsection{Fully-Connected Layer (8 points)}
+
+In this question, you will be deriving the gradient of a fully-connected layer. For this problem, consider:
+\begin{itemize}
+    \item $X \in \mathbb{R}^{N \times D_{in}}$, where $N$ is the number of samples in a batch.
+    \item A dense layer with weight parameters $W \in \mathbb{R}^{D_{in} \times D_{out}}$ and bias parameters $b \in \mathbb{R}^{1 \times D_{out}}$.
+\end{itemize}
+
+As we saw in the lecture, we can compute the output of the layer through a simple matrix multiplication operation:
+\begin{equation}
+    Y = XW + B,
+\end{equation}
+where $Y \in \mathbb{R}^{N \times D_{out}}$ is the output matrix and $B \in \mathbb{R}^{N \times D_{out}}$ is the bias matrix where each row of $B$ is the vector $b$. (Please note that we are using row-vector notation here to make it compatible with NumPy/PyTorch, but the lecture slides used column-vector notation, which is standard notation for most ML methods. We hope that the distinction is clear from the context.)
+
+Please note that the matrix multiplication operation stated above is generally useful for computing batch outputs (i.e., simultaneously computing the output of $N$ samples in the batch). However, for the purposes of computing the gradient, you might first want to consider the single-sample output operation of this fully-connected layer, which can be stated in row-major notation as:
+\begin{equation}
+    y^{(n)} = x^{(n)} W + b,
+\end{equation}
+where $y^{(n)} \in \mathbb{R}^{1 \times D_{out}}$ and $x^{(n)} \in \mathbb{R}^{1 \times D_{in}}$ for $1 \leq n \leq N$. Here, the index \((n)\) in the superscript denotes the $n$-th example, not the layer index, and $X^{(n)}_i = X_{n,i}$ denotes the $i$-th dimension of the $n$-th example $x^{(n)}$.
+
+\textbf{Note:} It might be fruitful for you to consider this expression as a summation and then calculate the gradient for individual parameters for a single-example case. After this, you can try to extend it to a vector/matrix format for the involved parameters.
+
+Now, compute the partial derivatives (in matrix form):
+\begin{equation}
+    \frac{\partial L}{\partial W} :=\nabla_W L \in \mathbb{R}^{D_{in} \times D_{out}},
+\end{equation}
+\begin{equation}
+    \frac{\partial L}{\partial b} :=\nabla_b L \in \mathbb{R}^{1 \times D_{out}},
+\end{equation}
+\begin{equation}
+    \frac{\partial L}{\partial X} := \nabla_X L \in \mathbb{R}^{N \times D_{in}},
+\end{equation}
+in terms of:
+\begin{equation}
+    \frac{\partial L}{\partial Y}:= \nabla_Y L \in \mathbb{R}^{N \times D_{out}}.
+\end{equation}
+For technical correctness, you might want to start with writing the gradient with a non-vectorized form involving:
+\begin{equation}
+    \frac{\partial L}{\partial Y^{(n)}_j} \in \mathbb{R},
+\end{equation}
+where $\frac{\partial L}{\partial Y^{(n)}_j}$ is the gradient with respect to the $j$-th element of the $n$-th sample in $Y$ with $1 \leq n \leq N$ and $1 \leq j \leq D_{out}$.
+
+\textbf{Hint for } $\frac{\partial L}{\partial W}$:
+Please note that we use a "matrix/vector" notation $\frac{\partial L}{\partial W}$ to denote a matrix in $\mathbb{R}^{D_{in} \times D_{out}}$, where the element in the $i$-th row and $j$-th column is:
+\begin{equation}
+    \frac{\partial L}{\partial W_{i,j}},
+\end{equation}
+and $W_{i,j}$ is the $(i,j)$-th element of $W$ with \( 1 \leq i \leq D_{in} \) and \( 1 \leq j \leq D_{out} \). Here you may want to calculate the gradient \( \frac{\partial L}{\partial W_{i,j}} \) using the formula: \[
+\frac{\partial L}{\partial W_{i,j}} = \sum_{n=1}^{N} \frac{\partial L}{\partial Y_j^{(n)}} \frac{\partial Y_j^{(n)}}{\partial W_{i,j}}
+\]
+
+\textbf{Hint for \( \frac{\partial L}{\partial b} \)}
+Please note that \( \frac{\partial L}{\partial b} \) is a vector in \( \mathbb{R}^{1 \times D_{out}} \). You may want to start by using the formula:\[
+\frac{\partial L}{\partial b_j} = \sum_{n=1}^{N} \sum_{m=1}^{D_{out}} \frac{\partial L}{\partial Y_m^{(n)}} \frac{\partial Y_m^{(n)}}{\partial b_j}
+\]and then move on to derive \( \frac{\partial L}{\partial b} \).
+
+\textbf{Hint for \( \frac{\partial L}{\partial X} \)}
+Please note that \( \frac{\partial L}{\partial X} \) is a matrix in \( \mathbb{R}^{N \times D_{in}} \). In order to derive this gradient, you can start by using the formula: \[
+\frac{\partial L}{\partial X_i^{(n)}} = \sum_{n'=1}^{N} \sum_{m=1}^{D_{out}} \frac{\partial L}{\partial Y_m^{(n')}} \frac{\partial Y_m^{(n')}}{\partial X_i^{(n)}}
+\]
+Following this, you can say that: \[
+\frac{\partial L}{\partial X_i^{(n)}} = \sum_{m=1}^{D_{out}} \frac{\partial L}{\partial Y_m^{(n)}} \frac{\partial Y_m^{(n)}}{\partial X_i^{(n)}}
+\]
+because the \( n \)-th sample in \( X \) is only related to the \( n \)-th sample in \( Y \) and: \[
+\frac{\partial Y_m^{(n')}}{\partial X_i^{(n)}} = 0 \quad \text{for all } n' \neq n.
+\]
+
+\subsection{ReLU [3 points]}
+
+Let \( X \in \mathbb{R}^{N \times D} \) be a 2-D array and \( Y = \text{ReLU}(X) \). In this case, ReLU is applied to \( X \) in an element-wise fashion. For an element \( x \in X \), the corresponding output is: \[
+y = \text{ReLU}(x) = \max(0, x).
+\]
+You can observe that \( Y \) will have the same shape as \( X \).\\
+\textbf{Express \( \frac{\partial L}{\partial X} \) in terms of \( \frac{\partial L}{\partial Y} \), where \( \frac{\partial L}{\partial X} \) has the same shape as \( X \).\\}
+\textbf{Hint:} You may need to use the element-wise product to express \( \frac{\partial L}{\partial X} \). Please feel free to introduce the indicator function \( I[\cdot] \).
+
+
+
+\subsection{ Autograder Implementation [14 points]}
+
+Now, we will implement the corresponding forward and backward passes in \texttt{two\_layer\_net.py}. More importantly, please ensure that you use vectorization to make your layer implementations as efficient as possible. You should use \texttt{two\_layer\_net.ipynb} to help you check the correctness of your implementation. Note that for each layer, the iPython notebook just checks the result for one specific example. Passing these tests does not necessarily mean that your implementation is 100\% correct.
+
+Once you implement the layers properly, please implement a two fully-connected layer-based classifier with a Softmax loss in \texttt{two\_layer\_net.py} and test it on the MNIST dataset, following the guide in \texttt{two\_layer\_net.ipynb}. All your implementations should go into \texttt{two\_layer\_net.py}.
+
+\subsection{Report Training Loss and Accuracy Plot [1 point]}
+
+Please report the training loss with train/test accuracy plot of the MNIST dataset, stored as \texttt{two\_layer\_net.png} from \texttt{two\_layer\_net.ipynb}, in your writeup.
+
+\subsection{Report Test Set Accuracy [1 point]}
+
+Please report the accuracy obtained on the test set of the MNIST dataset in your writeup.
 
 
 
