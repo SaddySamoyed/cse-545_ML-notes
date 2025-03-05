@@ -93,3 +93,32 @@ Algorithm of NN training:
 
 
 
+#### ex: NN with 1 hidden layer
+
+![image-20250305122536288](04-neural_network.assets/image-20250305122536288.png)
+
+Scalar-valued, 很容易算
+
+![image-20250305122547854](04-neural_network.assets/image-20250305122547854.png)
+
+vectorized: 有点难. 
+
+![image-20250305122619418](04-neural_network.assets/image-20250305122619418.png)
+
+至于 matrix input, vector valued 的函数, 其涉及 tensor 的 differentiation, 目前还没写.
+
+![image-20250305122641797](04-neural_network.assets/image-20250305122641797.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+# lec12
