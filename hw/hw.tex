@@ -16,7 +16,7 @@
 \tableofcontents
 \mainmatter
 
-\chapter{Linear Regression}
+\chapter{on Linear Regression}
 \section{Derivation and Proof}
 
 \subsection{Derive the solution for \(w_0\) and \(w_1\) in linear regression}
@@ -472,7 +472,7 @@ This reduces the problem to solving a weighted linear regression problem \( E_D(
 \end{itemize}
 
 
-\chapter{classification}
+\chapter{on classification}
 
 \section{Logistic Regression}
 
@@ -1317,7 +1317,7 @@ For technical correctness, you might want to start with writing the gradient wit
 \end{equation}
 where $\frac{\partial L}{\partial Y^{(n)}_j}$ is the gradient with respect to the $j$-th element of the $n$-th sample in $Y$ with $1 \leq n \leq N$ and $1 \leq j \leq D_{out}$.
 
-\subsection*{calculate $\frac{\partial L}{\partial W}$}
+\subsubsection*{calculate $\frac{\partial L}{\partial W}$}
 \textbf{Hint: }Please note that we use a "matrix/vector" notation $\frac{\partial L}{\partial W}$ to denote a matrix in $\mathbb{R}^{D_{in} \times D_{out}}$, where the element in the $i$-th row and $j$-th column is:
 \begin{equation}
     \frac{\partial L}{\partial W_{i,j}},
@@ -1332,7 +1332,7 @@ and $W_{i,j}$ is the $(i,j)$-th element of $W$ with \( 1 \leq i \leq D_{in} \) a
     \]
 \end{solution}
 
-\subsection*{calculate $\frac{\partial L}{\partial b}$}
+\subsubsection*{calculate $\frac{\partial L}{\partial b}$}
 \textbf{Hint:} Please note that \( \frac{\partial L}{\partial b} \) is a vector in \( \mathbb{R}^{1 \times D_{out}} \). You may want to start by using the formula:\[
 \frac{\partial L}{\partial b_j} = \sum_{n=1}^{N} \sum_{m=1}^{D_{out}} \frac{\partial L}{\partial Y_m^{(n)}} \frac{\partial Y_m^{(n)}}{\partial b_j}
 \]and then move on to derive \( \frac{\partial L}{\partial b} \).
@@ -1344,7 +1344,7 @@ Thus we conclude: \[
 \end{solution}
 
 
-\subsection*{calculate $\frac{\partial L}{\partial X}$}
+\subsubsection*{calculate $\frac{\partial L}{\partial X}$}
 \textbf{Hint:} Please note that \( \frac{\partial L}{\partial X} \) is a matrix in \( \mathbb{R}^{N \times D_{in}} \). In order to derive this gradient, you can start by using the formula: \[
 \frac{\partial L}{\partial X_i^{(n)}} = \sum_{n'=1}^{N} \sum_{m=1}^{D_{out}} \frac{\partial L}{\partial Y_m^{(n')}} \frac{\partial Y_m^{(n')}}{\partial X_i^{(n)}}
 \]
@@ -1381,21 +1381,228 @@ You can observe that \( Y \) will have the same shape as \( X \).\\
 \subsection{Autograder Implementation [14 points]}
 
 Now, we will implement the corresponding forward and backward passes in \texttt{two\_layer\_net.py}. More importantly, please ensure that you use vectorization to make your layer implementations as efficient as possible. You should use \texttt{two\_layer\_net.ipynb} to help you check the correctness of your implementation. Note that for each layer, the iPython notebook just checks the result for one specific example. Passing these tests does not necessarily mean that your implementation is 100\% correct.
-
 Once you implement the layers properly, please implement a two fully-connected layer-based classifier with a Softmax loss in \texttt{two\_layer\_net.py} and test it on the MNIST dataset, following the guide in \texttt{two\_layer\_net.ipynb}. All your implementations should go into \texttt{two\_layer\_net.py}.
-
 \subsection*{Report Training Loss and Accuracy Plot [1 point]}
-
 Please report the training loss with train/test accuracy plot of the MNIST dataset, stored as \texttt{two\_layer\_net.png} from \texttt{two\_layer\_net.ipynb}, in your writeup.
-
+\begin{solution}
+    \pic[0.8]{hw3.assets/Screenshot 2025-02-28 at 16.47.33.png}
+    \pic[1]{hw3.assets/image-20250228164833928.png}
+\end{solution}
 \subsection*{Report Test Set Accuracy [1 point]}
-
 Please report the accuracy obtained on the test set of the MNIST dataset in your writeup.
+\begin{solution}
+    \pic[0.45]{hw3.assets/Screenshot 2025-02-28 at 16.47.49.png}
+\end{solution}
+
+
+
+
+\chapter{on CNN, RNN and transformer}
+
+
+Your program should run under an environment with the following libraries:
+\begin{itemize}
+    \item Python 3.11
+    \item NumPy == 1.24.1 (for implementations of algorithms)
+    \item Matplotlib (for plots)
+    \item PyTorch (for implementing neural networks)
+\end{itemize}
+You should be able to load the data and execute your code on Autograder with the environment described above, but in your local working environment you might need to install them via:
+\begin{verbatim}
+pip install numpy matplotlib torch torchvision
+\end{verbatim}
+For this assignment, you will need to submit the following files:
+\begin{itemize}
+    \item Q1
+    \begin{itemize}
+        \item \texttt{cnn\_layers.py}
+        \item \texttt{cnn.py}
+        \item \texttt{cnn.ipynb}
+    \end{itemize}
+    \item Q2
+    \begin{itemize}
+        \item \texttt{rnn\_layers.py}
+        \item \texttt{rnn.py}
+        \item \texttt{rnn.ipynb}
+    \end{itemize}
+    \item Q3
+    \begin{itemize}
+        \item \texttt{transfer\_learning.py}
+        \item \texttt{transfer\_learning.ipynb}
+    \end{itemize}
+    \item Q4
+    \begin{itemize}
+        \item \texttt{transformer.py}
+        \item \texttt{transformer\_trainer.py}
+        \item \texttt{transformer.ipynb}
+    \end{itemize}
+\end{itemize}
+
+\paragraph*{PyTorch Implementation Tips}: When initializing a tensor, please set it to the same dtype (`X.dtype`) and device (`X.device`) from the input parameter X, instead of explicitly set an arbitrary one. Please refer to this tutorial for more information if you encountered any dtype or device errors.
 
 
 
 
 
+\section{CNNs for Multi-class Classification}
+
+In this problem, you will implement a convolutional neural network (CNN) for classifying the MNIST dataset. For better visualization of the convolution operations, you can refer to the following link: \url{https://bit.ly/3H0Rjhn}.
+
+Let $X, Y$ represent the input and output of the layers, respectively. We use row-major notation (i.e., each row of $X$ and $Y$ corresponds to one data sample) to maintain compatibility with NumPy's multi-dimensional array structure. Furthermore, let $L$ be the scalar-valued loss function of $Y$.
+
+\textbf{Important Note:} In this question, any indices involved (e.g., $i, j$) in the mathematical notation start from 1, whereas in the code implementation, you should use 0-based indexing (standard NumPy notation).
+
+Consider the following 2D arrays/tensors: $a \in \mathbb{R}^{H_a \times W_a}$ and $b \in \mathbb{R}^{H_b \times W_b}$, where $a$ represents the image and $b$ is the filter, with $H_a > H_b$ and $W_a > W_b$. The following definitions apply:
+
+\paragraph*{Valid Convolution} In this problem, we can define the \textit{valid convolution} operation is defined as:
+\[
+(a *_{\text{valid}} b)_{i,j} =
+\sum_{m=i}^{i+H_b-1} \sum_{n=j}^{j+W_b-1} a_{m,n}\; b_{i-m+H_b,\; j-n+W_b}
+\]
+where $1 \leq i \leq H_a - H_b + 1$ and $1 \leq j \leq W_a - W_b + 1$. Please note that \textbf{the valid convolution does not involve zero padding} and produces an output of size $(H_a - H_b + 1) \times (W_a - W_b + 1)$.
+
+\paragraph*{Filtering} Moreover, it might also be useful to consider the \textit{filtering} operation $*_{\text{filt}}$ is defined as:
+\begin{align}
+    (a *_{\text{filt}} b)_{i,j} 
+  &  = \sum_{m=i}^{1+H_b - 1} \; \sum_{n=j}^{j+W_b-1}   a_{m,n} \; b_{m-i+1,\; n - j +1} \\
+  & =\sum_{p=1}^{H_b} \sum_{q=1}^{W_b} a_{i+p-1,\; j+q-1} b_{p,q}
+\end{align}
+Here, $1 \leq i \leq H_a - H_b + 1$ and $1 \leq j \leq W_a - W_b + 1$. Please note that the filtering operation generates an output of size $(H_a - H_b + 1) \times (W_a - W_b + 1)$. \\
+\textbf{The filtering operation is similar to valid convolution but does not flip the kernel.} You can \textbf{think of filtering as an inner product }between the $H_a \times W_b$ sized kernel with image patch of the same size.
+
+\paragraph*{Full Convolution} Finally, for deriving the gradent through convolution layer, the \textit{full convolution} operation is is useful, defined as:
+\[
+(a *_{\text{full}} b)_{i,j} =
+\sum_{m=i-H_b+1}^{i} \sum_{n=j-W_b+1}^{j} a_{m,n} b_{i-m+1, j-n+1}
+\]
+Here, $1 \leq i \leq H_a + H_b - 1$ and $1 \leq j \leq W_a + W_b - 1$.\\
+The full convolution is just z\textbf{ero padding $a$ on all sides, then performing valid convolution}.
+In the definition of full conv, $a_{m,n} = 0$ if $m<1\,,\, n<1$ or $m>H_a$ or $n>W_a$.
+This operation produces an output of size $(H_a + H_b  -1 )\times (W_a + W_b -1)$.
+
+\paragraph*{Convolution Layer}
+Let the input to the layer be $X \in \mathbb{R}^{N \times C \times H \times W}$, where:
+\begin{itemize}
+    \item $N$ is the batch size (number of images),
+    \item $C$ is the number of channels,
+    \item $H$ and $W$ are the height and width of the image.
+\end{itemize}
+
+The convolutional kernel is $K \in \mathbb{R}^{F \times C \times H' \times W'}$, where $F$ is the number of filters.\\
+
+The output is $Y \in \mathbb{R}^{N \times F \times H'' \times W''}$, with:
+\[
+H'' = H - H' + 1, \quad W'' = W - W' + 1.
+\]
+
+The output of the layer is defined by:
+\[
+Y_{n,f} = \sum_{c=1}^{C} X_{n,c} *_{\text{valid}} \overline{K}_{f,c}
+\]
+where $\overline{K}_{f,c}$ represents the flipped filter, which can be more concretely defined for each element as:
+\[\overline{K}_{f,c,i,j} = K_{f,c,H' + 1 - i,\; W' + 1 - j}
+\]
+
+\paragraph*{Convolution Backward Pass}
+Finally, considering the upstream gradient to be denoted by $\frac{\partial L}{\partial Y_{n,f}}$, use the following formula to implement the backward pass in `layers.py`. \[
+\frac{\partial L}{\partial X_{n,c}} = \sum_{f=1}^{F} K_{f,c} *_{\text{full}} \left( \frac{\partial L}{\partial Y_{n,f}} \right)
+\]
+and  \[
+\frac{\partial L}{\partial K_{f,c}} = \sum_{n=1}^{N} X_{n,c} *_{\text{filt}} \left( \frac{\partial L}{\partial Y_{n,f}} \right)
+\]
+(The derivation is included in the appendix.)
+\subsection{implement forward and backward pass of convolution layer [14 points]}
+(Autograder) Use the definitions and derivations above to implement \texttt{conv\_forward} and \texttt{conv\_backward} in the \texttt{cnn\_layers.py} script.
+Note that the output expression  \[
+Y_{n,f} = \sum_{c=1}^{C} X_{n,c} *_{\text{valid}} \overline{K}_{f,c}
+\]
+can also be represented by the expression \[
+Y_{n,f} = \sum_{c=1}^{C} X_{n,c} *_{\text{filt}} K_{f,c}
+\]
+Therefore, you can implement \(Y_{n,f} = \sum_{c=1}^{C} X_{n,c} *_{\text{filt}} K_{f,c}\) in the \texttt{conv\_forward} function in the \texttt{cnn\_layers.py} script.
+
+You should vectorize your implementations as much as possible following the instructions and hints in \texttt{cnn\_layers.py}. \textbf{Even with a vectorized implementation, training on (c) may take a significant amount of time.} (The instructor solution takes around 1 hour to finish).
+
+\subsection{CNN for softmax multi-class classification [14 points]}
+(Autograder) Implement a CNN for softmax multi-class classification using the starter code in \texttt{cnn.py}. \\Note that \textbf{forward, relu, softmax, max pool layers have been implemented} for you in `layers.py`. Unlike the two-layer-net you implemented in HW3, we will initialize using a uniform distribution (instead of a normal distribution). This will significantly improve training performance in the next part.
+
+\subsection{Train CNN on CIFAR-10 dataset [6 points]}
+Train the CNN on the CIFAR-10 dataset using \texttt{cnn.ipynb}.\\
+Using the hyperparameters specified in the solver instance, train the CNN on the CIFAR-10 dataset and report the generated loss plot (cnn.png) and the accuracy obtained on the test set in your writeup. Please also submit cnn.ipynb to autograder.
+
+
+
+
+\section{Application of RNN to Image Captioning (29 points)}
+In this problem, you will apply the RNN module that has been partially implemented to build an image captioning model. The link to download data is provided in the comment in \texttt{rnn.ipynb}. Please download \texttt{coco\_captioning.zip} using the link provided in the notebook and unzip the data into the \texttt{data} directory.
+
+\subsection{implement forward and backward pass of RNN [8 points]}
+(Autograder) At every timestep we use a fully-connected layer to transform the RNN hidden vector at that timestep into scores for each word in the vocabulary. This is very similar to the fully-connected layer that you implemented in HW3. Implement the forward pass in \texttt{temporal\_fc\_forward} function and the backward pass in \texttt{temporal\_fc\_backward} function in \texttt{rnn\_layers.py}.
+
+\subsection{implement image captioning model with RNN [16 points]}
+ (Autograder) Now that you have the necessary layers in \texttt{rnn\_layers.py}, you can combine them to build an image captioning model. Implement the forward and backward pass of the model in the \texttt{loss} function and the \texttt{sample} function for the RNN model in \texttt{rnn.py}.
+
+\subsection*{report loss and caption samples [5 points]}
+With the RNN code now ready, run the script \texttt{rnn.ipynb} to get learning curves of training loss and the caption samples. Report the learning curves and the caption samples based on your well-trained network in your writeup. Please also submit \texttt{rnn.ipynb} to the autograder.
+
+
+\section{Transfer Learning (18 points)}
+By working on this problem, you will become more familiar with PyTorch and can run experiments in two major transfer learning scenarios. If you are new to PyTorch, please refer to our PyTorch review materials on Canvas. The link to download data is provided in the comment in \texttt{transfer\_learning.ipynb}. Please unzip \texttt{hymenoptera\_data.zip} into the \texttt{data} directory.
+This problem is heavily based on the PyTorch transfer learning tutorial from this link. If you are stuck on this problem, feel free to consult the PyTorch tutorial.
+
+\subsection{implement transfer learning[10 points]}
+Fill in the code in the \texttt{transfer\_learning.py} file. This includes TODO blocks in the \texttt{train\_model}, \texttt{finetune}, and \texttt{freeze} functions.
+
+The \texttt{train\_model} function is a general function for model training. In the \texttt{finetune} function, instead of random initialization, we initialize the network with a pre-trained network. The rest of the training looks as usual. In the \texttt{freeze} function, the weights are frozen in all of the network except that of the final fully connected layer. This last fully connected layer is replaced with a new one with random weights and only this layer is trained.
+
+After implementing all of the above, run the script \texttt{transfer\_learning.ipynb}.
+
+\textbf{Note:} This part will not be autograded. Therefore, please submit your completed code to the autograder. You will get 2/10 points for submitting the files. We will manually grade based on your submitted code.
+
+Before submitting \texttt{transfer\_learning.ipynb}, make sure that you run it thoroughly and have \textbf{ALL} the logs displayed (for example, the result figures of the last cell). For Gradescope, please submit a screenshot of the Test Case of the autograder transfer learning section, which should show 2 blue bars of \textbf{passed} for submitted \texttt{transfer\_learning.py} and submitted \texttt{transfer\_learning.ipynb}.
+
+
+\subsection*{report loss and accuracy per epoch [4 points]}
+Report the train/validation loss and accuracy per epoch log generated by \texttt{transfer\_learning.ipynb} in your writeup.
+
+\subsection*{figures generated by the model’s prediction [4 points]}
+Please include figures generated by the model’s prediction in your writeup for both finetuned model predictions and frozen model predictions.
+
+
+
+
+
+
+
+
+\section{Transformer Neural Networks (19 points)}
+
+In this problem, you will implement a simple Transformer network in PyTorch and train it on interesting datasets. All the models and layers in PyTorch inherit from the \texttt{torch.nn.Module} class. You can refer to the documentation at \href{https://pytorch.org/docs/stable/generated/torch.nn.Module.html}{PyTorch Documentation} for more information about how it works. If you are new to PyTorch, please refer to our PyTorch review materials on Canvas. \textbf{Note: parts (b) and (c) will not be autograded.}
+
+\subsection*{implement attention module in Pytorch[5 points]}
+(Autograder) Let's implement an attention module in PyTorch. Follow the instructions to fill the TODO blocks in the \texttt{forward} function of \texttt{MaskedAttention} in \texttt{transformer.py}. For a sanity check, please run section (A) of \texttt{transformer.ipynb} to check your implementation. Then, submit your \texttt{transformer.py} file to the autograder.D
+
+\subsection*{train transformer [9 points]}
+Follow the instructions in \texttt{transformer\_trainer.py} to fill in the missing lines in the function \texttt{run}. With this function, you can train the language model to learn math multiplication. Please run section (B) in \texttt{transformer.ipynb} and:
+\begin{enumerate}
+    \item Report your final training and testing accuracy.
+    \item Attach your training loss plot (\texttt{multiplication\_loss.png}) in your writeup.
+\end{enumerate}
+You should expect a training accuracy higher than 95\% and a testing accuracy higher than 85\%.
+
+\subsection*{generate tiny stories [5 points]}
+Now, let's move on to a more interesting Tiny Stories dataset. The Tiny Stories dataset contains a large collection of artificially generated children's stories. The dataset is designed to test whether small language models can learn to produce fluent and coherent text when trained on data with a smaller vocabulary and simpler grammar structures (language that 3-4-year-olds can understand). We will train the model you implemented on Tiny Stories and see what stories the language model will generate! 
+The link to download the dataset is in the comment in \texttt{transformer.ipynb}. Run section (C) in \texttt{transformer.ipynb} and report:
+\begin{enumerate}
+    \item The final training loss.
+    \item The three generated stories in the end.
+\end{enumerate}
+Please also submit \texttt{transformer.ipynb} to the autograder.
+
+
+
+
+\includepdf[]{hw4_appendix.pdf}
 
 
 
