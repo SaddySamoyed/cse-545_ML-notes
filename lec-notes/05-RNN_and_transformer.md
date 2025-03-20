@@ -40,15 +40,35 @@ RNN 的 loss 是所有的 time 上的 loss 的总和。每过一个 timestamp �
 
 ![Screenshot 2025-03-06 at 21.54.22](/Users/fanqiulin/Desktop/cse-545_ML-notes/lec-notes/04-neural_network.assets/Screenshot 2025-03-06 at 21.54.22.png)
 
+为了计算这个 loss, 我们需要 do some recursion. Take: 
+$$
+\mathcal{L}_t = \sum_{\tau = t}^T D(y_\tau, \hat{y_\tau}) 
+$$
+表示从 time $t$ 累积到 $T$ 的 loss sum. (是从尾开始, 为了 do back propagation)
+
+我们要求的就是 
+$$
+D_{all} = \mathcal{L}_1
+$$
+我们要 differentiate w.r.t. $W,U,W^{out}, b$
 
 
-### backpropagation through time (BPTT)
+
+#### backpropagation through time (BPTT)
 
 ![image-20250307025712487](/Users/fanqiulin/Desktop/cse-545_ML-notes/lec-notes/04-neural_network.assets/image-20250307025712487.png)
 
 
 
-![image-20250307025948974](/Users/fanqiulin/Desktop/cse-545_ML-notes/lec-notes/04-neural_network.assets/image-20250307025948974.png)
+
+
+
+
+
+
+
+
+
 
 
 
@@ -75,3 +95,12 @@ vectorized version:
 2. **GRU（Gated Recurrent Unit）**：简化版的 LSTM，仅使用两个门（更新门和重置门），计算更高效。
 
 尽管 RNN 适用于序列数据，但由于训练困难，**Transformer 及其变体（如 BERT、GPT）已逐渐取代 RNN 在 NLP 任务中的地位**。
+
+
+
+
+
+
+
+
+
