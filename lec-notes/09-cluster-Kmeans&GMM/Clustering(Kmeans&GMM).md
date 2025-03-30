@@ -227,6 +227,14 @@ distortion measure $J$ 就是: squared distance of points from the center of its
 
 
 
-**图示：**如 $(0.97, 0.03)$ 表示该点以 97% 概率属于一个簇，以 3% 概率属于另一个簇
+**图示：**如 $(0.97, 0.03)$ 表示该点以 97% 概率属于 簇2，以 3% 概率属于簇2
 
-![{A4E22888-7017-4186-8D9C-B712353A6389}](Clustering(Kmeans&GMM).assets/{A4E22888-7017-4186-8D9C-B712353A6389}.png)
+
+
+
+
+
+
+
+
+![{A4E22888-7017-4186-8D9C-B712353A6389}](Clustering(Kmeans&GMM).assets/GMM.png)
