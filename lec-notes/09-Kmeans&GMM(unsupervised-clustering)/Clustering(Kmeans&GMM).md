@@ -183,7 +183,7 @@ distortion measure $J$ 就是: squared distance of points from the center of its
 
 - 重复以下步骤直到收敛：
 
-  - cluster assignment:（"E step"）
+  - cluster assignment:（近似于 EM 中的 "E step"）
 
     将每个点分配给最近的簇中心：
     $$
@@ -194,20 +194,15 @@ distortion measure $J$ 就是: squared distance of points from the center of its
     \end{cases}
     $$
     
-  - 参数更新（"M 步"）：更新簇中心
+  - 参数更新：更新簇中心（近似于 EM 中的"M step"）
   
   $$
   \mu_k = \frac{\sum_n r_{nk} \mathbf{x}^{(n)}}{\sum_n r_{nk}}
   $$
 
-> **注：**  
-> - E 代表 Expectation（期望）  
-> - M 代表 Maximization（最大化）  
-> （我们稍后会再次介绍 EM 算法）
 
 
-
-
+这里没有 back 
 
 
 
