@@ -30,7 +30,9 @@ Initial centriods 在 `initial_centrids` 里, 因而结果是 deterministic 的.
 
 After training, 我们在 `mandrill-large.tiff` 上进行 test, replace 每个 pixel 的 $(r,g,b)$ with the value of the closest cluster centroid.
 
-Use the notebook’s plotting code to display the original and compressed images side-by-side, and attach the plots to the write-up. (Note: you should have reasonable image quality/resolution to make the difference discernible). Also, measure and write down the **mean pixel error** between the original and compressed image.
+Attach the plots original and compressed images side-by-side to the write-up. (Note: you should have reasonable image quality/resolution to make the difference discernible). 
+
+Also, measure and write down the **mean pixel error** between the original and compressed image.
 
 
 
@@ -52,15 +54,11 @@ If we represent the image with these reduced 16 colors, by (approximately) what 
 
 ## 1.2 Gaussian Mixtures
 
-现在让我们使用高斯混合模型（Gaussian Mixtures，带完整协方差矩阵）来重复前面的图像压缩任务，这次将聚类数设置为 $K = 5$，而不是使用 K-means。
+现在让我们使用高斯混合模型（Gaussian Mixtures，带完整协方差矩阵）来重复前面的图像压缩任务，这次将聚类数设置为 $K = 5$，
 
-------
+### (d) train GMM
 
-### (d) （10 分）(自动评分)
-
-在笔记本 `kmeans_gmm.ipynb` 中实现 GMM 的 EM 算法。
-
-你需要实现 `gmm.train_gmm()` 来训练一个 GMM 模型，该模型将在提供的样例数据以及一些随机数据上进行评分。为了获得满分，你的实现应当足够高效（否则将只能获得部分分数）。
+(10 points) 你需要实现 `gmm.train_gmm()` 来训练一个 GMM 模型，该模型将在提供的样例数据以及一些随机数据上进行评分。你的实现应当足够高效（否则将只能获得部分分数）。
 
 **提示 1：** 可以使用 `scipy.stats.multivariate_normal()` 来计算数据的对数似然（log-likelihood）。
 
@@ -72,9 +70,32 @@ $$
 
 ------
 
-### (e) （3 分）
 
-在训练图像 `mandrill-small.tiff` 上使用 $K = 5$ 的高斯混合模型进行训练。使用提供的初始参数：
+
+#### **E-step** (compute responsibilities):
+For each point $ x_n $, and cluster $ k $:
+$$
+\gamma(z_{nk}) = \frac{\pi_k \cdot \mathcal{N}(x_n \mid \mu_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \cdot \mathcal{N}(x_n \mid \mu_j, \Sigma_j)}
+$$
+
+Use **log-space trick**:
+- compute `log p(x_n | k)` using `scipy.stats.multivariate_normal.logpdf`
+- then compute log-sum-exp over $ k $for normalization (using `scipy.special.logsumexp`)
+- exponentiate to get $ \gamma(z_{nk})$
+
+#### **M-step** (update parameters):
+Let $ N_k = \sum_n \gamma(z_{nk}) $
+- $ \pi_k = \frac{N_k}{N} $
+- $ \mu_k = \frac{1}{N_k} \sum_n \gamma(z_{nk}) x_n $
+- $ \Sigma_k = \frac{1}{N_k} \sum_n \gamma(z_{nk}) (x_n - \mu_k)(x_n - \mu_k)^T $
+
+
+
+
+
+### (e) 
+
+(3 points) 在训练图像 `mandrill-small.tiff` 上使用 $K = 5$ 的高斯混合模型进行训练。使用提供的初始参数：
 
 - initial mean（`initial_mu`）
 - covariance matrices（`initial_sigma`）
@@ -89,9 +110,11 @@ report:
 
 无需写出协方差矩阵 $\Sigma_k$。你可以选择：write down the values, or attach visualization plots，其图例中展示了 $\pi_k$ 和 $\mu_k$ 的值
 
+
+
 ------
 
-### (f) （2 分）
+### (f)
 
 在使用 `mandrill-small.tiff` 训练后，读取测试图像 `mandrill-large.tiff`，并将每个像素的 $(r, g, b)$ 值替换为其 value of latent cluster mean ($\mu_k$). 这里对于每个 pixel, 我们使用 MAP（最大后验估计，Maximum A Posteriori）for the latent cluster-assignment variable.
 
@@ -100,6 +123,12 @@ report:
 > 注：图像质量应当足够好，以使压缩前后图像的差异可以被分辨
 
 另外，计算并写出 original image 和 compressed image 之间的平均像素误差（mean pixel error）
+
+
+
+
+
+
 
 
 
