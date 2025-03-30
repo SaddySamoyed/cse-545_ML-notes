@@ -13,12 +13,11 @@
 
 
 
-notation:
-
-- $\mathbf{X}$ 表示所有观测数据，第 $n$ 行为 $\mathbf{x}_n^\top$
-- $\mathbf{Z}$ 表示所有潜变量，第 $n$ 行为 $\mathbf{z}_n^\top$
+notation:$\mathbf{X}$ 表示所有观测数据，第 $n$ 行为 $\mathbf{x}_n^\top$， $\mathbf{Z}$ 表示所有潜变量，第 $n$ 行为 $\mathbf{z}_n^\top$
 
 
+
+如果我们拥有完整数据$\{\mathbf{X}, \mathbf{Z}\}$， 那么
 
 - 当只有 $\mathbf{X}$ 而没有 $\mathbf{Z}$ 时，我们需要对 $\mathbf{Z}$ **边际化（marginalize）**；
   - 这导致对数似然中包含 $\log \sum_z p(x, z)$，使优化变得困难。
@@ -195,9 +194,8 @@ distortion measure $J$ 就是: squared distance of points from the center of its
     \end{cases}
     $$
     
-
   - 参数更新（"M 步"）：更新簇中心
-
+  
   $$
   \mu_k = \frac{\sum_n r_{nk} \mathbf{x}^{(n)}}{\sum_n r_{nk}}
   $$
