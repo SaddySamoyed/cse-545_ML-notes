@@ -1,16 +1,16 @@
-
-
-
-
-# K-means
-
 无监督学习（**Unsupervised Learning**）是机器学习的一种类型，它的核心特点是：**训练数据没有标签**。也就是说，算法在学习时，并不知道哪些是“对”或者“错”的答案，它只能从数据中自己“找规律”
 
 Clustering 问题是一类 unsupervised learning 问题.
 
 example: customer segmentation. 将客户分组，以便在决策（如信用卡审批）或营销（如产品推广）中提供帮助。
 
+我们将介绍两种 clustering 的算法: K-means 以及 GMM
 
+K-means 其实算是 GMM 的一种特殊情况.
+
+
+
+# K-means
 
 k-means Algorithm 的 idea 即: 
 
@@ -52,7 +52,7 @@ distortion measure $J$ 就是: squared distance of points from the center of its
 
 - 重复以下步骤直到收敛：
 
-  - cluster assignment:（近似于 EM 中的 "E step"）
+  - cluster assignment:（E step）
 
     将每个点分配给最近的簇中心：
     $$
@@ -63,17 +63,13 @@ distortion measure $J$ 就是: squared distance of points from the center of its
     \end{cases}
     $$
 
-  - 参数更新：更新簇中心（近似于 EM 中的"M step"）
+  - 参数更新：更新簇中心（M step）
 
   $$
   \mu_k = \frac{\sum_n r_{nk} \mathbf{x}^{(n)}}{\sum_n r_{nk}}
   $$
 
 
-
-这里没有 back 
-
-$\implies$
 
 
 
@@ -95,8 +91,11 @@ $\implies$
 
 **图示：**如 $(0.97, 0.03)$ 表示该点以 97% 概率属于 簇2，以 3% 概率属于簇2
 
+![Screenshot 2025-03-31 at 15.37.07](09(2)-Clustering(Kmeans&GMM).assets/Screenshot 2025-03-31 at 15.37.07.png)
+
+不同的 clusters take different levels of responsibility for a point. 一个点上, responsibility 即 posterior probability.
 
 
 
+![{A4E22888-7017-4186-8D9C-B712353A6389}](09(2)-Clustering(Kmeans&GMM).assets/GMM.png)
 
-![{A4E22888-7017-4186-8D9C-B712353A6389}](Clustering(Kmeans&GMM).assets/GMM.png)

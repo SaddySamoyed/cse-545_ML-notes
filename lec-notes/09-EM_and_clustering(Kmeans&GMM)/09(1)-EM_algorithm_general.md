@@ -160,17 +160,17 @@ EM Algorithm 是一个在设定了 latent variable $Z$ 时，间接地 maximizin
 >1. E-step (expectation): 固定参数 $\theta$，**compute posterior** $p(\mathbf{Z} \mid \mathbf{X}, \theta)$, 然后把它赋给 $q(\mathbf{Z})$，使 variational lower bound $\mathcal{L}$ 最大化 (此时 for 固定的 $\theta$, 有 $\mathcal{L}(q,\theta) = \log p(\mathbf{X} \mid \theta)$)
 >
 >   具体要做的即:
->   $$
+> $$
 >   q^{(t)}(\mathbf{Z}) := p(\mathbf{Z} \mid \mathbf{X}, \theta^{(t)})
->   $$
+> $$
 >   
 >
 >2. M-step (maximization)：固定 $q(\mathbf{Z})$，**最大化 $\mathbb{E}_q[\log p(\mathbf{X}, \mathbf{Z} \mid \theta)]$ 得到新的 $\theta$**
 >
 >   具体要做的即: 
->   $$
+> $$
 >   \theta^{(t+1)} : = \operatorname{argmax}_\theta \mathcal{L}(q^{(t)}, \theta)=\operatorname{argmax}_\theta \sum_{\mathbf{Z}} q^{(t)}(\mathbf{Z}) \log p(\mathbf{X}, \mathbf{Z} \mid \theta)
->   $$
+> $$
 
 EM 即交替优化 $q$ 和 $\theta$，提升 ELBO 下界，直至收敛. E step 就是固定目前的参数 $\theta$, 把 $q$ 重新设定为 $p$，使得 variational lower bound 提升至等于我们需要的 liklihood；M step 就是固定住分布 $q$，看看什么参数能够优化 variational lower bound.
 
@@ -184,7 +184,7 @@ E step 计算的 latent var 的后验概率，可以视为对未观测数据的�
 
 ### 图示
 
-![EM](Clustering(Kmeans&GMM).assets/EM.png)
+![EM](09(1)-EM_algorithm_general.assets/EM.png)
 
 我们容易验证: EM Algorithm 一定是 converging 的. (一定单调递增, 又是有界, 因而 MCT)
 
