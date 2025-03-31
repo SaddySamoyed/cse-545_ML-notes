@@ -49,35 +49,38 @@ $$
 
 
 $$
-\begin{align}
+\begin{align*}
 \log p(\mathbf{X} \mid \theta) 
 &= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log p(\mathbf{X} \mid \theta)  \quad \text{(因为} \sum_{\mathbf{Z}} q(\mathbf{Z}) = 1)\\
 &= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{p(\mathbf{Z} \mid \mathbf{X}, \theta)} \\
 &= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{q(\mathbf{Z})} \cdot \frac{q(\mathbf{Z})}{p(\mathbf{Z} \mid \mathbf{X}, \theta)} \\
 &= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{q(\mathbf{Z})} + \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{q(\mathbf{Z})}{p(\mathbf{Z} \mid \mathbf{X}, \theta)}
-\end{align}
+\end{align*}
 $$
 
 我们把这两个成分，分别定义为
 
 1. variational lower bound of $q$ (或称为 Evidence Lower Bound, ELBO)
    $$
-   \begin{align*}
+   \begin{align}
    \mathcal{L}(q, \theta) &: =\sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{q(\mathbf{Z})} \\
    &= \mathbb{E}_{Z\sim q(Z)}[\log p(\mathbf{X}, \mathbf{Z} \mid \theta)] - \mathbb{E}_{Z\sim q(Z)}[\log q(\mathbf{Z})]
-   \end{align*}
+   \end{align}
    $$
    
-
 2. KL divergence of $q$ w.r.t. $p$
 
 $$
-\begin{align*}
+\begin{align}
 \mathrm{KL}(q(\mathbf{Z}) \parallel p(\mathbf{Z} \mid \mathbf{X}, \theta)) &:=\sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{q(\mathbf{Z})}{p(\mathbf{Z} \mid \mathbf{X}, \theta)}\\
 & = \mathbb{E}_{Z\sim q(Z)}[\log q(\mathbf{Z})]  - \mathbb{E}_{Z\sim q(Z)}[\log p(\mathbf{Z}\mid \mathbf{X} ,\theta)] 
-\end{align*}
+\end{align}
 $$
 
+从而: 
+$$
+\begin{aligned} \log p(\mathbf{X} \mid \theta)  & =\mathcal{L}(q, \theta)+K L(q(\mathbf{Z}) \| p(\mathbf{Z} \mid \mathbf{X}, \theta))\end{aligned}
+$$
 
 
 ###  KL 散度
@@ -112,7 +115,7 @@ $KL(q‖p)$ 表示：真实分布是 $q$，用 $p$ 来近似它
 
 
 
-### Jensen 不等式: showing that 
+### Jensen 不等式: showing that KL 散度是非负的
 
 Recall 凸分析中我们有 Jensen 不等式:
 
@@ -131,57 +134,53 @@ $$
 f(\mathbb{E}[x]) \leq \mathbb{E}[f(x)]
 $$
 
-因而，由于.  f KL 散度总是非负，且当且仅当 $q = p(\mathbf{Z} \mid \mathbf{X}, \theta)$ 时取等号
+因而，由于 log 函数是 convex 的，我们可以由 Jensen 证明出：散度总是非负，且当且仅当 $q = p(\mathbf{Z} \mid \mathbf{X}, \theta)$ 时取等号
 $$
 \begin{aligned} K L(q \| p) &=\mathbb{E}_{z\sim q(z)}\left[\log \frac{q(z)}{p(z)}\right]\\
-&\geq \log ()    \\
-
-&=\sum_z q(z) \log \left(\frac{q(z)}{p(z)}\right) \\ & =\sum_z q(z)\left(-\log \left(\frac{p(z)}{q(z)}\right)\right) \\ & \geq-\log (\underbrace{\sum_z q(z) \frac{p(z)}{q(z)}}_{=\sum_z p(z)=1}) \\ & =0\end{aligned}
+&\geq \log (\mathbb{E}_{z\sim q(z)}\left[ \frac{q(z)}{p(z)}\right])    \\
+& = -\log (\underbrace{\sum_z q(z) \frac{p(z)}{q(z)}}_{=\sum_z p(z)=1}) \\ & =0\end{aligned}
 $$
 
----
+recall: 
+$$
+\begin{align*} \log p(\mathbf{X} \mid \theta)  & =\mathcal{L}(q, \theta)+K L(q(\mathbf{Z}) \| p(\mathbf{Z} \mid \mathbf{X}, \theta))\end{align*}
+$$
+由于 KL 非负, 我们可以得到: 对于任意的 distribution $q$ of $\mathbf{Z}$, $\mathcal{L}(q, \theta)$ 是 $\log p(\mathbf{X})$ 的一个 lower bound. 因此我们才把它叫做 **variational lower bound**. 
 
 
 
-lg
+## EM Algorithm
 
-
-
-EM（Expectation-Maximization）算法** 是一种通用的优化潜变量模型对数似然的策略。
-
-
+EM Algorithm 是一个在设定了 latent variable $Z$ 时，间接地 maximizing (log) $ p(X \mid\theta )$ 的方法. 它并不直接优化 $ p(X \mid\theta )$, 而是通过不断 maximize 它的 variational lower bound $\mathcal{L}(q, \theta)$ 的行为，来间接优化 $ p(X \mid\theta )$ 
 
 
 
 
 
-- KL 散度定义衡量两个分布之间的差异
+重复以下步骤直到收敛：
 
-- 可由 Jensen 不等式推导其非负性：
+1. E-step (expectation): 固定参数 $\theta$，compute posterior $p(\mathbf{Z} \mid \mathbf{X}, \theta)$, 然后把它赋给 $q(\mathbf{Z})$，使 variational lower bound $\mathcal{L}$ 最大化 (此时 for 固定的 $\theta$, 有 $\mathcal{L}(q,\theta) = \log p(\mathbf{X} \mid \theta)$)
 
-  $$
-  \mathrm{KL}(q \parallel p) = \sum_z q(z) \log \frac{q(z)}{p(z)} \geq 0
-  $$
+   具体要做的即:
+   $$
+   q(\mathbf{Z}) := p(\mathbf{Z} \mid \mathbf{X}, \theta)
+   $$
+   
 
-  - 当 $q = p$ 时，KL 散度为 0
+2. M-step (maximization)：固定 $q(\mathbf{Z})$，最大化 $\mathbb{E}_q[\log p(\mathbf{X}, \mathbf{Z} \mid \theta)]$ 得到新的 $\theta$
 
----
+   具体要做的即: 
+   $$
+   \operatorname{argmax}_\theta \mathcal{L}(q, \theta):=\operatorname{argmax}_\theta \sum_{\mathbf{Z}} q(\mathbf{Z}) \log p(\mathbf{X}, \mathbf{Z} \mid \theta)
+   $$
 
-# EM 算法结构概览
+EM 即交替优化 $q$ 和 $\theta$，提升 ELBO 下界，直至收敛
 
-- 重复以下步骤直到收敛：
 
-  ### E 步（期望步）：
-  - 固定参数 $\theta$，令 $q(\mathbf{Z}) = p(\mathbf{Z} \mid \mathbf{X}, \theta)$ 使下界最大化
 
-  ### M 步（最大化步）：
-  - 固定 $q(\mathbf{Z})$，最大化 $\mathbb{E}_q[\log p(\mathbf{X}, \mathbf{Z} \mid \theta)]$ 得到新的 $\theta$
 
-- 即交替优化 $q$ 和 $\theta$，提升 ELBO 下界，直至收敛
 
----
-
-# E 步可视化说明
+E 步可视化说明
 
 - 对固定的 $\theta$，最大化 ELBO 的最佳 $q$ 是：
 
@@ -191,9 +190,9 @@ EM（Expectation-Maximization）算法** 是一种通用的优化潜变量模型
 
 - 所以 E 步就是计算当前参数下的后验概率
 
----
 
-# M 步可视化说明
+
+M 步可视化说明
 
 - 固定 $q$，我们最大化：
 
@@ -203,9 +202,11 @@ EM（Expectation-Maximization）算法** 是一种通用的优化潜变量模型
 
 - 此期望是对完全数据似然的加权平均，M 步更新参数以增加该值
 
----
 
-# EM 算法总结
+
+
+
+EM 算法总结
 
 1. 随机初始化参数 $\theta$
 2. 重复以下步骤直到收敛：
@@ -213,9 +214,7 @@ EM（Expectation-Maximization）算法** 是一种通用的优化潜变量模型
    - **M 步**：更新参数 $\theta$ 以最大化期望对数似然
 3. 当后验分布不可得时，使用变分分布近似 $q(\mathbf{Z})$
 
----
 
-是否需要我将这个翻译后的版本导出为 `.md` 文件，或者连同你前面上传的 K-means / GMM 幻灯片内容整合成一个完整的课程笔记？可以告诉我你的偏好！
 
 
 
