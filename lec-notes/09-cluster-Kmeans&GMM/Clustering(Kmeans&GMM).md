@@ -176,17 +176,90 @@ EM 即交替优化 $q$ 和 $\theta$，提升 ELBO 下界，直至收敛. E step 
 
 
 
+EM 的 idea 是: use q(Z) as (factional) pseudo-counts and maximize the “data completion” log-likelihood". 
 
+E step 计算的 latent var 的后验概率，可以视为对未观测数据的“伪计数”（pseudo-counts）；在 M step，利用这些伪计数来进行对数似然函数的最大化“data completion”.
+
+
+
+### 图示
+
+![EM](Clustering(Kmeans&GMM).assets/EM.png)
+
+我们容易验证: EM Algorithm 一定是 converging 的. (一定单调递增, 又是有界, 因而 MCT)
+
+
+
+### EM for multiple data-points
+
+The EM Algorithm: Multiple data-points
+- Variational lower bound for a single example $\mathbf{x}$ :
+
+$$
+\begin{aligned}
+\log p(\mathbf{x} \mid \theta) & =\sum_{\mathbf{z}} q(\mathbf{z}) \log \frac{p(\mathbf{z}, \mathbf{x} \mid \theta)}{q(\mathbf{z})}+K L(q(\mathbf{z}) \| p(\mathbf{z} \mid \mathbf{x}, \theta)) \\
+& \geq \sum_{\mathbf{z}} q(\mathbf{z}) \log \frac{p(\mathbf{z}, \mathbf{x} \mid \theta)}{q(\mathbf{z})}
+\end{aligned}
+$$
+
+- Lower bound on the log-likelihood of the entire training data $\mathcal{D}=\left\{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\right\}$ :
+
+$$
+\begin{aligned}
+\log p(\mathcal{D} \mid \theta)=\sum_n \log p\left(\mathbf{x}^{(n)} \mid \theta\right) & =\sum_n \sum_{\mathbf{z}} q^{(n)}(\mathbf{z}) \log \frac{p\left(\mathbf{z}, \mathbf{x}^{(n)} \mid \theta\right)}{q^{(n)}(\mathbf{z})}+\sum_n K L\left(q^{(n)}(\mathbf{z}) \| p\left(\mathbf{z} \mid \mathbf{x}^{(n)}, \theta\right)\right) \\
+& \geq \sum_n \sum_{\mathbf{z}} q^{(n)}(\mathbf{z}) \log \frac{p\left(\mathbf{z}, \mathbf{x}^{(n)} \mid \theta\right)}{q^{(n)}(\mathbf{z})}
+\end{aligned}
+$$
+
+注意: 每个 $n$ 用的 $q$ 是不一样的!
+
+
+
+因而 EM for multiple data points:
+
+>Initialize random parameters $\theta$.
+>
+>Repeat until convergence:
+>
+>1. "E-step": Set $q^{(n)}(\mathbf{z})=p\left(\mathbf{z} \mid \mathbf{x}^{(n)}, \theta\right)$ **for each training sample $n$.**
+>2. "M-step": Update $\theta$ via the following maximization:
+>
+>$$
+>\arg \max _\theta \sum_n \sum_{\mathbf{z}} q^{(n)}(\mathbf{z}) \log p\left(\mathbf{z}, \mathbf{x}^{(n)} \mid \theta\right)
+>$$
+
+注意：这个过程对于很多具体的情况，可以 vectorize. 
+
+eg：GMM
+
+-  $\mathbf{z} \in\{1, \ldots, K\}$ ，是 cluster assignment
+- $q^{(n)}(z)=\gamma_k^{(n)}$ 是第 $n$ 个样本属于第 $k$ 类的＂软分配＂概率
+- 可以将所有 $\gamma$ 组织成一个 $N \times K$ 的矩阵
+- 每个 component 的参数 $\theta_k$ 也可以向量化操作（均值向量，协方差矩阵等）这时整个 E step 和 M step 都可以用 矩阵操作，广播，batch 乘法等实现。
+
+
+
+但是有的模型是：
+- 隐变量是 连续的
+- 或者是图模型中很复杂的结构（比如 HMM，LDA，VAE 中的 latent vector）
+
+那你就需要 采样 或 近似推断，vectorization 就变得困难（但不是不可能，需要更复杂的技巧，比如 Monte Carlo＋vectorized sampling）。
+
+
+
+
+
+### What if E-step 需算的 $p(Z \mid X, \theta)$ intractable?
 
 （Note: 在每一步，我们需要根据当前的参数 $\theta^{(t)}$ 计算 **latent var 的后验分布** $p(Z \mid X, \theta)$。这要求我们能显式地写出并计算这个分布。
 
 这被称为 **tractable**：可以显式地写出并计算（比如 GMM 中，posterior 是 softmax over components，就很 tractable）
 
-> Q: 如果 $ p(Z \mid X, \theta)$ **不可解（intractable），那怎么办？
+> Q: 如果 $ p(Z \mid X, \theta)$ 不可解（intractable），那怎么办？
 
 当后验不可 tractable，我们就不能用 standard EM 了，需要改用更 general 的方法，比如：
 
- 1. Variational EM（变分 EM）
+ 1. Variational EM（变分 EMa
 
 - 用一个可计算的变分分布 $ q(Z) \approx p(Z \mid X, \theta) $
 - 不再要求 $q(Z) = p(Z \mid X, \theta)$，而是优化下界：
@@ -202,6 +275,14 @@ EM 即交替优化 $q$ 和 $\theta$，提升 ELBO 下界，直至收敛. E step 
 - 用采样方法近似计算 E 步中的期望，比如用 Gibbs Sampling 或 Metropolis-Hastings 从 $p(Z \mid X, \theta)$ 中采样
 
 这里不讲解）
+
+
+
+
+
+
+
+
 
 
 
