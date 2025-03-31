@@ -68,6 +68,26 @@ $$
 
 
 
+If $f$ is convex, then for any $0 \leq \theta_i \leq 1(\forall i)$ s.t. $\theta_1+\theta_2+\cdots+\theta_k=1 \\$ 都有:
+$$
+\begin{array}{r}
+f\left(\theta_1 x_1+\theta_2 x_2+\cdots+\theta_k x_k\right) \leq \theta_1 f\left(x_1\right)+\cdots+\theta_k f\left(x_k\right)
+\end{array}
+$$
+这是 convex ineq 的一个更广泛的 interpolation 推广. 它还可以
+
+
+
+- It can be seen as a generalization of the definition of convex function:
+  $f$ is convex $\Longleftrightarrow f(\theta x+(1-\theta) y) \leq \theta f(x)+(1-\theta) f(y)$ for all $0 \leq \theta \leq 1$
+- Jensen's inequality can be written in expectation form (think of $\theta_i$ as probability mass for different outcome values $x_i$ )
+
+$$
+f(\mathbb{E}[x]) \leq \mathbb{E}[f(x)]
+$$
+
+
+
 
 
 
