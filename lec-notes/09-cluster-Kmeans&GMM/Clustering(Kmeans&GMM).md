@@ -1,12 +1,12 @@
 # EM Algorithm in general
 
-## Latent Variable
+## Model with Latent Variable
 
 潜变量（Latent Variables）
 
-- 对于数据 $\mathbf{X}$ 的系统，有时候当我们引入从 $\mathbf{X}$ 中派生出的额外变量 $\mathbf{Z}$，可能更容易理解；但这些变量是未观测的（latent）
+- 对于数据 $\mathbf{X}$ 的系统，有时候当我们引入从 $\mathbf{X}$ 中派生出的额外变量 $\mathbf{Z}$，可以使得模型具有更强的表达能力 (表示复杂结构) 以及有时候优化会更加简单.；但这些变量可能是未观测的.
 
-  latent variable 的定义是建模的一部分. 
+  latent variable 的定义是建模的一部分.
 
   例如，在高斯混合模型中：对于一个样本 $\mathbf{x}_n$，潜变量 $\mathbf{z}_n$ 表示这个样本属于哪一个高斯分布；
 
@@ -14,22 +14,34 @@
 
 
 
-notation:$\mathbf{X}$ 表示所有观测数据，第 $n$ 行为 $\mathbf{x}_n^\top$， $\mathbf{Z}$ 表示所有潜变量，第 $n$ 行为 $\mathbf{z}_n^\top$
+通常, 我们想要做一个 model with paramters $\theta$, maximizing the log-likelihood of the observed data:
+$$
+\theta_{ml} : =   \arg \max_{\theta} \log p(X \mid\theta ) 
+$$
+这就是普通的 MLE.
+
+
+而当我们 model with latent variable $Z$ 的时候, 我们 by Bayesian formula, 可以等同于 maximize: 
+$$
+\log p(X \mid\theta )  = \log  p(X, Z |\theta )   \, \log (Z  |  \theta)
+$$
+
+如果我们拥有完整数据$\{\mathbf{X}, \mathbf{Z}\}$， 那么这个 joint prob $\log  p(X, Z |\theta )$ 很容易求得.
+
+但是, 如果我们并不知道 latent variable 呢 ? 比如说, $Z$ 是一个 missing label. 那么
+$$
+\log p(X \mid\theta ) = \log  \int  p(X, Z |\theta ) \, dZ
+$$
+Speicially, $Z$ 是 discrete variable 的情况下: 
+$$
+\log p(X \mid\theta ) =  \log   \sum_Z p(X, Z |\theta )
+$$
+
+这个做法称为 $Z$ 的 **marginalization**. 不得不进行 marginalization 使得想要优化这个式子变得困难 (因为 log 里套了积分/求和)
 
 
 
-$\implies$
-
-如果我们拥有完整数据$\{\mathbf{X}, \mathbf{Z}\}$， 那么我们可以直接
-
-- 当只有 $\mathbf{X}$ 而没有 $\mathbf{Z}$ 时，我们需要对 $\mathbf{Z}$ **边际化（marginalize）**；
-  - 这导致对数似然中包含 $\log \sum_z p(x, z)$，使优化变得困难。
-
-- 如果我们拥有完整数据 $\{\mathbf{X}, \mathbf{Z}\}$，就可以直接最大化完全数据似然函数。
-
-
-
-EM 算法：总体思想
+## EM to maximize marginalized $\log p(X \mid\theta ) =  \log   \sum_Z p(X, Z |\theta )$
 
 - **EM（Expectation-Maximization）算法** 是一种通用的优化潜变量模型对数似然的策略。
 
@@ -39,7 +51,25 @@ EM 算法：总体思想
   - 构造对数似然的一个下界 $\mathcal{L}(q, \theta)$；
   - 然后交替优化 $q$ 和 $\theta$，直到收敛（类似坐标上升）。
 
----
+
+$$
+\begin{align}
+\log p(\mathbf{X} \mid \theta) 
+&= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log p(\mathbf{X} \mid \theta) \\
+&= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{p(\mathbf{Z} \mid \mathbf{X}, \theta)} \\
+&= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{q(\mathbf{Z})} \cdot \frac{q(\mathbf{Z})}{p(\mathbf{Z} \mid \mathbf{X}, \theta)} \\
+&= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{q(\mathbf{Z})} + \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{q(\mathbf{Z})}{p(\mathbf{Z} \mid \mathbf{X}, \theta)}
+\end{align}
+$$
+
+
+
+
+
+
+
+
+
 
 # 对数似然的变分下界（Evidence Lower Bound, ELBO）
 
@@ -61,6 +91,12 @@ EM 算法：总体思想
   - KL 散度总是非负，且当且仅当 $q = p(\mathbf{Z} \mid \mathbf{X}, \theta)$ 时取等号
 
 ---
+
+
+
+
+
+
 
 # KL 散度与 Jensen 不等式
 
