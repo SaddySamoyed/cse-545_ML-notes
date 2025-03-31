@@ -450,3 +450,20 @@ $X: \Omega \rightarrow \mathbb{R}^n$ 形式的 random variables, 称其为 rando
 
 
 ![Screenshot 2025-02-09 at 17.32.40](00-prob.assets/Screenshot 2025-02-09 at 17.32.47.png)
+
+
+
+Definition: The vector $\mathbf{X}=\left(X_1, X_2, \ldots, X_n\right)$ has the multivariate normal distribution (or multinormal distribution), written $N(\boldsymbol{\mu}, \mathbf{V})$, if its joint density function is
+
+$$
+f(\mathbf{x})=\frac{1}{\sqrt{(2 \pi)^n|\mathbf{V}|}} \exp \left[-\frac{1}{2}(\mathbf{x}-\mu) \mathbf{V}^{-1}(\mathbf{x}-\mu)^{\prime}\right], \quad \mathbf{x} \in \mathbb{R}^n
+$$
+
+where $\mathbf{V}$ is a positive definite symmetric matrix.
+
+
+
+注意：real positive definite symmetric matrix，它的特征值都是正的，因而一定可逆
+
+
+

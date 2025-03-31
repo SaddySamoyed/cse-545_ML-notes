@@ -97,5 +97,71 @@ distortion measure $J$ 就是: squared distance of points from the center of its
 
 
 
+
+
+## GMM Algorithm
+
+
+
+> - Initialize parameters randomly $\theta=\left\{\pi_k, \mu_k, \Sigma_k\right\}_{k=1}^K$
+>
+> - Repeat until convergence (alternating optimization)
+>
+> - E Step: Given fixed parameters $\theta$, set $q^{(n)}(\mathbf{z})=p\left(\mathbf{z} \mid \mathbf{x}^{(n)}, \theta\right)$
+>   $$
+>   \gamma\left(z_{n k}\right)=\frac{\pi_k \mathcal{N}\left(\mathbf{x}^{(n)} \mid \mu_k, \Sigma_k\right)}{\sum_{j=1}^K \pi_j \mathcal{N}\left(\mathbf{x}^{(n)} \mid \mu_j, \Sigma_j\right)}=P\left(z_k=1 \mid \mathbf{x}^{(n)}\right)
+>   $$
+>   
+>
+> - M Step: Given fixed $q\left(\mathbf{z}^{(n)}\right)^{\prime}$ 's for $\mathbf{x}^{(n)}$ 's (or $\left.\gamma\left(z_{n k}\right)\right)$, update $\theta$ :
+>
+>   in order to get 
+>   $$
+>   \theta^{new} : = \arg \max _\theta \sum_n \sum_{\mathbf{z}} q^{(n)}(\mathbf{z}) \log p\left(\mathbf{z}, \mathbf{x}^{(n)} \mid \theta\right)
+>   $$
+>   We update:
+>   $$
+>   \begin{aligned}
+>   & \pi_k^{\text {new }}=\frac{N_k}{N}=\frac{\sum_n \gamma\left(z_{n k}\right)}{N} \\
+>   & \mu_k^{\text {new }}=\frac{1}{N_k} \sum_{n=1}^N \gamma\left(z_{n k}\right) \mathbf{x}^{(n)} \\
+>   & \Sigma_k^{\text {new }}=\frac{1}{N_k} \sum_{n=1}^N \gamma\left(z_{n k}\right)\left(\mathbf{x}^{(n)}-\mu_k^{\text {new }}\right)\left(\mathbf{x}^{(n)}-\mu_k^{\text {new }}\right)^{\top}
+>   \end{aligned}
+>   $$
+>
+
+
+
+### Proof of M step update rule
+
+我们上面已经给出 parameter 的更新算法，现在我们证明为什么这些 Parameters 是 argmax 的.
+
+首先，我们先简化表达式：
+$$
+\begin{aligned}
+J(\boldsymbol{\pi}, \boldsymbol{\mu}, \boldsymbol{\Sigma})= & \sum_{n=1}^N \sum_{k=1}^K q^{(n)}\left(\mathbf{z}_k\right) \log p\left(\mathbf{z}_k, \mathbf{x}^{(n)} \mid \pi_k, \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k\right) \\
+= & \sum_{n=1}^N \sum_{k=1}^K \gamma\left(\mathbf{z}_{n k}\right)\left(\log \pi_k+\log \frac{1}{(2 \pi)^{m / 2}\left(\operatorname{det} \boldsymbol{\Sigma}_k\right)^{1 / 2}}-\frac{1}{2}\left(\mathbf{x}^{(n)}-\boldsymbol{\mu}_k\right)^{\top} \boldsymbol{\Sigma}_k^{-1}\left(\mathbf{x}^{(n)}-\boldsymbol{\mu}_k\right)\right. \bigg)\\
+= & \sum_{n=1}^N \sum_{k=1}^K \gamma\left(\mathbf{z}_{n k}\right) \log \pi_k-\sum_{n=1}^N \sum_{k=1}^K \gamma\left(\mathbf{z}_{n k}\right) \log \left((2 \pi)^{m / 2}\left(\operatorname{det} \boldsymbol{\Sigma}_k\right)^{1 / 2}\right) \\
+= & \sum_{n=1}^N \sum_{k=1}^K \gamma\left(\mathbf{z}_{n k}\right) \log \pi_k-\frac{1}{2} \sum_{n=1}^N \sum_{k=1}^K \gamma\left(\mathbf{z}_{n k}\right)\left(\mathbf{x}^{(n)}-\boldsymbol{\mu}_k\right)^{\top} \boldsymbol{\Sigma}_k^{-1}\left(\mathbf{x}^{(n)}-\boldsymbol{\mu}_k\right) \\
+& -\frac{1}{2} \sum_{n=1}^N \sum_{k=1}^K \gamma\left(\mathbf{z}_{n k}\right)\left(\mathbf{x}^{(n)}-\boldsymbol{\mu}_k\right)^{\top} \boldsymbol{\Sigma}_k^{-1}\left(\mathbf{x}^{(n)}-\boldsymbol{\mu}_k\right)+\mathrm{const}
+\end{aligned}
+$$
+因而我们 differentiate:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ![{A4E22888-7017-4186-8D9C-B712353A6389}](09(2)-Clustering(Kmeans&GMM).assets/GMM.png)
 
