@@ -155,72 +155,53 @@ EM Algorithm 是一个在设定了 latent variable $Z$ 时，间接地 maximizin
 
 
 
+>重复以下步骤直到收敛：
+>
+>1. E-step (expectation): 固定参数 $\theta$，**compute posterior** $p(\mathbf{Z} \mid \mathbf{X}, \theta)$, 然后把它赋给 $q(\mathbf{Z})$，使 variational lower bound $\mathcal{L}$ 最大化 (此时 for 固定的 $\theta$, 有 $\mathcal{L}(q,\theta) = \log p(\mathbf{X} \mid \theta)$)
+>
+>   具体要做的即:
+>   $$
+>   q^{(t)}(\mathbf{Z}) := p(\mathbf{Z} \mid \mathbf{X}, \theta^{(t)})
+>   $$
+>   
+>
+>2. M-step (maximization)：固定 $q(\mathbf{Z})$，**最大化 $\mathbb{E}_q[\log p(\mathbf{X}, \mathbf{Z} \mid \theta)]$ 得到新的 $\theta$**
+>
+>   具体要做的即: 
+>   $$
+>   \theta^{(t+1)} : = \operatorname{argmax}_\theta \mathcal{L}(q^{(t)}, \theta)=\operatorname{argmax}_\theta \sum_{\mathbf{Z}} q^{(t)}(\mathbf{Z}) \log p(\mathbf{X}, \mathbf{Z} \mid \theta)
+>   $$
 
-
-重复以下步骤直到收敛：
-
-1. E-step (expectation): 固定参数 $\theta$，compute posterior $p(\mathbf{Z} \mid \mathbf{X}, \theta)$, 然后把它赋给 $q(\mathbf{Z})$，使 variational lower bound $\mathcal{L}$ 最大化 (此时 for 固定的 $\theta$, 有 $\mathcal{L}(q,\theta) = \log p(\mathbf{X} \mid \theta)$)
-
-   具体要做的即:
-   $$
-   q(\mathbf{Z}) := p(\mathbf{Z} \mid \mathbf{X}, \theta)
-   $$
-   
-
-2. M-step (maximization)：固定 $q(\mathbf{Z})$，最大化 $\mathbb{E}_q[\log p(\mathbf{X}, \mathbf{Z} \mid \theta)]$ 得到新的 $\theta$
-
-   具体要做的即: 
-   $$
-   \operatorname{argmax}_\theta \mathcal{L}(q, \theta):=\operatorname{argmax}_\theta \sum_{\mathbf{Z}} q(\mathbf{Z}) \log p(\mathbf{X}, \mathbf{Z} \mid \theta)
-   $$
-
-EM 即交替优化 $q$ 和 $\theta$，提升 ELBO 下界，直至收敛
+EM 即交替优化 $q$ 和 $\theta$，提升 ELBO 下界，直至收敛. E step 就是固定目前的参数 $\theta$, 把 $q$ 重新设定为 $p$，使得 variational lower bound 提升至等于我们需要的 liklihood；M step 就是固定住分布 $q$，看看什么参数能够优化 variational lower bound.
 
 
 
 
 
-E 步可视化说明
+（Note: 在每一步，我们需要根据当前的参数 $\theta^{(t)}$ 计算 **latent var 的后验分布** $p(Z \mid X, \theta)$。这要求我们能显式地写出并计算这个分布。
 
-- 对固定的 $\theta$，最大化 ELBO 的最佳 $q$ 是：
+这被称为 **tractable**：可以显式地写出并计算（比如 GMM 中，posterior 是 softmax over components，就很 tractable）
 
-  $$
-  q(\mathbf{Z}) = p(\mathbf{Z} \mid \mathbf{X}, \theta)
-  $$
+> Q: 如果 $ p(Z \mid X, \theta)$ **不可解（intractable），那怎么办？
 
-- 所以 E 步就是计算当前参数下的后验概率
+当后验不可 tractable，我们就不能用 standard EM 了，需要改用更 general 的方法，比如：
 
+ 1. Variational EM（变分 EM）
 
-
-M 步可视化说明
-
-- 固定 $q$，我们最大化：
+- 用一个可计算的变分分布 $ q(Z) \approx p(Z \mid X, \theta) $
+- 不再要求 $q(Z) = p(Z \mid X, \theta)$，而是优化下界：
 
   $$
-  \mathbb{E}_q[\log p(\mathbf{X}, \mathbf{Z} \mid \theta)]
+  \mathcal{L}(q, \theta) = \mathbb{E}_{q(Z)}[\log p(X, Z \mid \theta)] - \mathbb{E}_{q(Z)}[\log q(Z)]
   $$
 
-- 此期望是对完全数据似然的加权平均，M 步更新参数以增加该值
+- 然后交替优化 $q$ 和 $\theta$，这就是变分推断框架。
 
+ 2. MCMC-EM（采样版 EM）
 
+- 用采样方法近似计算 E 步中的期望，比如用 Gibbs Sampling 或 Metropolis-Hastings 从 $p(Z \mid X, \theta)$ 中采样
 
-
-
-EM 算法总结
-
-1. 随机初始化参数 $\theta$
-2. 重复以下步骤直到收敛：
-   - **E 步**：设 $q(\mathbf{Z}) = p(\mathbf{Z} \mid \mathbf{X}, \theta)$
-   - **M 步**：更新参数 $\theta$ 以最大化期望对数似然
-3. 当后验分布不可得时，使用变分分布近似 $q(\mathbf{Z})$
-
-
-
-
-
-
-
-
+这里不讲解）
 
 
 
@@ -297,7 +278,7 @@ distortion measure $J$ 就是: squared distance of points from the center of its
 
 这里没有 back 
 
-
+$\implies$
 
 
 
