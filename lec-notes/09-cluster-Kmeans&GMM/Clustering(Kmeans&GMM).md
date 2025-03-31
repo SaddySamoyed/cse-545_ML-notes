@@ -41,84 +41,119 @@ $$
 
 
 
-## EM to maximize marginalized $\log p(X \mid\theta ) =  \log   \sum_Z p(X, Z |\theta )$
+## decomposition of $\log p(X \mid\theta ) =  \log   \sum_Z p(X, Z |\theta )$ into Evidence Lower Bound 和 KL divergence
 
-- **EM（Expectation-Maximization）算法** 是一种通用的优化潜变量模型对数似然的策略。
 
-- 目标是最大化对数似然 $\log p(\mathbf{X} \mid \theta)$：
 
-  - EM 首先引入一个变分分布 $q(\mathbf{Z})$；
-  - 构造对数似然的一个下界 $\mathcal{L}(q, \theta)$；
-  - 然后交替优化 $q$ 和 $\theta$，直到收敛（类似坐标上升）。
+目标是最大化对数似然 $\log p(\mathbf{X} \mid \theta)$：
 
 
 $$
 \begin{align}
 \log p(\mathbf{X} \mid \theta) 
-&= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log p(\mathbf{X} \mid \theta) \\
+&= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log p(\mathbf{X} \mid \theta)  \quad \text{(因为} \sum_{\mathbf{Z}} q(\mathbf{Z}) = 1)\\
 &= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{p(\mathbf{Z} \mid \mathbf{X}, \theta)} \\
 &= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{q(\mathbf{Z})} \cdot \frac{q(\mathbf{Z})}{p(\mathbf{Z} \mid \mathbf{X}, \theta)} \\
 &= \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{q(\mathbf{Z})} + \sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{q(\mathbf{Z})}{p(\mathbf{Z} \mid \mathbf{X}, \theta)}
 \end{align}
 $$
 
+我们把这两个成分，分别定义为
+
+1. variational lower bound of $q$ (或称为 Evidence Lower Bound, ELBO)
+   $$
+   \begin{align*}
+   \mathcal{L}(q, \theta) &: =\sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{p(\mathbf{X}, \mathbf{Z} \mid \theta)}{q(\mathbf{Z})} \\
+   &= \mathbb{E}_{Z\sim q(Z)}[\log p(\mathbf{X}, \mathbf{Z} \mid \theta)] - \mathbb{E}_{Z\sim q(Z)}[\log q(\mathbf{Z})]
+   \end{align*}
+   $$
+   
+
+2. KL divergence of $q$ w.r.t. $p$
+
+$$
+\begin{align*}
+\mathrm{KL}(q(\mathbf{Z}) \parallel p(\mathbf{Z} \mid \mathbf{X}, \theta)) &:=\sum_{\mathbf{Z}} q(\mathbf{Z}) \log \frac{q(\mathbf{Z})}{p(\mathbf{Z} \mid \mathbf{X}, \theta)}\\
+& = \mathbb{E}_{Z\sim q(Z)}[\log q(\mathbf{Z})]  - \mathbb{E}_{Z\sim q(Z)}[\log p(\mathbf{Z}\mid \mathbf{X} ,\theta)] 
+\end{align*}
+$$
+
+
+
+###  KL 散度
+
+我们这里简写.
+
+可以发现, KL-divergence 有很多种展开形式：
+$$
+\begin{aligned} K L(q \| p) &=\mathbb{E}_{z\sim q(z)}\left[\log \frac{q(z)}{p(z)}\right]\\ 
+& =\sum_z q(z) \log \frac{q(z)}{p(z)} \\
+& =-\sum_z q(z) \log p(z)+\sum_z q(z) \log q(z)  \\
+& = \mathbb{H}(q, p)-\mathbb{H}(q)
+\end{aligned}
+$$
+因而两个分布的 KL 散度就是 $p,q$ 的 cross entropy 减去 $p$ 自己的 entropy.
+
+这个结果是 0 当且仅当 $p=q$ （下面会证明）. 并且显然 $p,q$ 这两个分布越是相近, 这个 KL 散度越低.
+
+但是 notice: 
+$$
+K L(q \| p) \not =  K L(p \| q)
+$$
+这个行为不是 commutative 的.
+
+$KL(p‖q)$ 表示：真实分布是 $p$，用 $q$ 来近似它
+
+$KL(q‖p)$ 表示：真实分布是 $q$，用 $p$ 来近似它
 
 
 
 
 
 
-If $f$ is convex, then for any $0 \leq \theta_i \leq 1(\forall i)$ s.t. $\theta_1+\theta_2+\cdots+\theta_k=1 \\$ 都有:
+
+### Jensen 不等式: showing that 
+
+Recall 凸分析中我们有 Jensen 不等式:
+
+If $f$ is **convex**, then for any $0 \leq \theta_i \leq 1(\forall i)$ s.t. $\theta_1+\theta_2+\cdots+\theta_k=1 \\$ 都有:
 $$
 \begin{array}{r}
 f\left(\theta_1 x_1+\theta_2 x_2+\cdots+\theta_k x_k\right) \leq \theta_1 f\left(x_1\right)+\cdots+\theta_k f\left(x_k\right)
 \end{array}
 $$
-这是 convex ineq 的一个更广泛的 interpolation 推广. 它还可以
-
-
-
-- It can be seen as a generalization of the definition of convex function:
-  $f$ is convex $\Longleftrightarrow f(\theta x+(1-\theta) y) \leq \theta f(x)+(1-\theta) f(y)$ for all $0 \leq \theta \leq 1$
-- Jensen's inequality can be written in expectation form (think of $\theta_i$ as probability mass for different outcome values $x_i$ )
-
+这是 convex ineq 的一个更广泛的 interpolation 推广. 它还可以从而推广到积分形式: 对于任意一个 measure space $(\Omega, A, \mu)$, 如果 measurable $f$ 是 convex 的，那 取任意 measurable function $g$ 都有: 
+$$
+\varphi\left(\int_{\Omega} f \mathrm{~d} \mu\right) \leq \int_{\Omega} \varphi \circ f \mathrm{~d} \mu
+$$
+从而 corollary: 
 $$
 f(\mathbb{E}[x]) \leq \mathbb{E}[f(x)]
 $$
 
+因而，由于.  f KL 散度总是非负，且当且仅当 $q = p(\mathbf{Z} \mid \mathbf{X}, \theta)$ 时取等号
+$$
+\begin{aligned} K L(q \| p) &=\mathbb{E}_{z\sim q(z)}\left[\log \frac{q(z)}{p(z)}\right]\\
+&\geq \log ()    \\
 
-
-
-
-
-# 对数似然的变分下界（Evidence Lower Bound, ELBO）
-
-- 我们的目标是最大化：
-
-  $$
-  \log p(\mathbf{X} \mid \theta)
-  $$
-
-- 对于任何 $q(\mathbf{Z})$ 都有：
-
-  $$
-  \log p(\mathbf{X} \mid \theta) = \mathcal{L}(q, \theta) + \mathrm{KL}(q(\mathbf{Z}) \parallel p(\mathbf{Z} \mid \mathbf{X}, \theta))
-  $$
-
-  其中：
-
-  - $\mathcal{L}(q, \theta) = \mathbb{E}_q[\log p(\mathbf{X}, \mathbf{Z} \mid \theta)] - \mathbb{E}_q[\log q(\mathbf{Z})]$
-  - KL 散度总是非负，且当且仅当 $q = p(\mathbf{Z} \mid \mathbf{X}, \theta)$ 时取等号
+&=\sum_z q(z) \log \left(\frac{q(z)}{p(z)}\right) \\ & =\sum_z q(z)\left(-\log \left(\frac{p(z)}{q(z)}\right)\right) \\ & \geq-\log (\underbrace{\sum_z q(z) \frac{p(z)}{q(z)}}_{=\sum_z p(z)=1}) \\ & =0\end{aligned}
+$$
 
 ---
 
 
 
+lg
+
+
+
+EM（Expectation-Maximization）算法** 是一种通用的优化潜变量模型对数似然的策略。
 
 
 
 
-# KL 散度与 Jensen 不等式
+
+
 
 - KL 散度定义衡量两个分布之间的差异
 
