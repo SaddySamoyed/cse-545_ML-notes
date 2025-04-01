@@ -1,12 +1,12 @@
 # 1. [25 points] K-means and GMM for Image Compression
 
-In this problem: 我们将 apply K-means 和 Gaussian Mixture Models (GMM) to lossy image compression, 通过 reducing the number of colors used in the image.
+In this problem: We will apply K-means and Gaussian Mixture Models (GMM) to lossy image compression, by reducing the number of colors used in the image.
 
 input image files: 
 
-1. `mandrill-large.tiff`, $512 \times 512 = 262144$ pixels size, 24-bit color ($3\times 8$ bits 色彩通道, 8 bits 即表示 0~255, 代表 RGB). 
+1. `mandrill-large.tiff`, $512 \times 512 = 262144$ pixels size, 24-bit color ($3\times 8$ bits color channels, 8 bits represent 0~255, RGB colors). 
 
-   因而一张图大小是 $262144 \times 3$ B
+   So the size of each picture is $262144 \times 3$ B
 
 2.  `mandrill-small.tiff`: $128 \times 128$ pixels version of `mandrill-large.tiff`. 
 
@@ -16,29 +16,29 @@ input image files:
 
 work on `keans_gmm.ipynb` 和 `kmean.py`
 
-Treat 每个 pixel 的 $(r,g,b)\in \mathbb{R}^3$, implement 并 run k-means with 16 clusters, on `mandrill-small.tiff`, running 50 updates steps.
+Treat every pixel as $(r,g,b)\in \mathbb{R}^3$, implement and run k-means with 16 clusters, on `mandrill-small.tiff`, running 50 updates steps.
 
-Initial centriods 在 `initial_centrids` 里, 因而结果是 deterministic 的.
+Initial centriods is in `initial_centrids` , so the result is deterministic.
 
-我们将 implement a general version of K-means algorithm in `kmeans.train_kmeans()`, which will be graded with the provided sample data and some random data. In order to get full points, your implementation should be efficient and fast enough (otherwise you will get only partial points).
+We will implement a general version of K-means algorithm in `kmeans.train_kmeans()`, which will be graded with the provided sample data and some random data. In order to get full points, your implementation should be efficient and fast enough (otherwise you will get only partial points).
 
 **Hint:** You may use `sklearn.metrics.pairwise_distances` function to **compute the distance** between centroids and data points, although it would not be difficult to implement this function (in a vectorized version) on your own.
 
-
-
 ### (b) test on `mandrill-large.tiff`
 
-After training, 我们在 `mandrill-large.tiff` 上进行 test, replace 每个 pixel 的 $(r,g,b)$ with the value of the closest cluster centroid.
+After training, we test on `mandrill-large.tiff`, replace $(r,g,b)$ of every pixel with the value of the closest cluster centroid.
 
 Attach the plots original and compressed images side-by-side to the write-up. (Note: you should have reasonable image quality/resolution to make the difference discernible). 
 
 Also, measure and write down the **mean pixel error** between the original and compressed image.
 
-
-
- 
-
-
+> **Sol**: 
+>
+> Plots as below![image-20250401143801716](hw5.assets/image-20250401143801716.png)
+>
+> **mean pixel error** as below:
+>
+> ![Screenshot 2025-04-01 at 14.33.35](hw5.assets/Screenshot 2025-04-01 at 14.33.35.png)
 
 
 
@@ -64,7 +64,7 @@ If we represent the image with these reduced 16 colors, by (approximately) what 
 
 **提示 2：** 在计算 $\gamma(z_{nk})$ 时可以使用 `scipy.special.logsumexp()`。由于 division by small probabilities 可能出现数值不稳定问题，实际中推荐使用对数似然来表示（可能很小的）概率 $N(x^{(n)} \mid \mu_k, \Sigma_k)$，即：
 $$
-N(x^{(n)} \mid \mu_k, \Sigma_k) = \exp[\log N(x^{(n)} \mid \mu_k, \Sigma_k)]
+N(x^{(n)} \mid \mu_k, \Sigma_k) = \exp[\log N(x^{(n)} \mid \mu_k, \Sigma_k)]  \notag
 $$
 **注意：** 不要使用（也不需要使用）`scipy` 或 `scikit-learn` 的其他 API。
 
@@ -75,7 +75,7 @@ $$
 #### **E-step** (compute responsibilities):
 For each point $ x_n $, and cluster $ k $:
 $$
-\gamma(z_{nk}) = \frac{\pi_k \cdot \mathcal{N}(x_n \mid \mu_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \cdot \mathcal{N}(x_n \mid \mu_j, \Sigma_j)}
+\gamma(z_{nk}) = \frac{\pi_k \cdot \mathcal{N}(x_n \mid \mu_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \cdot \mathcal{N}(x_n \mid \mu_j, \Sigma_j)} \notag
 $$
 
 Use **log-space trick**:
@@ -128,6 +128,15 @@ report:
 
 
 
+```
+
+class GMMState(NamedTuple):
+    """Parameters to a GMM Model."""
+    pi: np.ndarray  # [K]
+    mu: np.ndarray  # [K, d]
+    sigma: np.ndarray  # [K, d, d]
+```
+
 
 
 
@@ -146,7 +155,7 @@ report:
 
 In particular, 我们假设我们有 $l$ 个带标签的样本和 $u$ 个未标记的样本，即：
 $$
-D = \{(x^{(1)}, y^{(1)}), \cdots, (x^{(l)}, y^{(l)}), x^{(l+1)}, \cdots, x^{(l+u)}\}
+D = \{(x^{(1)}, y^{(1)}), \cdots, (x^{(l)}, y^{(l)}), x^{(l+1)}, \cdots, x^{(l+u)}\} \notag
 $$
 
 We also make the following assumptions
@@ -269,6 +278,102 @@ Write down the E-step. Specifically, define the distribution $Q_{ij} = q_i(y^{(i
 
 
 
+# 3. [20 points] PCA and eigenfaces
+
+### (a) derive PCA from "minimizing squared error" viewpoint
+
+(a) ( 8 pts ) In lecture, we derived PCA from the "maximizing variance" viewpoint. In this problem, we will take the "minimizing squared error" viewpoint. Let $K \in\{1, \ldots, D\}$ be arbitrary and let $\mathbf{x}^{(n)} \in \mathbb{R}^D$. Let $\mathcal{U}=\left\{\mathbf{U}=\left[\mathbf{u}_1 \cdots \mathbf{u}_K\right] \in \mathbb{R}^{D \times K} \mid\left\{\mathbf{u}_i\right\}_{i=1}^K\right.$ 's are orthonormal vectors $\}$, where $\mathbf{u}_i$ is the $i$-th column vector of $\mathbf{U}$.
+Let's define the objective function for minimizing the distortion error:
+$$
+\mathcal{J}=\frac{1}{N} \sum_{n=1}^N\left\|\mathbf{x}^{(n)}-\mathbf{U} \mathbf{U}^{\top} \mathbf{x}^{(n)}\right\|^2=\frac{1}{N} \sum_{n=1}^N\left\|\mathbf{x}^{(n)}-\sum_{i=1}^K \mathbf{u}_i \mathbf{u}_i^{\top} \mathbf{x}^{(n)}\right\|^2   \tag{9}
+$$
+
+Here, $\mathbf{U U}^{\top} \mathbf{x}^{(n)}$ is called a projection of $\mathbf{x}^{(n)}$ into the subspace spanned by $\mathbf{u}_i$ 's, and we can denote the projection $\widetilde{\mathbf{x}}^{(n)}=\mathbf{U} \mathbf{U}^{\top} \mathbf{x}^{(n)}$ as in the lecture.
+Specifically, show that:
+$$
+\mathcal{J}=\sum_{i=1}^D \lambda_i-\sum_{i=1}^K \mathbf{u}_i^{\top} \mathbf{S} \mathbf{u}_i	\tag{10}
+$$
+
+where $\mathbf{S}$ is the data covariance matrix $\mathbf{S}=\frac{1}{N} \sum_{n=1}^N\left(\mathbf{x}^{(n)}-\overline{\mathbf{x}}\right)\left(\mathbf{x}^{(n)}-\overline{\mathbf{x}}\right)^{\top}, \overline{\mathbf{x}}$ is the data mean vector, and $\lambda_1 \geq \ldots \geq \lambda_d$ are the (ordered) eigenvalues of $\mathbf{S}$. Since the first term is a constant, the above equation implies that minimizing the squared error after projection is equivalent to maximizing the variance, as we have shown in the lecture slides.
+
+With further simplification, show that the minimum distortion error corresponds to the sum of the $D-K$ smallest eigenvalues of $\mathbf{S}$, i.e.,
+$$
+\min _{\mathbf{U} \in \mathcal{U}} \mathcal{J}=\sum_{k=K+1}^D \lambda_k	\tag{11}
+$$
+and that the $\mathbf{u}_i$ 's that minimize $\mathcal{J}$ are indeed the $K$ eigenvectors of $\mathbf{S}$ corresponding to the (ordered) eigenvalues $\left\{\lambda_i\right\}_{k=1}^K$. After showing Eq.(10), it is okay to use the fact (without proof) that the optimal solution $\mathbf{u}_i$ 's that maximize $\sum_{i=1}^K \mathbf{u}_i^{\top} \mathbf{S} \mathbf{u}_i$ is to pick the top- $K$ eigenvectors of $\mathbf{S}$ (i.e., $\mathbf{u}_1, \ldots, \mathbf{u}_K$ corresponding to the largest $K$ eigenvalues of $\mathbf{S}$ in descending order), as we already have seen in the lecture.
+
+[Hint 1: You may assume that the data is zero-centered, i.e., $\overline{\mathbf{x}}=\frac{1}{N} \sum_{n=1}^N \mathbf{x}^{(n)}=\mathbf{0} \in \mathbb{R}^D$ without loss of generality. Be sure to mention it if you make such an assumption.]
+
+[Hint 2: You can rewrite the objective as $\mathcal{J}=\frac{1}{N}\left\|\mathbf{X}-\mathbf{U U}^{\top} \mathbf{X}\right\|_F^2$, where $\mathbf{X} \in \mathbb{R}^{D \times N}$ is the matrix that stacks all the data points $\left\{\mathbf{x}^{(n)}\right\}_{n=1}^N$ as column vectors, and the $\|\cdot\|_F$ denotes the Frobenious norm:
+$$
+\|A\|_F=\sqrt{\sum_{i, j}\left(A_{i j}\right)^2}	\tag{12}
+$$
+
+and use the fact $\|A\|_F^2=\operatorname{tr}\left(A^{\top} A\right)$ and $\operatorname{tr}(\mathbf{S})=\sum_i \lambda_i$. Also note that there are many possible approaches for proving the claim, so you do not have to use this fact if you take a different approach.]
+
+Now, you will apply PCA to face images. The principal components (eigenvectors) of the face images are called eigenfaces.
+
+### (b) implement PCA
+
+(4 pts) (Autograder) Work on the provided code pca.ipynb and pca.py to implement PCA. Your code will be graded by the correctness on the sample face dataset and some other randomly-generated dataset.
+
+
+
+### (c) perform PCA on face images
+
+ (3 pts) By regarding each image as a vector in a high dimensional space, perform PCA on the face images (sort the eigenvalues in descending order). In the write-up, report the eigenvalues corresponding to the first 10 principal components, and plot all the eigenvalues (in sorted order) where x -axis is the index of corresponding principal components and $y$-axis is the eigenvalue. Use $\log$ scale for the $y$-axis.
+
+
+
+### (d) plot eigenfaces
+
+ (3 pts) Plot and attach to your write-up: a $2 \times 5$ array of subplots showing the first 10 principal components/eigenvectors ("eigenfaces") (sorted according to the descending eigenvalues) as images, treating the mean of images as the first principal component. Comment on what facial or lighting variations some of the different principal components are capturing (Note: you don't need to comment for all the images. Just pick a few that capture some salient aspects of image).
+
+
+
+### (e) calculate: how many principle components are needed to represent 95% total variance
+
+(2 pts) Eigenfaces are a set of bases for all the images in the dataset (every image can be represented as a linear combination of these eigenfaces). Suppose we have $L$ eigenfaces in total. Then we can use the $L$ coefficients (of the bases, i.e. the eigenfaces) to represent an image. Moreover, we can use the first $K(<L)$ eigenfaces to reconstruct the face image approximately (correspondingly use $K$ coefficients to represent the image). In this case, we reduce the dimension of the representation of images from $L$ to $K$. To determine the proper $K$ to use, we will check the percentage of variance that has been preserved (recall that the basic idea of PCA is preserving variance). Specifically, we define total variance
+$$
+v(K)=\sum_{i=1}^K \lambda_i \notag
+$$
+
+where $1 \leq K<L$ and $\lambda_1 \geq \lambda_2 \geq \ldots \geq \lambda_L$ are eigenvalues. Then the percentage of total variance is
+
+
+$$
+\frac{v(K)}{v(L)} \notag
+$$
+
+
+How many principal components are needed to represent $95 \%$ of the total variance? How about $99 \%$ ? What is the percentage of reduction in dimension in each case?
+
+
+
+
+
+
+
+# 4. [10 points] Independent Component Analysis
+
+
+In this problem, you will implement maximum-likelihood Independent Component Analysis (ICA) for blind audio separation. As we learned in the lecture, the maximum-likelihood ICA minimizes the following loss:
+$$
+\ell(W)=\sum_{i=1}^N\left(\sum_{j=1}^m \log g^{\prime}\left(w_j^{\top} x^{(i)}\right)+\log |W|\right) \tag{13}
+$$
+
+where $N$ is the number of time steps, $m$ is the number of independent sources, $W$ is the transformation matrix representing a concatenation of $w_j$ 's, and $g(s)=1 /\left(1+e^{-s}\right)$ is the sigmoid function. This link has some nice demos of blind audio separation: https://cnl.salk.edu/~tewon/Blind/blind_audio.html.
+
+We provided the starter code `ica.py` and the `data ica_data.dat`, which contains mixed sound signals from multiple microphones. Run the provided notebook `ica.ipynb` to load the data and run your ICA implementation from `ica.py`.
+
+### (a) implement ICA
+
+ (6 points) (Autograder) Implement ICA by filling in the ica.py file.
+
+### (b) report $W$
+
+(4 points) Run your ICA implementation in the ica.ipynb notebook. To make sure your code is correct, you should listen to the resulting unmixed sources. (Some overlap in the sources may be present, but the different sources should be pretty clearly separated.)
+Report the $W$ matrix you found and submit the notebook ica.ipynb (along with ica.py) to the autograder. Make sure the audio tracks are audible in the notebook before submitting. You do not need to submit your unmixed sound files (`ica_unmixed_track_X.wav`).
 
 
 
@@ -277,3 +382,59 @@ Write down the E-step. Specifically, define the distribution $Q_{ij} = q_i(y^{(i
 
 
 
+
+# 5. [25 points] Conditional Variational Autoencoders
+
+In this problem, you will implement a conditional variational autoencoder (CVAE) from [1] and train it on the MNIST dataset.
+
+### (a) derive variational lower bound of a conditional VAE
+
+[5 points] Derive the variational lower bound of a conditional variational autoencoder. Show that:
+$$
+\begin{aligned}
+\log p_\theta(\mathbf{x} \mid \mathbf{y}) & \geq \mathcal{L}(\theta, \phi ; \mathbf{x}, \mathbf{y}) \\
+& =\mathbb{E}_{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\left[\log p_\theta(\mathbf{x} \mid \mathbf{z}, \mathbf{y})\right]-D_{K L}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)	
+\end{aligned}\tag{14}
+$$
+
+where $\mathbf{x}$ is a binary vector of dimension $d, \mathbf{y}$ is a one-hot vector of dimension $c$ defining a class, $\mathbf{z}$ is a vector of dimension $m$ sampled from the posterior distribution $q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})$. The posterior distribution is modeled by a neural network of parameters $\phi$. The generative distribution $p_\theta(\mathbf{x} \mid \mathbf{y})$ is modeled by another neural network of parameters $\theta$. Similar to the VAE that we learned in the class, we assume the conditional independence on the componenets of $\mathbf{z}$ : i.e., $q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})=\prod_{j=1}^m q_\phi\left(z_j \mid \mathbf{x}, \mathbf{y}\right)$, and $p_\theta(\mathbf{z} \mid \mathbf{y})=\prod_{j=1}^m p_\theta\left(z_j \mid \mathbf{y}\right)$.
+
+
+
+
+
+
+### (b) Derive the analytical KL-divergence between two Gaussian distributions 
+
+[8 points] Derive the analytical solution to the KL-divergence between two Gaussian distributions $D_{K L}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)$. Let us assume that $p_\theta(\mathbf{z} \mid \mathbf{y}) \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$ and show that:
+$$
+D_{K L}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)=-\frac{1}{2} \sum_{j=1}^m\left(1+\log \left(\sigma_j^2\right)-\mu_j^2-\sigma_j^2\right)	\tag{15}
+$$
+
+where $\mu_j$ and $\sigma_j$ are the outputs of the neural network that estimates the parameters of the posterior distribution $q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})$.
+You can assume without proof that
+$$
+D_{K L}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)=\sum_{j=1}^m D_{K L}\left(q_\phi\left(z_j \mid \mathbf{x}, \mathbf{y}\right) \| p_\theta\left(z_j \mid \mathbf{y}\right)\right)	\tag{16}
+$$
+
+This is a consequence of conditional independence of the components of $\mathbf{z}$.
+
+
+
+
+
+
+
+### (c) implement CVAE
+
+[12 points] Fill in code for CVAE network as a nn.Module class called CVAE in the starter code cvae.py and the notebook cvae.ipynb:
+
+- Implement the recognition_model function $q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})$.
+- Implement the generative_model function $p_\theta(\mathbf{x} \mid \mathbf{z}, \mathbf{y})$.
+- Implement the forward function by inferring the Gaussian parameters using the recognition model, sampling a latent variable using the reparametrization trick and generating the data using the generative model.
+- Implement the variational lowerbound loss_function $\mathcal{L}(\theta, \phi ; \mathbf{x}, \mathbf{y})$.
+- Train the CVAE and visualize the generated image for each class (i.e., 10 images per class).
+- Repeat the image generation 10 times with different random noise. In the write-up, attach and submit $10 \times 10$ array of images showing all the generated images, where the images in the same row are generated from the same random noise, and images in the same column are generated from the the same class label.
+- The hyperparameters and training setups provided in the code should work well for learning a CVAE on the MNIST dataset, but please feel free to make any changes as needed and you think appropriate to make CVAE work. Please discuss (if any) there are some notable changes you have made.
+
+If trained successfully, you should be able to sample images $\mathbf{x}$ that look like MNIST digits reflecting the given label $\mathbf{y}$, and the noise vector $\mathbf{z}$.
