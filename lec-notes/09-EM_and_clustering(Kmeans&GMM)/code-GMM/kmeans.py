@@ -77,7 +77,6 @@ def train_kmeans(train_data: np.ndarray, initial_centroids, *,
         assigned_centroids = centroids[labels]
         mean_error = np.mean(euclidean_distance(train_data, assigned_centroids))
         #######################################################################
-
         print(f'Iteration {i:2d}: mean error = {mean_error:2.2f}')
 
     # This should contain the centroid points after convergence.

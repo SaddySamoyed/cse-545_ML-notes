@@ -34,11 +34,13 @@ Also, measure and write down the **mean pixel error** between the original and c
 
 > **Sol**: 
 >
-> Plots as below![image-20250401143801716](hw5.assets/image-20250401143801716.png)
+> Plots as below
+>
+> ![image-20250401150832659](hw5.assets/image-20250401150832659.png)
 >
 > **mean pixel error** as below:
 >
-> ![Screenshot 2025-04-01 at 14.33.35](hw5.assets/Screenshot 2025-04-01 at 14.33.35.png)
+> ![Screenshot 2025-04-01 at 15.08.43](hw5.assets/Screenshot 2025-04-01 at 15.08.43.png)
 
 
 
@@ -50,96 +52,106 @@ If we represent the image with these reduced 16 colors, by (approximately) what 
 
 
 
+
+
+
+
 ------
 
 ## 1.2 Gaussian Mixtures
 
 现在让我们使用高斯混合模型（Gaussian Mixtures，带完整协方差矩阵）来重复前面的图像压缩任务，这次将聚类数设置为 $K = 5$，
 
-### (d) train GMM
+### (d) implement the EM algorithm for GMM
 
-(10 points) 你需要实现 `gmm.train_gmm()` 来训练一个 GMM 模型，该模型将在提供的样例数据以及一些随机数据上进行评分。你的实现应当足够高效（否则将只能获得部分分数）。
+(10 pts) (Autograder) Work on the notebook `kmeans_gmm.ipynb` to implement the EM algorithm for GMM. You will need to implement gmm. train_gmm() to train a GMM model, which will be graded with the provided sample data and some random data. In order to get full points, your implementation should be efficient and fast enough (otherwise you will get only partial points).
 
-**提示 1：** 可以使用 `scipy.stats.multivariate_normal()` 来计算数据的对数似然（log-likelihood）。
+[Hint 1: You may use `scipy.stats.multivariate_normal()` to compute the log-likelihood of the data.] 
 
-**提示 2：** 在计算 $\gamma(z_{nk})$ 时可以使用 `scipy.special.logsumexp()`。由于 division by small probabilities 可能出现数值不稳定问题，实际中推荐使用对数似然来表示（可能很小的）概率 $N(x^{(n)} \mid \mu_k, \Sigma_k)$，即：
+[Hint 2: You may use `scipy.special.logsumexp()` when computing $\gamma\left(z_{n k}\right)$. You would need trick this because division by small probabilities can become computationally unstable when the likelihood values are too small. In practice, it is recommended to represent (possibly small) probabilities $\mathcal{N}\left(\mathbf{x}^{(n)} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k\right)$ with log-likelihood. Note that
 $$
 N(x^{(n)} \mid \mu_k, \Sigma_k) = \exp[\log N(x^{(n)} \mid \mu_k, \Sigma_k)]  \notag
 $$
-**注意：** 不要使用（也不需要使用）`scipy` 或 `scikit-learn` 的其他 API。
+ ]
+Do not use (and you don't need use) any other scipy or scikit-learn APIs.
 
-------
+>**E-step** (compute responsibilities):
+>
+>For each point $ x_n $, and cluster $ k $:
+>
+>>
+>
+>$$
+>\gamma(z_{nk}) = \frac{\pi_k \cdot \mathcal{N}(x_n \mid \mu_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \cdot \mathcal{N}(x_n \mid \mu_j, \Sigma_j)} \notag
+>$$
+>
+>Use **log-space trick**:
+>
+>- compute `log p(x_n | k)` using `scipy.stats.multivariate_normal.logpdf`
+>- then compute log-sum-exp over $ k $for normalization (using `scipy.special.logsumexp`)
+>- exponentiate to get $ \gamma(z_{nk})$
+>
+>
+>
+>**M-step** (update parameters):
+>
+>Let $ N_k = \sum_n \gamma(z_{nk}) $
+>
+>- $ \pi_k = \frac{N_k}{N} $
+>- $ \mu_k = \frac{1}{N_k} \sum_n \gamma(z_{nk}) x_n $
+>- $ \Sigma_k = \frac{1}{N_k} \sum_n \gamma(z_{nk}) (x_n - \mu_k)(x_n - \mu_k)^T $
+>
 
 
 
-#### **E-step** (compute responsibilities):
-For each point $ x_n $, and cluster $ k $:
-$$
-\gamma(z_{nk}) = \frac{\pi_k \cdot \mathcal{N}(x_n \mid \mu_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \cdot \mathcal{N}(x_n \mid \mu_j, \Sigma_j)} \notag
-$$
+### (e) train GMM on image 
 
-Use **log-space trick**:
-- compute `log p(x_n | k)` using `scipy.stats.multivariate_normal.logpdf`
-- then compute log-sum-exp over $ k $for normalization (using `scipy.special.logsumexp`)
-- exponentiate to get $ \gamma(z_{nk})$
-
-#### **M-step** (update parameters):
-Let $ N_k = \sum_n \gamma(z_{nk}) $
-- $ \pi_k = \frac{N_k}{N} $
-- $ \mu_k = \frac{1}{N_k} \sum_n \gamma(z_{nk}) x_n $
-- $ \Sigma_k = \frac{1}{N_k} \sum_n \gamma(z_{nk}) (x_n - \mu_k)(x_n - \mu_k)^T $
-
-
-
-
-
-### (e) 
-
-(3 points) 在训练图像 `mandrill-small.tiff` 上使用 $K = 5$ 的高斯混合模型进行训练。使用提供的初始参数：
+(3 points) Train GMM on `mandrill-small.tiff` using $K = 5$. Provided initial parameters:
 
 - initial mean（`initial_mu`）
 - covariance matrices（`initial_sigma`）
 - prior distribution of latent cluster（`initial_pi`）
 
-(因而结果是 deterministic 的.)
-
 report:
 
 - log-likelihood of training data after running 50 EM steps
-- GMM 模型的参数 $\{(\pi_k, \mu_k) \mid k = 1, ..., 5\}$
+- Parameters $\{(\pi_k, \mu_k) \mid k = 1, ..., 5\}$
 
-无需写出协方差矩阵 $\Sigma_k$。你可以选择：write down the values, or attach visualization plots，其图例中展示了 $\pi_k$ 和 $\mu_k$ 的值
+You do not need to write down $\Sigma_k$. You can choose either write down the values, or attach visualization plots.
+
+> log-likelihood of training data after running 50 EM steps:
+>
+> <img src="hw5.assets/Screenshot 2025-04-01 at 15.23.40.png" alt="Screenshot 2025-04-01 at 15.23.40" style="zoom: 33%;" />
+>
+> Parameter values:
+>
+> <img src="hw5.assets/Screenshot 2025-04-01 at 15.17.43.png" alt="Screenshot 2025-04-01 at 15.17.43" style="zoom:33%;" />
+>
+> 
+>
+> Plots: <img src="hw5.assets/image-20250401151824120.png" alt="image-20250401151824120" style="zoom:50%;" />
+>
+> 
 
 
-
-------
 
 ### (f)
 
-在使用 `mandrill-small.tiff` 训练后，读取测试图像 `mandrill-large.tiff`，并将每个像素的 $(r, g, b)$ 值替换为其 value of latent cluster mean ($\mu_k$). 这里对于每个 pixel, 我们使用 MAP（最大后验估计，Maximum A Posteriori）for the latent cluster-assignment variable.
+(2 pts) After training on the train `image mandrill-small.tiff`, read the test image `mandrill-large.tiff` and replace each pixel's $(r, g, b)$ values with the value of latent cluster mean, where we use the MAP (Maximum A Posteriori) estimation for the latent cluster-assignment variable for each pixel.
 
-使用 notebook 中提供的绘图代码，显示原始图像和压缩图像的并排图，并将图像附在报告中
+Use the notebook's plotting code to display the original and compressed images side-by-side, and attach the plots to the write-up. (Note: you should have reasonable image quality/resolution to make the difference discernable). 
 
-> 注：图像质量应当足够好，以使压缩前后图像的差异可以被分辨
+Also, measure and write down the mean pixel error between the original and compressed image.
 
-另外，计算并写出 original image 和 compressed image 之间的平均像素误差（mean pixel error）
-
-
-
-
-
-```
-
-class GMMState(NamedTuple):
-    """Parameters to a GMM Model."""
-    pi: np.ndarray  # [K]
-    mu: np.ndarray  # [K, d]
-    sigma: np.ndarray  # [K, d, d]
-```
-
-
-
-
+> **Sol:** 
+>
+> Plot:
+>
+> <img src="hw5.assets/image-20250401152454647.png" alt="image-20250401152454647" style="zoom:33%;" />
+>
+> mean pixel error between the original and compressed image:
+>
+> <img src="hw5.assets/Screenshot 2025-04-01 at 15.25.23.png" alt="Screenshot 2025-04-01 at 15.25.23" style="zoom:40%;" />
 
 
 

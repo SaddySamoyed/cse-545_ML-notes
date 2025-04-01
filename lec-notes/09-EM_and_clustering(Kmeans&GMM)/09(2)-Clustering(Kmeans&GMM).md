@@ -73,6 +73,171 @@ distortion measure $J$ 就是: squared distance of points from the center of its
 
 
 
+
+
+```python
+import numpy as np
+
+def euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    assert x.shape == y.shape
+    error = np.sqrt(np.sum(np.power(x - y, 2), axis=-1))
+    return error
+
+def train_kmeans(train_data: np.ndarray, initial_centroids, *, num_iterations: int = 50):
+    N, d = train_data.shape
+    K, d2 = initial_centroids.shape
+    if d != d2:
+        raise ValueError(f"Invalid dimension: {d} != {d2}")
+    assert train_data.dtype.kind == 'f'
+
+    centroids = initial_centroids.copy()
+    
+    for i in range(num_iterations):
+        # E-step: Assign each point to the nearest centroid
+        # Expand dims for broadcasting: train_data (N, 1, d), centroids (1, K, d)
+        distances = np.linalg.norm(train_data[:, np.newaxis, :] - centroids[np.newaxis, :, :], axis=2)  # shape (N, K)
+        labels = np.argmin(distances, axis=1)  # shape (N,)
+
+        # M-step: Update centroids
+        new_centroids = np.zeros_like(centroids)
+        for k in range(K):
+            points_in_cluster = train_data[labels == k]
+            if len(points_in_cluster) > 0:
+                new_centroids[k] = np.mean(points_in_cluster, axis=0)
+            else:
+                new_centroids[k] = centroids[k]  # If a cluster has no points, keep old centroid
+
+        centroids = new_centroids
+        
+        # monitor convergence
+        assigned_centroids = centroids[labels]
+        mean_error = np.mean(euclidean_distance(train_data, assigned_centroids))
+        print(f'Iteration {i:2d}: mean error = {mean_error:2.2f}')
+        
+    assert centroids.shape == (K, d)
+    return centroids
+```
+
+
+
+
+
+### Applying K-means to image compression
+
+```python
+import numpy as np
+
+def compress_image(image: np.ndarray, centroids: np.ndarray) -> np.ndarray:
+    """Compress image by mapping each pixel to the closest centroid."""
+
+    H, W, C = image.shape
+    K, C2 = centroids.shape
+    assert C == C2 == 3, "Invalid number of channels."
+    assert image.dtype == np.uint8
+
+    # Step 1: reshape image to (N, 3) where N = H * W
+    flat_image = image.reshape(-1, 3).astype(np.float32)  # shape (N, 3)
+
+    # Step 2: compute distances to all centroids
+    distances = np.linalg.norm(flat_image[:, np.newaxis, :] - centroids[np.newaxis, :, :], axis=2)  # shape (N, K)
+
+    # Step 3: find closest centroid index for each pixel
+    labels = np.argmin(distances, axis=1)  # shape (N,)
+
+    # Step 4: map each pixel to its centroid
+    compressed_flat = centroids[labels]  # shape (N, 3)
+
+    # Step 5: reshape back to image shape
+    compressed_image = np.round(compressed_flat).astype(np.uint8).reshape(H, W, C)
+
+    assert compressed_image.dtype == np.uint8
+    assert compressed_image.shape == (H, W, C)
+    return compressed_image
+
+```
+
+Note: 这个 image，我们在处理的时候都是变成 (N = HM, 3) 来处理
+
+**如果我们把图像 reshape 成 (N, 3)，是不是就丢掉了像素之间的空间结构（space topology）？比如谁是邻居，哪个区域属于同一物体？**
+
+答案是：**是的，标准的 K-means 是忽略空间拓扑结构的！**
+
+
+
+📦 为什么我们还能用它来压缩图像？
+
+虽然 K-means 忽略空间关系，它仍然能在 **颜色分布** 上做聚类 —— 也就是说，它试图把所有像素的颜色压缩成 K 种代表色。
+
+它的效果好不好，**取决于图像是“色彩分布主导”还是“空间结构主导”**：
+
+| 图像类型                         | K-means 压缩效果               |
+| -------------------------------- | ------------------------------ |
+| 渐变、纯色块、多彩卡通图         | 很好                           |
+| 纹理复杂、结构强烈、边缘清晰的图 | 容易出现 artifacts（马赛克感） |
+
+------
+
+## 🤔 那如果我想要用空间结构呢？
+
+这就引出了更高级的模型，比如：
+
+### 1. **Spatial-aware K-means / Bilateral K-means**
+
+- 你可以把每个像素除了 `(R, G, B)` 之外，再加上 `(x, y)` 空间坐标！
+- 变成 `(R, G, B, x, y)`，也就是 `d = 5` 的数据点。
+- 然后做 K-means，就能同时考虑颜色 + 空间邻近性。
+
+示意代码：
+
+```python
+H, W, _ = image.shape
+pixels = image.reshape(-1, 3).astype(np.float32)
+
+# 加入空间位置（归一化）
+x_coords, y_coords = np.meshgrid(np.linspace(0, 1, W), np.linspace(0, 1, H))
+position = np.stack([x_coords, y_coords], axis=2).reshape(-1, 2)
+
+# 拼接颜色和位置
+features = np.concatenate([pixels, position], axis=1)  # shape (N, 5)
+
+# 训练 K-means
+centroids = train_kmeans(features, initial_centroids=... , num_iterations=...)
+```
+
+当然这样压缩出来的颜色可能要再从 `centroids[:, :3]` 拿回来变成图像。
+
+------
+
+### 2. **Graph-based clustering**
+
+如果你真的很关心“谁跟谁是邻居”，可以用：
+
+- Mean shift
+- DBSCAN
+- 或者构图然后用 spectral clustering
+
+这些都更尊重空间拓扑，但计算代价也更高。
+
+------
+
+## ✅ 小结
+
+| 方法                          | 是否考虑空间结构 | 说明                               |
+| ----------------------------- | ---------------- | ---------------------------------- |
+| 原始 K-means                  | ❌                | 只考虑颜色，速度快，结果像色彩量化 |
+| K-means + 坐标                | ✅（部分）        | 折中方法，考虑颜色 + 空间          |
+| 图像分割（如 SLIC, GraphCut） | ✅✅               | 更复杂，更保拓扑，但更慢           |
+
+------
+
+你对 “space topology” 感兴趣是很棒的方向——这是计算机视觉里图像分割、语义分割的重要话题。如果你愿意深入，我可以给你推荐一些入门例子或论文。
+
+要不要我给你加上空间感知的 K-means 版本？
+
+
+
+
+
 # Gaussian Mixture 
 
 
