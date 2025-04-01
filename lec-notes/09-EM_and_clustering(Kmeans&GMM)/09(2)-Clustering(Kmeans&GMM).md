@@ -75,6 +75,10 @@ distortion measure $J$ 就是: squared distance of points from the center of its
 
 # Gaussian Mixture 
 
+
+
+
+
 **K-Means 使用 hard clustering assignment**
 
 - 每个点**只能**属于一个簇。
@@ -94,6 +98,18 @@ distortion measure $J$ 就是: squared distance of points from the center of its
 ![Screenshot 2025-03-31 at 15.37.07](09(2)-Clustering(Kmeans&GMM).assets/Screenshot 2025-03-31 at 15.37.07.png)
 
 不同的 clusters take different levels of responsibility for a point. 一个点上, responsibility 即 posterior probability.
+
+
+
+
+
+## Modeling
+
+
+
+
+
+
 
 
 
