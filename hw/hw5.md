@@ -235,6 +235,28 @@ where $Q_{i j} \triangleq q_i\left(y^{(i)}=j\right)$ is a simplified shorthand n
 
 [**Hint: you may want to use Jensen's Inequality.**]
 
+> Proof:
+>
+> The objective is:
+> $$
+> \mathcal{J}=\sum_{i=1}^l \log p\left(\mathbf{x}^{(i)}, y^{(i)}\right)+\lambda \sum_{i=l+1}^{l+u} \log \sum_{j \in\{0,1\}} p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)
+> $$
+> We define a distribution over the latent variable $y^{(i)}$ ($l+1 \leq i \leq l+u$) as:
+>
+> $$
+> q_i (y^{(i)}=j)=Q_{i j}, \quad j \in\{0,1\}, \quad \text { where } \sum_{j=0}^1 Q_{i j}=1
+> $$
+>
+>
+> Apply Jensen's inequality to the log-sum over $j$ in the unlabeled term:
+>
+> $$
+> \log \sum_{j \in\{0,1\}} p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)=\log \sum_{j \in\{0,1\}} Q_{i j} \cdot \frac{p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)}{Q_{i j}} \geq \sum_{j \in\{0,1\}} Q_{i j} \log \frac{p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)}{Q_{i j}}
+> $$
+> where the first term $\sum_{i=1}^l  \log p\left(\mathbf{x}^{(i)}, y^{(i)}\right)$ is independent from the parameters 
+>
+> Dd
+
 
 
 
