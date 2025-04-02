@@ -134,10 +134,11 @@ $$
 f(\mathbb{E}[x]) \leq \mathbb{E}[f(x)]
 $$
 
-因而，由于 log 函数是 convex 的，我们可以由 Jensen 证明出：散度总是非负，且当且仅当 $q = p(\mathbf{Z} \mid \mathbf{X}, \theta)$ 时取等号
+因而，由于 $-log$ 函数是 convex 的 ($log$ 是 convex 的)，我们可以由 Jensen 证明出：散度总是非负，且当且仅当 $q = p(\mathbf{Z} \mid \mathbf{X}, \theta)$ 时取等号
 $$
 \begin{aligned} K L(q \| p) &=\mathbb{E}_{z\sim q(z)}\left[\log \frac{q(z)}{p(z)}\right]\\
-&\geq \log (\mathbb{E}_{z\sim q(z)}\left[ \frac{q(z)}{p(z)}\right])    \\
+& = \mathbb{E}_{z\sim q(z)}\left[-\log \frac{p(z)}{q(z)}\right] \\
+&\geq -\log (\mathbb{E}_{z\sim q(z)}\left[ \frac{p(z)}{q(z)}\right])    \\
 & = -\log (\underbrace{\sum_z q(z) \frac{p(z)}{q(z)}}_{=\sum_z p(z)=1}) \\ & =0\end{aligned}
 $$
 

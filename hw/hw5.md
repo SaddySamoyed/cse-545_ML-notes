@@ -239,33 +239,106 @@ where $Q_{i j} \triangleq q_i\left(y^{(i)}=j\right)$ is a simplified shorthand n
 >
 > The objective is:
 > $$
-> \mathcal{J}=\sum_{i=1}^l \log p\left(\mathbf{x}^{(i)}, y^{(i)}\right)+\lambda \sum_{i=l+1}^{l+u} \log \sum_{j \in\{0,1\}} p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)
+> \mathcal{J}=\sum_{i=1}^l \log p\left(\mathbf{x}^{(i)}, y^{(i)}\right)+\lambda \sum_{i=l+1}^{l+u} \log \sum_{j \in\{0,1\}} p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)	\notag
 > $$
-> We define a distribution over the latent variable $y^{(i)}$ ($l+1 \leq i \leq l+u$) as:
+> We define a distribution over the latent variable $y^{(i)}(l+1 \leq i \leq l+u)$ as:
+> $$
+> q_i\left(y^{(i)}=j\right)=Q_{i j}, \quad j \in\{0,1\}, \quad \text { where } \sum_{j=0}^1 Q_{i j}=1	\notag
+> $$
+>
+>
+> Since $\log$ is a concave function, $-\log$ is convex. Then by Jensen's ineq we have:
 >
 > $$
-> q_i (y^{(i)}=j)=Q_{i j}, \quad j \in\{0,1\}, \quad \text { where } \sum_{j=0}^1 Q_{i j}=1
+> -\log \mathbb{E}[X] \leq \mathbb{E}[-\log X]	\notag
 > $$
 >
 >
-> Apply Jensen's inequality to the log-sum over $j$ in the unlabeled term:
+> Writing the second term into expectation form, we have:
 >
 > $$
-> \log \sum_{j \in\{0,1\}} p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)=\log \sum_{j \in\{0,1\}} Q_{i j} \cdot \frac{p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)}{Q_{i j}} \geq \sum_{j \in\{0,1\}} Q_{i j} \log \frac{p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)}{Q_{i j}}
+> \begin{aligned}
+> \log \sum_{j \in\{0,1\}} p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right) & =\log \sum_{j \in\{0,1\}} Q_{i j} \cdot \frac{p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)}{Q_{i j}} \\
+> & =\log \sum_{j \in\{0,1\}} q\left(y^{(i)}\right) \cdot \frac{p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)}{q\left(y^{(i)}\right)} \\
+> & =\log \mathbb{E}_{y^{(i)} \sim q}\left[\frac{p(\mathbf{x}, y)}{q(y)}\right] \\
+> & =-\left(-\log \mathbb{E}_{y^{(i)} \sim q}\left[\frac{p(\mathbf{x}, y)}{q(y)}\right]\right)
+> \end{aligned}	\notag
 > $$
-> where the first term $\sum_{i=1}^l  \log p\left(\mathbf{x}^{(i)}, y^{(i)}\right)$ is independent from the parameters 
+> Since by Jensen's ineq we have:
 >
-> Dd
+> $$
+> -\log \mathbb{E}_{y^{(i)} \sim q}\left[\frac{p(\mathbf{x}, y)}{q(y)}\right] \leq \mathbb{E}_{y^{(i)} \sim q}\left[-\log \frac{p(\mathbf{x}, y)}{q(y)}\right]	\notag
+> $$
+>
+>
+> Then reversing it by adding a negative sign:
+>
+> $$
+> -\left(-\log \mathbb{E}_{y^{(i)} \sim q}\left[\frac{p(\mathbf{x}, y)}{q(y)}\right]\right) \geq-\mathbb{E}_{y^{(i)} \sim q}\left[-\log \frac{p(\mathbf{x}, y)}{q(y)}\right]=\mathbb{E}_{y^{(i)} \sim q}\left[\log \frac{p(\mathbf{x}, y)}{q(y)}\right]	\notag
+> $$
+>
+>
+> Thus
+>
+> $$
+> \begin{aligned}
+> \log \sum_{j \in\{0,1\}} p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right) & \geq \mathbb{E}_{y \sim q(y)}\left[\log \frac{p(\mathbf{x}, y)}{q(y)}\right] \\
+> & =\sum_{j \in\{0,1\}} Q_{i j} \log \frac{p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)}{Q_{i j}}
+> \end{aligned}	\notag
+> $$
+>
+>
+> Since this holds for each , we have:
+>
+> $$
+> \mathcal{J} \geq \sum_{i=1}^l \log p\left(\mathbf{x}^{(i)}, y^{(i)}\right)+\lambda \sum_{i=l+1}^{l+u} \sum_{j \in\{0,1\}} Q_{i j} \log \frac{p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)}{Q_{i j}}	\notag
+> $$
+>
+>
+> We define
+>
+> $$
+> \mathcal{L}(\mu, \Sigma, \phi):=\sum_{i=1}^l \log p\left(\mathbf{x}^{(i)}, y^{(i)}\right)+\lambda \sum_{i=l+1}^{l+u} \sum_{j \in\{0,1\}} Q_{i j} \log \frac{p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)}{Q_{i j}}	\notag
+> $$
+> Then we establish the (variational) lower bound:
+>
+> $$
+> \mathcal{J} \geq \mathcal{L}(\mu, \Sigma, \phi)	\notag
+> $$
 
 
 
-
-
-### (b) E-step 
+### (b) E-step
 
 [2 points] Write down the E-step. Specifically, define the distribution $Q_{ij} = q_i(y^{(i)} = j)$
 
-
+> For the E-step, we update the distribution of the latent variable to be the same as posterior, in order to make the KL-divergence 0 and thus maximize the variational lower bound $\mathcal{L}$ under current parameters:
+> $$
+> q^{new}(y) := p(y |x , \theta) \notag
+> $$
+> Here to be concrete,  we set for each $l+1 \leq i \leq l+u$ and $j = 0,1$:
+> $$
+> Q_{i j}^{new} := p (y^{(i)}=j \mid \mathbf{x}^{(i)} ; \mu_j, \Sigma_j, \phi)	\notag
+> $$
+> So we compute the posterior $p (y^{(i)}=j \mid \mathbf{x}^{(i)} ; \mu_j, \Sigma_j, \phi)$ for each $l+1 \leq i \leq l+u$ and $j = 0,1$:
+>
+> Using Bayes' theorem:
+>
+> $$
+> p (y^{(i)}=j \mid \mathbf{x}^{(i)} ; \mu_j, \Sigma_j, \phi)=\frac{p\left(y^{(i)}=j\right) \cdot p\left(\mathbf{x}^{(i)} \mid y^{(i)}=j\right)}{\sum_{k \in\{0,1\}} p\left(y^{(i)}=k\right) \cdot p\left(\mathbf{x}^{(i)} \mid y^{(i)}=k\right)}	\notag
+> $$
+>
+>
+> Plug in the model assumptions:
+> - $p(y=k)=\phi_k$
+> - $p(\mathbf{x} \mid y=k)=\mathcal{N}\left(\mathbf{x} ; {\mu}_k, {\Sigma}_k\right)$
+>
+> Thus, we get:
+>
+> $$
+> Q_{i j}=\frac{\phi_j \cdot \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_j, {\Sigma}_j\right)}{\sum_{k \in\{0,1\}} \phi_k \cdot \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)}	\notag
+> $$
+> (where $\phi_0 =1 - \phi,\; \phi_1 = \phi$)
 
 
 
@@ -273,7 +346,73 @@ where $Q_{i j} \triangleq q_i\left(y^{(i)}=j\right)$ is a simplified shorthand n
 
 [6 points] (c) Derive the M-step update rule for $\boldsymbol{\mu}_k$ where $k=0$ or 1 , while holding $Q_i$ 's (which you obtained in (a)) fixed. Also, explain in words (English) what intuitively $\boldsymbol{\mu}_k$ looks like in terms of $\mathbf{x}^{(i)}$ 's (each of labeled and unlabeled) and pseudo-counts.
 
-
+> **Sol:**
+>
+> For M step we want:
+> $$
+> \theta^{\text {new }}:=\operatorname{argmax}_\theta \mathcal{L}(q, \theta)	\notag
+> $$
+>
+> For the parameter ${\mu}_k, k=0,1$, we check both the labelled and unlabelled part of variational lower bound $\mathcal{L}$ :
+> For labeled data, ${\mu}_k$ contributes to $\mathcal{L}$ only when $y^{(i)}=k$. The contribution is:
+> $$
+> \sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] \log \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)	\notag
+> $$
+>
+>
+> For unlabeled data, the contribution of ${\mu}_k$ to $\mathcal{L}$ is:
+>
+> $$
+> \lambda \sum_{i=l+1}^{l+u} Q_{i k} \log \frac{\mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)}{Q_{i k}}=\lambda \sum_{i=l+1}^{l+u} Q_{i k}\left(\log \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)-\log Q_{i k}\right)	\notag
+> $$
+>
+>
+> But since for the M-step we fix the distribution of the latent variable, $Q_{i k}$ is constant, so the contribution is:
+>
+> $$
+> \lambda \sum_{i=l+1}^{l+u} Q_{i k} \log \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)	\notag
+> $$
+> So the total contribution of ${\mu}_k$ to $\mathcal{L}$ is:
+>
+> $$
+> \mathcal{L}_{{\mu}_k}:=\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] \log \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)+\lambda \sum_{i=l+1}^{l+u} Q_{i k} \log \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)	\notag
+> $$
+>
+>
+> Now we optimize this w.r.t. ${\mu}_k$. Taking the gradient of the above w.r.t. ${\mu}_k$, knowing:
+>
+> $$
+> \log \mathcal{N}\left({x} ; {\mu}_k, {\Sigma}_k\right)=-\frac{1}{2}\left(\mathbf{x}-{\mu}_k\right)^{\top} {\Sigma}_k^{-1}\left(\mathbf{x}-{\mu}_k\right)+\mathrm{const}	\notag
+> $$
+>
+>
+> Taking gradient:
+>
+> $$
+> \nabla_{{\mu}_k} \log \mathcal{N}\left(\mathbf{x} ; {\mu}_k, {\Sigma}_k\right)={\Sigma}_k^{-1}\left(\mathbf{x}-{\mu}_k\right)	\notag
+> $$
+>
+>
+> So setting derivative of total contribution to zero:
+>
+> $$
+> \nabla_{{\mu}_k}\mathcal{L}_{{\mu}_k}:=0 \Longrightarrow \sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] {\Sigma}_k^{-1}\left(\mathbf{x}^{(i)}-{\mu}_k\right)+\lambda \sum_{i=l+1}^{l+u} Q_{i k} {\Sigma}_k^{-1}\left(\mathbf{x}^{(i)}-{\mu}_k\right)=0	\notag
+> $$
+>
+>
+> Multiplying ${\Sigma}_k$ on the left we get:
+>
+> $$
+> \begin{aligned}
+> \sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right]\left(\mathbf{x}^{(i)}-{\mu}_k\right)+\lambda \sum_{i=l+1}^{l+u} Q_{i k}\left(\mathbf{x}^{(i)}-{\mu}_k\right) & =0 \\
+> \sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] \mathbf{x}^{(i)}+\lambda \sum_{i=l+1}^{l+u} Q_{i k} \mathbf{x}^{(i)} & =\left(\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right]+\lambda \sum_{i=l+1}^{l+u} Q_{i k}\right) {\mu}_k
+> \end{aligned}	\notag
+> $$
+> Then we get the optimal ${\mu}_k$ to update:
+>
+> $$
+> {\mu}_k=\frac{\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] \mathbf{x}^{(i)}+\lambda \sum_{i=l+1}^{l+u} Q_{i k} \mathbf{x}^{(i)}}{\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right]+\lambda \sum_{i=l+1}^{l+u} Q_{i k}}	\notag
+> $$
 
 
 
