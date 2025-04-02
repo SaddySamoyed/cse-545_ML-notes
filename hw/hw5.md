@@ -48,6 +48,19 @@ Also, measure and write down the **mean pixel error** between the original and c
 
 If we represent the image with these reduced 16 colors, by (approximately) what factor have we compressed the image (in terms of bits used to represent pixels) in terms of the data size? Include an explanation of why.
 
+> **Sol:**
+>
+> Originally we have $256^3$ possible number of $(r,g,b)$ colors to represent, taking over $3 \log _2 256 =512 8 \times 3 = 24$ Bits, for one pixel.
+>
+> And now we have $16$ colors, taking over $\log_2 16 = 4$ bits, for one pixel.
+>
+> Storing the information of the $16$ colors as basis, takes over $16 \times 24 = 384$ bits, (this amount is quite little compared to the size of an image.)
+>
+> Thus the factor of compression is approximately:
+> $$
+> = \frac{24 \times 512^2}{ 4 \times 512^2 + 384} \approx 6
+> $$
+
 
 
 
@@ -78,9 +91,6 @@ Do not use (and you don't need use) any other scipy or scikit-learn APIs.
 >**E-step** (compute responsibilities):
 >
 >For each point $ x_n $, and cluster $ k $:
->
->>
->
 >$$
 >\gamma(z_{nk}) = \frac{\pi_k \cdot \mathcal{N}(x_n \mid \mu_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \cdot \mathcal{N}(x_n \mid \mu_j, \Sigma_j)} \notag
 >$$
@@ -104,7 +114,7 @@ Do not use (and you don't need use) any other scipy or scikit-learn APIs.
 
 
 
-### (e) train GMM on image 
+### (e) train GMM on ``mandrill-small.tiff`` image
 
 (3 points) Train GMM on `mandrill-small.tiff` using $K = 5$. Provided initial parameters:
 
@@ -135,7 +145,7 @@ You do not need to write down $\Sigma_k$. You can choose either write down the v
 
 
 
-### (f)
+### (f) test on ``mandrill-large.tiff`` image
 
 (2 pts) After training on the train `image mandrill-small.tiff`, read the test image `mandrill-large.tiff` and replace each pixel's $(r, g, b)$ values with the value of latent cluster mean, where we use the MAP (Maximum A Posteriori) estimation for the latent cluster-assignment variable for each pixel.
 
@@ -152,119 +162,102 @@ Also, measure and write down the mean pixel error between the original and compr
 > mean pixel error between the original and compressed image:
 >
 > <img src="hw5.assets/Screenshot 2025-04-01 at 15.25.23.png" alt="Screenshot 2025-04-01 at 15.25.23" style="zoom:40%;" />
+>
+> Plot for $K=16$:
+>
+> <img src="hw5.assets/image-20250401152752391.png" alt="image-20250401152752391" style="zoom:33%;" />
+
+
 
 
 
 # 2. [20 分] EM for GDA with missing labels
 
-在本题中，我们将使用 EM 算法来处理标签不完整时的高斯判别分析 (GDA) 问题
+In this problem, we will work on using the EM algorithm for Gaussian Discrimination Analysis (GDA) with missing labels.
 
-假设你有一个数据集，其中一部分数据 is labeled，另一部分 unlabeled. 
+Suppose that you are given dataset where some portion of the data is labeled and the other portion is unlabeled. We want to learn a generative model over this partially-labeled dataset. ${ }^2$ 
 
-我们希望在这个**partially labelled dataset**上学习一个**generative model**. 
+> This type of learning formalism is called semi-supervised learning, which is a broad research field in machine learning.
 
-> 注：这种学习设定被称为**半监督学习（semi-supervised learning）**，是机器学习中的一个重要研究方向。
+In particular, suppose there are $l$ examples with labels and $u$ examples without labels, i.e., $\mathcal{D}=\left\{\left(\mathbf{x}^{(1)}, y^{(1)}\right), \cdots,\left(\mathbf{x}^{(l)}, y^{(l)}\right), \mathbf{x}^{(l+1)}, \cdots, \mathbf{x}^{(l+u)}\right\}.$
 
-In particular, 我们假设我们有 $l$ 个带标签的样本和 $u$ 个未标记的样本，即：
-$$
-D = \{(x^{(1)}, y^{(1)}), \cdots, (x^{(l)}, y^{(l)}), x^{(l+1)}, \cdots, x^{(l+u)}\} \notag
-$$
-
-We also make the following assumptions
-
-- The data is real-valued $M$ 维向量，即 $x \in \mathbb{R}^M$
-- 标签 $y \in \{0, 1\}$（即一个二分类问题）
-- We model the data following the same assumption as in GDA:
+We also make have the following assumptions:
+- The data is real-valued and $M$-dimensional, i.e., $\mathbf{x} \in \mathbb{R}^M$
+- The label $y$ can take one of $\{0,1\}$ (i.e., binary classification problem).
+- We model the data following the same assumption as in Gaussian Discrimination Analysis, i.e.,
 
 $$
-P(x, y) = P(y) P(x \mid y) \tag{1}
+\begin{aligned}
+P(\mathbf{x}, y) & =P(y) P(\mathbf{x} \mid y) \\
+P(y=j) & = \begin{cases}\phi & \text { if } j=1 \\
+1-\phi & \text { if } j=0\end{cases} \\
+P(\mathbf{x} \mid y=j) & =\mathcal{N}\left(\mathbf{x} ; \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j\right), j=0 \text { or } 1
+\end{aligned}	\tag{1,2,3}
 $$
 
-$$
-P(y = j) =
-\begin{cases}
-\phi & \text{if } j = 1 \\
-1 - \phi & \text{if } j = 0
-\end{cases} \tag{2}
-$$
+where $\phi$ is a Bernoulli probability (i.e., $0 \leq \phi \leq 1$ ), and $\boldsymbol{\mu}_j$ and $\boldsymbol{\Sigma}_j$ are class-specific mean and covariance, respectively. For notational convenience, you can use $\phi_1=\phi$ and $\phi_0=1-\phi$.
+
+Further, $\mathcal{N}\left(x ; \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j\right)$ is the multivariate Gaussian distribution which is defined as:
 
 $$
-P(x \mid y = j) = \mathcal{N}(x; \mu_j, \Sigma_j), \quad j = 0 \text{ or } 1 \tag{3}
+p\left(\mathbf{x} \mid y=j ; \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j\right)=\mathcal{N}\left(x ; \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j\right)=\frac{1}{(2 \pi)^{\frac{M}{2}}\left|\boldsymbol{\Sigma}_j\right|^{\frac{1}{2}}} \exp \left(-\frac{1}{2}\left(\mathbf{x}-\boldsymbol{\mu}_j\right)^{\top} \boldsymbol{\Sigma}_j^{-1}\left(\mathbf{x}-\boldsymbol{\mu}_j\right)\right) 	\tag{4}
 $$
 
-where $\phi$ 是伯努利分布的参数（即 $0 \leq \phi \leq 1$），$\mu_j$ 和 $\Sigma_j$ 分别是第 $j$ 类的 class-specific mean 和 covariance matrix. (因为只有两类, 为了简化记号，也可以写成 $\phi_1 = \phi$，$\phi_0 = 1 - \phi$)
-
-Multivariate Gaussian distribution $\mathcal{N}(x; \mu_j, \Sigma_j)$ 定义如下：
+Since we have unlabeled data, our goal is to maximize the following hybrid objective function:
 
 $$
-p(x \mid y = j; \mu_j, \Sigma_j) = \mathcal{N}(x; \mu_j, \Sigma_j) =
-\frac{1}{(2\pi)^{M/2} |\Sigma_j|^{1/2}} \exp\left(-\frac{1}{2}(x - \mu_j)^\top \Sigma_j^{-1}(x - \mu_j)\right) \tag{4}
+\mathcal{J}=\sum_{i=1}^l \log p\left(\mathbf{x}^{(i)}, y^{(i)}\right)+\lambda \sum_{i=l+1}^{l+u} \log p\left(\mathbf{x}^{(i)}\right) 	\tag{5}
 $$
 
----
-
-由于存在未标记数据，我们的目标是最大化以下混合目标函数：
-
+where $\lambda$ is a hyperparameter that controls the weight of labeled and unlabeld data.
+As we don't explicitly model the distribution $p(\mathbf{x})$, we use the law of total probability and rewrite the object function as:
 $$
-J = \sum_{i=1}^l \log p(x^{(i)}, y^{(i)}) + \lambda \sum_{i = l+1}^{l+u} \log p(x^{(i)}) \tag{5}
+\mathcal{J}=\sum_{i=1}^l \log p\left(\mathbf{x}^{(i)}, y^{(i)}\right)+\lambda \sum_{i=l+1}^{l+u} \log \sum_{j \in\{0,1\}} p\left(\mathbf{x}^{(i)}, y^{(i)}=j\right)	\tag{6}
 $$
 
-其中，$\lambda$ 是超参数，用于控制 labeled and unlabeled data 的 weight.
 
-由于我们没有 explicitly model $p(x)$ 的形式，我们使用全概率公式将目标函数重写为：
+This way the unlabeled training examples is using the same models as the labeled samples. Now we will be using **EM algorithm** to optimize this objective function.
 
+**(Hint) You can use the fact:**
 $$
-J = \sum_{i=1}^l \log p(x^{(i)}, y^{(i)}) + \lambda \sum_{i = l+1}^{l+u} \log \sum_{j \in \{0,1\}} p(x^{(i)}, y^{(i)} = j) \tag{6}
+p\left(\mathbf{x}^{(i)}, y^{(i)}\right)=\prod_{j \in\{0,1\}}\left[\frac{\phi_j}{(2 \pi)^{\frac{M}{2}}\left|\boldsymbol{\Sigma}_j\right|^{\frac{1}{2}}} \exp \left(-\frac{1}{2}\left(\mathbf{x}^{(i)}-\boldsymbol{\mu}_j\right)^{\top} \boldsymbol{\Sigma}_j^{-1}\left(\mathbf{x}^{(i)}-\boldsymbol{\mu}_j\right)\right)\right]^{\mathbb{I}\left[y^{(i)}=j\right]}	\tag{7}
 $$
-
-通过这种方式，unlabeled training examples 使用了与 labeled samples 相同的模型. 我们将使用 EM 算法来优化上述目标函数.
-
----
-
-在推导解法时，请给出所有必要的推导步骤，并尽量解释推导的过程，使之易于理解。
-
-> **提示：** 你可以使用如下等式：
-
-$$
-p(x^{(i)}, y^{(i)}) = \prod_{j \in \{0,1\}} \left[ \frac{\phi_j}{(2\pi)^{M/2} |\Sigma_j|^{1/2}} \exp\left( -\frac{1}{2}(x^{(i)} - \mu_j)^\top \Sigma_j^{-1}(x^{(i)} - \mu_j) \right) \right]^{\mathbb{I}[y^{(i)} = j]} \tag{7}
-$$
-
 
 
 ### (a) lower bound derivation [3 points]
 
-**(a)** 推导 objective $J$ 的 variational lower bound . Specifically, 证明对于任意的概率分布 $q_i(y^{(i)} = j)$，objective 的 lower bound 可以写为：
+(3 points) Derive the variational lower bound $\mathcal{L}(\boldsymbol{\mu}, \boldsymbol{\Sigma}, \phi)$ of the objective $\mathcal{J}$. Specifically, show that any arbitrary probability distribution $q_i\left(y^{(i)}=j\right)$, the lower bound of the objective function can be written as:
 $$
-L(\mu, \Sigma, \phi) = \sum_{i=1}^l \log p(x^{(i)}, y^{(i)}) + \lambda \sum_{i=l+1}^{l+u} \sum_{j \in \{0,1\}} Q_{ij} \log \frac{p(x^{(i)}, y^{(i)} = j)}{Q_{ij}} \tag{8}
+\mathcal{L}(\mu, \Sigma, \phi) = \sum_{i=1}^l \log p(x^{(i)}, y^{(i)}) + \lambda \sum_{i=l+1}^{l+u} \sum_{j \in \{0,1\}} Q_{ij} \log \frac{p(x^{(i)}, y^{(i)} = j)}{Q_{ij}} \tag{8}
 $$
 
-其中，$Q_{ij} \triangleq q_i(y^{(i)} = j)$ 是记号简化。
+where $Q_{i j} \triangleq q_i\left(y^{(i)}=j\right)$ is a simplified shorthand notation. 
 
-> **提示：** 可以考虑使用 Jensen 不等式来推导。
-
-
+[**Hint: you may want to use Jensen's Inequality.**]
 
 
 
-### (b) E-step [2 points]
-
-Write down the E-step. Specifically, define the distribution $Q_{ij} = q_i(y^{(i)} = j)$
 
 
+### (b) E-step 
 
-### (c) M-step for $\mu_k$ [6 points]
+[2 points] Write down the E-step. Specifically, define the distribution $Q_{ij} = q_i(y^{(i)} = j)$
 
-推导当 $k = 0$ 或 $1$ 时，$\mu_k$ 的 M-step update rule, while holding $Q_i$'s fixed.
 
-并文字解释：从直觉上看，what $\mu_k$ looks like ? in terms of $x^{(i)}$'s (labeled and unlabeled) 以及 pseudo-counts.
+
+
+
+### (c) M-step for $\mu_k$ 
+
+[6 points] (c) Derive the M-step update rule for $\boldsymbol{\mu}_k$ where $k=0$ or 1 , while holding $Q_i$ 's (which you obtained in (a)) fixed. Also, explain in words (English) what intuitively $\boldsymbol{\mu}_k$ looks like in terms of $\mathbf{x}^{(i)}$ 's (each of labeled and unlabeled) and pseudo-counts.
+
+
 
 
 
 ### (d) M-step for $\phi$ 
 
-[6 points] 推导 $\phi \in \mathbb{R}$ 的 M-step update rule, while holding $Q_i$'s fixed.
-
-并文字解释：从直觉上看，what $\phi$ looks like ? in terms of $x^{(i)}$'s (labeled and unlabeled) 以及 pseudo-counts.
+[6 points] [6 points] Derive the M-step update rule for $\phi \in \mathbb{R}$, while holding $Q_i$ 's (which you obtained in (a)) fixed. Also, explain in words (English) what intuitively $\phi$ looks like in terms of $\mathbf{x}^{(i)}$ 's (each of labeled and unlabeled) and pseudo-counts.
 
 
 
@@ -272,17 +265,7 @@ Write down the E-step. Specifically, define the distribution $Q_{ij} = q_i(y^{(i
 
 ### (e) M-step for $\Sigma_k$
 
-[3 points] 最后，based on analogy, 写出 $\Sigma_k$ （$k = 0$ 或 $1$）的 M-step update rule。
-
-由于我们知道推导过程与 GDA（高斯判别分析）或 GMM 的 M 步类似，因此你不需要重复完整推导步骤（你已经在之前任务中练习过）。
-
-并文字解释：从直觉上看，what $\Sigma_k$ looks like ? in terms of $x^{(i)}$'s (labeled and unlabeled) 以及 pseudo-counts.
-
-
-
-
-
-
+[3 points] Finally, let's think about the M-step update rule for $\boldsymbol{\Sigma}_k$ where $k=0$ or 1 . Since we know the derivation is very similar to the case of GDA (and GMM M-step), we do not require you to repeat the similar the step as you have already worked on other two M-step update rules. Write down the M-step update rule for $\boldsymbol{\Sigma}_k$, without derivation, based on your guess and the analogy we have seen. Also, explain in words (English) what intuitively $\boldsymbol{\Sigma}_k$ looks like in terms of $\mathbf{x}^{(i)}$ 's (each of labeled and unlabeled) and pseudo-counts.
 
 
 
@@ -324,6 +307,132 @@ $$
 and use the fact $\|A\|_F^2=\operatorname{tr}\left(A^{\top} A\right)$ and $\operatorname{tr}(\mathbf{S})=\sum_i \lambda_i$. Also note that there are many possible approaches for proving the claim, so you do not have to use this fact if you take a different approach.]
 
 Now, you will apply PCA to face images. The principal components (eigenvectors) of the face images are called eigenfaces.
+
+
+
+> **Proof**:
+>
+> First, **WLOG, we can assume that the data is zero-centered**, i.e.,
+>
+> $$
+> \overline{{x}}=\frac{1}{N} \sum_{n=1}^N {x}^{(n)}=\mathbf{0} \notag
+> $$
+>
+> This is because the directions of maximum variance depend on how the data is spread, not on where it's located; if the data is not zero-centered, shifting all data points by a constant vector (i.e. the mean) doesn't change the shape of the data. More concretely, even if the data is not zero-centered, the normalized data which is used for the data covariance matrix, will still be zro-centered:
+> $$
+> {S}=\frac{1}{N} \sum_{n=1}^N\left({x}^{(n)}-\overline{{x}}\right)\left({x}^{(n)}-\overline{{x}}\right)^T\notag
+> $$
+>
+> Since we are projecting each data point ${x}^{(n)} \in \mathbb{R}^D$ onto a $K$-dimensional subspace spanned by orthonormal basis vectors $\mathbf{u}_1, \ldots, \mathbf{u}_K$. The projection of ${x}^{(n)}$ is:
+> $$
+> \widetilde{{x}}^{(n)}={U}{U}^T {x}^{(n)}	\notag
+> $$
+>
+>
+> Then the projection error for each data point is:
+>
+> $$
+> \left\|{x}^{(n)} - {U U}^T {x}^{(n)}\right\|^2 \notag
+> $$
+>
+>
+> So the total average error is:
+>
+> $$
+> \mathcal{J}=\frac{1}{N} \sum_{n=1}^N\left\|{x}^{(n)}-{U} {U}^T {x}^{(n)}\right\|^2	\notag
+> $$
+> Define the data matrix $X=\left[x^{(1)}, \ldots, x^{(N)}\right] \in \mathbb{R}^{D \times N}$. Then by def of **Frobenius norm** we have:
+>
+> $$
+> \mathcal{J}=\frac{1}{N}\left\|X-U U^T X\right\|_F^2 \notag
+> $$
+>
+>
+> Using the identity:
+>
+> $$
+> \|A\|_F^2=\operatorname{tr}\left(A^T A\right)\notag
+> $$
+>
+>
+> We have:
+>
+> $$
+> \mathcal{J}=\frac{1}{N} \operatorname{tr}\left[\left(X-U U^T X\right)^{\top}\left(X-U U^T X\right)\right] \notag
+> $$
+>
+>
+> Let's denote $P:=U U^T$ as the projection matrix. Then:
+>
+> $$
+> \begin{aligned}
+> \mathcal{J} & =\frac{1}{N} \operatorname{tr}\left[((I-P) X)^T(I-P) X\right] \\
+> & =\frac{1}{N} \operatorname{tr}\left[X^T(I-P)^T(I-P) X\right]
+> \end{aligned} \notag
+> $$
+>
+>
+> Note that (as the property of projection matrix) we have:
+>
+> $$
+> P^T=\left(U U^T\right)^T=U U^T=P \quad \text { and } \quad P^2=\left(U U^T U U^T\right)=U U^T=P \notag
+> $$
+> Thus we also have:
+>
+> $$
+> (I-P)^T=I^T-P^T=I-P \notag
+> $$
+>
+> so
+>
+> $$
+> (I-P)^T(I-P)=I-2 P+P^2=I-P \notag
+> $$
+>
+>
+> This simplifies $\mathcal{J}$ to
+>
+> $$
+> \begin{aligned}
+> \mathcal{J}=\frac{1}{N} \operatorname{tr}\left[X^T(I-P) X\right] & =\frac{1}{N} \operatorname{tr}\left[X^T X-X^T P X\right] \\
+> & =\frac{1}{N}\left(\operatorname{tr}\left(X^T X\right)-\operatorname{tr}\left(X^T P X\right)\right) \quad \text { by linearity of trace } \\
+> & =\frac{1}{N}\left(\operatorname{tr}\left(X^T X\right)-\operatorname{tr}\left(X^T U U^T X\right)\right) \\
+> & =\frac{1}{N}\left(\operatorname{tr}\left(X^T X\right)-\operatorname{tr}\left(U^T X X^T U\right)\right) \quad \text { since } \operatorname{tr}(A B)=\operatorname{tr}(B A
+> \end{aligned} \notag
+> $$
+>
+>
+> Define the data covariance matrix:
+>
+> $$
+> S:=\frac{1}{N} \sum_{n=1}^N\left(x^{(n)}-\bar{x}\right)\left(x^{(n)}-\bar{x}\right)^T=\frac{1}{N} X X^T \quad \text { (since data is zero-centered) }  \notag
+> $$
+> Then since $\operatorname{tr}\left(X^T X\right)=\operatorname{tr}\left(X X^T\right)$, we have:
+>
+> $$
+> \mathcal{J}=\operatorname{tr}(S)-\operatorname{tr}\left(U^T S U\right)\notag
+> $$
+>
+>
+> Now, trace of a symmetric matrix equals the sum of its eigenvalues, so denoting $\lambda_1 \geq \cdots \geq \lambda_D$ as the eigenvalues of $S$, we have $\operatorname{tr}(S)=\sum_{i=1}^D \lambda_i$; and we know that $\operatorname{tr}\left(U^T S U\right)=\sum_{i=1}^K \mathbf{u}_i^T S \mathbf{u}_i$, thus we simplify $\mathcal{J}$ to be:
+>
+> $$
+> \mathcal{J}=\sum_{i=1}^D \lambda_i-\sum_{i=1}^K \mathbf{u}_i^T S \mathbf{u}_i\notag
+> $$
+>
+> To minimize $\mathcal{J}$ is to maximize $\sum_{i=1}^K \mathbf{u}_i^T S \mathbf{u}_i$ over $\left\{\mathbf{u}_i\right\}$.
+> Now we use the fact (from spectral theorem) that, the optimal solution $\mathbf{u}_i$ 's to maximize $\sum_{i=1}^K \mathbf{u}_i^T S \mathbf{u}_i$ is to pick the top-$K$ eigenvectors of $S$. Note each $\mathbf{u}_i$ is unit, to make them orthonormal (thus $\mathbf{u}_i ^T \mathbf{u}_i = 1$ for each $i$)
+>
+> So we have:
+> $$
+> S \mathbf{u}_i = \lambda_i  \mathbf{u}_i  \implies \mathbf{u}_i ^T S \mathbf{u}_i = \lambda_i \mathbf{u}_i ^T  \mathbf{u}_i = \lambda_i
+> $$
+> This completes the proof that:
+> $$
+> \mathcal{J}_{\min }=\sum_{i=1}^D \lambda_i-\sum_{i=1}^K \lambda_i=\sum_{k=K+1}^D \lambda_k \notag
+> $$
+
+
 
 ### (b) implement PCA
 
