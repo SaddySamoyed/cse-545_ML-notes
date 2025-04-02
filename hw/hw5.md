@@ -58,7 +58,7 @@ If we represent the image with these reduced 16 colors, by (approximately) what 
 >
 > Thus the factor of compression is approximately:
 > $$
-> = \frac{24 \times 512^2}{ 4 \times 512^2 + 384} \approx 6
+> = \frac{24 \times 512^2}{ 4 \times 512^2 + 384} \approx 6	\notag
 > $$
 
 
@@ -336,7 +336,7 @@ where $Q_{i j} \triangleq q_i\left(y^{(i)}=j\right)$ is a simplified shorthand n
 > Thus, we get:
 >
 > $$
-> Q_{i j}=\frac{\phi_j \cdot \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_j, {\Sigma}_j\right)}{\sum_{k \in\{0,1\}} \phi_k \cdot \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)}	\notag
+> Q_{i j}=\frac{\phi_j \cdot \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_j, {\Sigma}_j\right)}{\sum_{k \in\{0,1\}} \phi_k \cdot \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)}	\notag	
 > $$
 > (where $\phi_0 =1 - \phi,\; \phi_1 = \phi$)
 
@@ -353,21 +353,40 @@ where $Q_{i j} \triangleq q_i\left(y^{(i)}=j\right)$ is a simplified shorthand n
 > \theta^{\text {new }}:=\operatorname{argmax}_\theta \mathcal{L}(q, \theta)	\notag
 > $$
 >
-> For the parameter ${\mu}_k, k=0,1$, we check both the labelled and unlabelled part of variational lower bound $\mathcal{L}$ :
-> For labeled data, ${\mu}_k$ contributes to $\mathcal{L}$ only when $y^{(i)}=k$. The contribution is:
+> For the parameter $\mu_k, k=0,1$, we check both the labelled and unlabelled part of variational lower bound $\mathcal{L}$.
+> The labelled part: $\sum_{i=1}^l \log p\left(x^{(i)}, y^{(i)}\right)$, where for each $i$,
+> $$
+> p\left(\mathbf{x}^{(i)}, y^{(i)}\right)=\prod_{j \in\{0,1\}}\left[\frac{\phi_j}{(2 \pi)^{\frac{M}{2}}\left|\Sigma_j\right|^{\frac{1}{2}}} \exp \left(-\frac{1}{2}\left(\mathbf{x}^{(i)}-\mu_j\right)^{\top} \Sigma_j^{-1}\left(\mathbf{x}^{(i)}-\mu_j\right)\right)\right]^{\mathbb{I}\left[y^{(i)}=j\right]}	\notag
+> $$
+>
+>
+> Thus $\mu_k$ contributes to $\mathcal{L}$ only when $y^{(i)}=k$. And thus the contribution is:
+>
+> $$
+> \begin{aligned}
+> & \sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] \log \phi_j \mathcal{N}\left(\mathbf{x}^{(i)} ; \mu_k, \Sigma_k\right) \\
+> & =\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] \log \mathcal{N}\left(\mathbf{x}^{(i)} ; \mu_k, \Sigma_k\right)+\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] \log \phi_j	
+> \end{aligned}	\notag
+> $$
+>
+>
+> And since $\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] \log$ does not depend on $\mu_k$ also, the contribution is thus
 > $$
 > \sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right] \log \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)	\notag
 > $$
 >
 >
-> For unlabeled data, the contribution of ${\mu}_k$ to $\mathcal{L}$ is:
+> The unlabeled part: $\lambda \sum_{i=l+1}^{l+u} \sum_{j \in \{0,1\}} Q_{ij} \log \frac{p(x^{(i)}, y^{(i)} = j)}{Q_{ij}} $. Thus for this part, the contribution of ${\mu}_k$ to $\mathcal{L} $ is: 
 >
 > $$
-> \lambda \sum_{i=l+1}^{l+u} Q_{i k} \log \frac{\mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)}{Q_{i k}}=\lambda \sum_{i=l+1}^{l+u} Q_{i k}\left(\log \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)-\log Q_{i k}\right)	\notag
+> \begin{align*}
+>     \lambda \sum_{i=l+1}^{l+u} Q_{i k}  \log   \frac{p(x^{(i)}, y^{(i)} =k)}{Q_{ik}} & =  \lambda \sum_{i=l+1}^{l+u} Q_{i k}  \log   \frac{\phi_k\, \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)  }{Q_{ik}}\\
+>     &= \lambda \sum_{i=l+1}^{l+u} Q_{i k}  \bigg(\log  {\mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)} + \log \phi_k   -  \log {Q_{ik}}  \bigg) 
+> \end{align*}
 > $$
 >
 >
-> But since for the M-step we fix the distribution of the latent variable, $Q_{i k}$ is constant, so the contribution is:
+> But since for the M-step we fix the distribution of the latent variable, **$Q_{i k}$ is constant**, so the contribution is:
 >
 > $$
 > \lambda \sum_{i=l+1}^{l+u} Q_{i k} \log \mathcal{N}\left(\mathbf{x}^{(i)} ; {\mu}_k, {\Sigma}_k\right)	\notag
@@ -416,17 +435,90 @@ where $Q_{i j} \triangleq q_i\left(y^{(i)}=j\right)$ is a simplified shorthand n
 
 
 
+> **Intuition of what $\mu_k$ looks like in termes of $x^{(i)}$'s and pseudo-counts:**
+>
+> $\mu_k$ is estimated by the weighted average of  $\mathbf{x}^{(i)}$ that are in the class $k$, where for the labelled part, real counts is applied ($\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right]$, "how many data points is in class $k$) and for the unlabelled part, pseudo-counts is applied ($\sum_{i=l+1}^{l+u} Q_{i k}$, "how many data points are expected to be in class $k$ by prob modeling).
+>
+> And we use hyperparameter $\lambda $ to control whether labeled and unlabeld data is more important in this learning.
+>
+> If we only look at the labelled part, the $\mu_k$ is same as that we are doing GDA. If we only look at the unlabelled part, the $\mu_k$ is same as that we are doing GMM. 
+
+
+
 ### (d) M-step for $\phi$ 
 
 [6 points] [6 points] Derive the M-step update rule for $\phi \in \mathbb{R}$, while holding $Q_i$ 's (which you obtained in (a)) fixed. Also, explain in words (English) what intuitively $\phi$ looks like in terms of $\mathbf{x}^{(i)}$ 's (each of labeled and unlabeled) and pseudo-counts.
 
+> **Sol:**
+> $$
+> \begin{aligned}
+> \mathcal{L} & =\sum_{i=1}^l \log p\left(x^{(i)}, y^{(i)}\right)+\lambda \sum_{i=l+1}^{l+u} \sum_{j \in\{0,1\}} Q_{i j} \log \frac{p\left(x^{(i)}, y^{(i)}=j\right)}{Q_{i j}} \\
+> & =\sum_{i=1}^l\left(\log \frac{\phi_{y(i)}}{(2 \pi)^{\frac{M}{2}}\left|\Sigma_j\right|^{\frac{1}{2}}}-\frac{1}{2}\left(\mathbf{x}^{(i)}-\mu_j\right)^{\top} \Sigma_j^{-1}\left(\mathbf{x}^{(i)}-\mu_j\right)\right)+\lambda \sum_{i=l+1}^{l+u}\left[Q_{i 1} \log \phi+Q_{i 0} \log (1-\phi)\right. \\
+> & =\sum_{i=1}^l\left(\log \phi_{y(i)}-\log (2 \pi)^{\frac{M}{2}}\left|\Sigma_j\right|^{\frac{1}{2}}-\frac{1}{2}\left(\mathbf{x}^{(i)}-\mu_j\right)^{\top} \Sigma_j^{-1}\left(\mathbf{x}^{(i)}-\mu_j\right)\right)+\lambda \sum_{i=l+1}^{l+u}\left[Q_{i 1} \log \phi+Q_{i 0} l\right.
+> \end{aligned}	\notag
+> $$
+>
+>
+> Removing the terms that $\phi$ does not depend on, i.e. $-\log (2 \pi)^{\frac{M}{2}}\left|\Sigma_j\right|^{\frac{1}{2}}-\frac{1}{2}\left(\mathbf{x}^{(i)}-\mu_j\right)^{\top} \Sigma_j^{-1}\left(\mathbf{x}^{(i)}-\mu_j\right)$ for each $i$, then we get the total contribution of $\phi$ to $\mathcal{L}$ is:
+>
+> $$
+> \begin{aligned}
+> \mathcal{L}_\phi & :=\sum_{i=1}^l \log \phi_{y(i)}+\lambda \sum_{i=l+1}^{l+u}\left[Q_{i 1} \log \phi+Q_{i 0} \log (1-\phi)\right] \\
+> & =\sum_{i=1}^l\left(\mathbb{I}\left[y^{(i)}=1\right] \log \phi+\mathbb{I}\left[y^{(i)}=0\right] \log (1-\phi)\right)+\lambda \sum_{i=l+1}^{l+u}\left(Q_{i 1} \log \phi+Q_{i 0} \log (1-\phi)\right) \\
+> & =\left(\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=1\right]+\lambda \sum_{i=l+1}^{l+u} Q_{i 1}\right) \log \phi+\left(\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=0\right]+\lambda \sum_{i=l+1}^{l+u} Q_{i 0}\right) \log (1-\phi)
+> \end{aligned}	\notag
+> $$
+>
+> We set: 
+> $$
+> A:=\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=1\right]+\lambda \sum_{i=l+1}^{l+u} Q_{i 1}, \quad B:=\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=0\right]+\lambda \sum_{i=l+1}^{l+u} Q_{i 0}	\notag
+> $$
+>
+>
+> To maximize $\mathcal{L}_\phi$ over $\phi$, we set $\nabla_\phi \mathcal{L}_\phi:=0$, get:
+>
+> $$
+> \begin{aligned}
+> \nabla_\phi \mathcal{L}_\phi=\frac{A}{\phi}-\frac{B}{1-\phi} & =0 \\
+> A(1-\phi) & =B \phi \\
+> A & =A \phi+B \\
+> \phi & =\frac{A}{A+B}
+> \end{aligned}	\notag
+> $$
+>
+>
+> Then we get the optimal $\mu_k$ to update:
+>
+> $$
+> \phi=\frac{\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=1\right]+\lambda \sum_{i=l+1}^{l+u} Q_{i 1}}{l+\lambda u}	\notag
+> $$
 
+> **Intuition of what $\phi$ looks like in termes of $x^{(i)}$'s and pseudo-counts:**
+>
+> $\phi$, the estimated prior probability of class 1, is estimated by the fraction of examples out of all labeled and unlabeled points that are believed to be in class 1. priority of labeled and unlabeled in the model is controlled by $\lambda$.
+>
+> Labeled examples contribute hard counts (via $\mathbb{I}\left[y^{(i)}=1\right]$ ), while unlabeled examples contribute soft counts via $Q_{i 1}$. The denominator is the total number of effective examples, including both labeled and scaled unlabeled.
 
 
 
 ### (e) M-step for $\Sigma_k$
 
 [3 points] Finally, let's think about the M-step update rule for $\boldsymbol{\Sigma}_k$ where $k=0$ or 1 . Since we know the derivation is very similar to the case of GDA (and GMM M-step), we do not require you to repeat the similar the step as you have already worked on other two M-step update rules. Write down the M-step update rule for $\boldsymbol{\Sigma}_k$, without derivation, based on your guess and the analogy we have seen. Also, explain in words (English) what intuitively $\boldsymbol{\Sigma}_k$ looks like in terms of $\mathbf{x}^{(i)}$ 's (each of labeled and unlabeled) and pseudo-counts.
+
+> Sol:
+>
+> By similar reasoning we can get:
+> $$
+> {\Sigma}_k=\frac{\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right]\left(\mathbf{x}^{(i)}-{\mu}_k\right)\left(\mathbf{x}^{(i)}-{\mu}_k\right)^{\top}+\lambda \sum_{i=l+1}^{l+u} Q_{i k}\left(\mathbf{x}^{(i)}-{\mu}_k\right)\left(\mathbf{x}^{(i)}-{\mu}_k\right)^{\top}}{\sum_{i=1}^l \mathbb{I}\left[y^{(i)}=k\right]+\lambda \sum_{i=l+1}^{l+u} Q_{i k}}	\notag
+> $$
+
+> **Intuition of what $\Sigma_k$ looks like in termes of $x^{(i)}$'s and pseudo-counts:** 
+>
+> ${\Sigma}_k$ is esimated by the (not strictly) data covariance matrix of sample data points in class $k$. 
+>
+> For labeled examples, it literarily sample from data points that are belong to class $k$; for unlabeled examples, it takes $\sum_{i=l+1}^{l+u} Q_{i k}$ through probability modeling as pseudo-counts. The denominator is the total effective counts (hard and pseudo, importance weighted by $\lambda$ between labelled and unlablled) of class $k$, ensuring it's a proper average. 
+>
+> Then the whole matrix can be viewed as data covariance matrix (but not strictly, since it has pseudo counts).
 
 
 
@@ -601,15 +693,21 @@ Now, you will apply PCA to face images. The principal components (eigenvectors) 
 
 
 
+
+
 ### (c) perform PCA on face images
 
  (3 pts) By regarding each image as a vector in a high dimensional space, perform PCA on the face images (sort the eigenvalues in descending order). In the write-up, report the eigenvalues corresponding to the first 10 principal components, and plot all the eigenvalues (in sorted order) where x -axis is the index of corresponding principal components and $y$-axis is the eigenvalue. Use $\log$ scale for the $y$-axis.
 
 
 
+
+
 ### (d) plot eigenfaces
 
  (3 pts) Plot and attach to your write-up: a $2 \times 5$ array of subplots showing the first 10 principal components/eigenvectors ("eigenfaces") (sorted according to the descending eigenvalues) as images, treating the mean of images as the first principal component. Comment on what facial or lighting variations some of the different principal components are capturing (Note: you don't need to comment for all the images. Just pick a few that capture some salient aspects of image).
+
+
 
 
 
