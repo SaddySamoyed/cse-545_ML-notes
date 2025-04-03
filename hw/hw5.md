@@ -691,15 +691,17 @@ Now, you will apply PCA to face images. The principal components (eigenvectors) 
 
 (4 pts) (Autograder) Work on the provided code pca.ipynb and pca.py to implement PCA. Your code will be graded by the correctness on the sample face dataset and some other randomly-generated dataset.
 
-
-
-
-
 ### (c) perform PCA on face images
 
  (3 pts) By regarding each image as a vector in a high dimensional space, perform PCA on the face images (sort the eigenvalues in descending order). In the write-up, report the eigenvalues corresponding to the first 10 principal components, and plot all the eigenvalues (in sorted order) where x -axis is the index of corresponding principal components and $y$-axis is the eigenvalue. Use $\log$ scale for the $y$-axis.
 
-
+> First 10 principal components:
+>
+> <img src="hw5.assets/Screenshot 2025-04-02 at 18.10.10.png" alt="Screenshot 2025-04-02 at 18.10.10" style="zoom:33%;" />
+>
+> Plot of eigenvalues (in descending order):
+>
+> <img src="hw5.assets/image-20250402180944359.png" alt="image-20250402180944359" style="zoom:50%;" />
 
 
 
@@ -707,7 +709,19 @@ Now, you will apply PCA to face images. The principal components (eigenvectors) 
 
  (3 pts) Plot and attach to your write-up: a $2 \times 5$ array of subplots showing the first 10 principal components/eigenvectors ("eigenfaces") (sorted according to the descending eigenvalues) as images, treating the mean of images as the first principal component. Comment on what facial or lighting variations some of the different principal components are capturing (Note: you don't need to comment for all the images. Just pick a few that capture some salient aspects of image).
 
-
+> Eigenfaces in descending eigenvalues:
+>
+> <img src="hw5.assets/image-20250402181205288.png" alt="image-20250402181205288" style="zoom:50%;" />
+>
+> My comment:
+>
+> The first component in first row captures that a face has two eyes (and eyes are similar among all faces);
+>
+> The third component in first row captures the symmetry of the face;
+>
+> The last component in second row captures smiling;
+>
+> The last but one component in second row captures the behavior of slightly raising head up.
 
 
 
@@ -728,7 +742,11 @@ $$
 
 How many principal components are needed to represent $95 \%$ of the total variance? How about $99 \%$ ? What is the percentage of reduction in dimension in each case?
 
-
+> <img src="hw5.assets/Screenshot 2025-04-02 at 18.45.53.png" alt="Screenshot 2025-04-02 at 18.45.53" style="zoom: 33%;" />
+>
+> Upon computation, **43 principal components** are needed to represent  **95% of the total variance**, with a **reduction of** **97.87% in dimension**.
+>
+> **167 principal components** are needed to represent **99% of the total variance**, with a **reduction of** **91.72% in dimension**.
 
 
 
@@ -750,14 +768,19 @@ We provided the starter code `ica.py` and the `data ica_data.dat`, which contain
 
  (6 points) (Autograder) Implement ICA by filling in the ica.py file.
 
+> details:
+>
+> - $ y = Wx $ are the independent components.
+> - $ \log g'(y) = \log (\sigma(y)(1 - \sigma(y))) $
+> - The gradient of the sum over $ \log g'(y_j) $ gives $ (1 - 2 \sigma(y_j)) x^T $
+> - Plus the gradient of $ \log |\det W| = (W^{-1})^T $
+
 ### (b) report $W$
 
 (4 points) Run your ICA implementation in the ica.ipynb notebook. To make sure your code is correct, you should listen to the resulting unmixed sources. (Some overlap in the sources may be present, but the different sources should be pretty clearly separated.)
 Report the $W$ matrix you found and submit the notebook ica.ipynb (along with ica.py) to the autograder. Make sure the audio tracks are audible in the notebook before submitting. You do not need to submit your unmixed sound files (`ica_unmixed_track_X.wav`).
 
-
-
-
+> <img src="hw5.assets/Screenshot 2025-04-02 at 20.01.42.png" alt="Screenshot 2025-04-02 at 20.01.42" style="zoom:50%;" />
 
 
 
