@@ -843,7 +843,7 @@ where $\mathbf{x}$ is a binary vector of dimension $d, \mathbf{y}$ is a one-hot 
 > \log p_\theta(\mathbf{x} \mid \mathbf{y}) \geq \mathcal{L}(\theta, \phi ; \mathbf{x}, \mathbf{y})	\notag
 > $$
 
-
+ 
 
 
 ### (b) Derive the analytical KL-divergence between two Gaussian distributions 
@@ -924,6 +924,20 @@ This is a consequence of conditional independence of the components of $\mathbf{
 
 If trained successfully, you should be able to sample images $\mathbf{x}$ that look like MNIST digits reflecting the given label $\mathbf{y}$, and the noise vector $\mathbf{z}$.
 
+> My recognition model uses two hidden layers (size ignoring batch size: input+num_classes -> hidden_units, hidden_units -> hidden units) activated by relu function, and a linear output layer, outputing $\mu_{z|x}$ and $\Sigma_{z|x}$ (size ignoring batch size: hidden_units -> latent_size).
+>
+> My generation model also uses two hidden layers (size ignoring batch size:  latent_size+num_classes -> hidden_units, hidden_units -> hidden_units) activated by relu function, and a sigmoid output layer, generating $\hat{x}$.
+>
+> ![{3F8FC02D-84DE-440E-9340-47B2C3D3FB87}](hw5.assets/{3F8FC02D-84DE-440E-9340-47B2C3D3FB87}.png)
+>
+> The loss function is define as negative variational bound, to minimize it (so that we maximize the variational bound):
+> $$
+> -\mathcal{L}(\theta, \phi ; \mathbf{x}, \mathbf{y}) = -\mathbb{E}_{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\left[\log p_\theta(\mathbf{x} \mid \mathbf{z}, \mathbf{y})\right] + D_{K L}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)
+> $$
+> 
+>
+> ![{ABC01453-357C-4E5C-8E06-57F17764DCD4}](hw5.assets/{ABC01453-357C-4E5C-8E06-57F17764DCD4}.png)
+>
 > My generated images that look like MNIST digits reflecting the given label and the noise vector:
 >
 > ![image-20250403160102906](hw5.assets/image-20250403160102906.png)
