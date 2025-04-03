@@ -930,14 +930,14 @@ If trained successfully, you should be able to sample images $\mathbf{x}$ that l
 >
 > ![{3F8FC02D-84DE-440E-9340-47B2C3D3FB87}](hw5.assets/{3F8FC02D-84DE-440E-9340-47B2C3D3FB87}.png)
 >
-> The loss function is define as negative variational bound, to minimize it (so that we maximize the variational bound):
-> $$
-> -\mathcal{L}(\theta, \phi ; \mathbf{x}, \mathbf{y}) = -\mathbb{E}_{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\left[\log p_\theta(\mathbf{x} \mid \mathbf{z}, \mathbf{y})\right] + D_{K L}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)
-> $$
+> We minimized our loss_function $-\mathcal{L}(\theta, \phi ; \mathbf{x}, \mathbf{y})$, from $1.599241$ to $0.240457$.
 > 
->
+> 
 > ![{ABC01453-357C-4E5C-8E06-57F17764DCD4}](hw5.assets/{ABC01453-357C-4E5C-8E06-57F17764DCD4}.png)
->
-> My generated images that look like MNIST digits reflecting the given label and the noise vector:
->
-> ![image-20250403160102906](hw5.assets/image-20250403160102906.png)
+> 
+>My generated images that look like MNIST digits reflecting the given label and the 10 different noise vectors:
+> 
+>![image-20250403160102906](hw5.assets/image-20250403160102906.png)
+> 
+>The generating model performs very well on MNIST.
+
