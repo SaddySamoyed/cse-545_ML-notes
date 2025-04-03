@@ -923,3 +923,7 @@ This is a consequence of conditional independence of the components of $\mathbf{
 - The hyperparameters and training setups provided in the code should work well for learning a CVAE on the MNIST dataset, but please feel free to make any changes as needed and you think appropriate to make CVAE work. Please discuss (if any) there are some notable changes you have made.
 
 If trained successfully, you should be able to sample images $\mathbf{x}$ that look like MNIST digits reflecting the given label $\mathbf{y}$, and the noise vector $\mathbf{z}$.
+
+> My generated images that look like MNIST digits reflecting the given label and the noise vector:
+>
+> ![image-20250403160102906](hw5.assets/image-20250403160102906.png)
