@@ -1,0 +1,40 @@
+# Autoencoder and VAE
+
+Autoencoder 是一个很简单的事情, 就是一个使用 deep learning 架构的 dimension reduction 器, 是一个结合了 deep learing 和 embedding method 的方法
+
+
+
+![Screenshot 2025-04-03 at 02.31.32](Autoencoder&VAE.assets/Screenshot 2025-04-03 at 02.31.32.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
