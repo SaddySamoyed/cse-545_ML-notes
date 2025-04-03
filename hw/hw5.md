@@ -73,7 +73,7 @@ If we represent the image with these reduced 16 colors, by (approximately) what 
 
 ## 1.2 Gaussian Mixtures
 
-现在让我们使用高斯混合模型（Gaussian Mixtures，带完整协方差矩阵）来重复前面的图像压缩任务，这次将聚类数设置为 $K = 5$，
+Now we use GMM to repeat the clustering task, setting $K = 5$.
 
 ### (d) implement the EM algorithm for GMM
 
@@ -171,7 +171,7 @@ Also, measure and write down the mean pixel error between the original and compr
 
 
 
-# 2. [20 分] EM for GDA with missing labels
+# 2. [20 points] EM for GDA with missing labels
 
 In this problem, we will work on using the EM algorithm for Gaussian Discrimination Analysis (GDA) with missing labels.
 
