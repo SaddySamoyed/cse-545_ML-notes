@@ -802,7 +802,46 @@ $$
 
 where $\mathbf{x}$ is a binary vector of dimension $d, \mathbf{y}$ is a one-hot vector of dimension $c$ defining a class, $\mathbf{z}$ is a vector of dimension $m$ sampled from the posterior distribution $q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})$. The posterior distribution is modeled by a neural network of parameters $\phi$. The generative distribution $p_\theta(\mathbf{x} \mid \mathbf{y})$ is modeled by another neural network of parameters $\theta$. Similar to the VAE that we learned in the class, we assume the conditional independence on the componenets of $\mathbf{z}$ : i.e., $q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})=\prod_{j=1}^m q_\phi\left(z_j \mid \mathbf{x}, \mathbf{y}\right)$, and $p_\theta(\mathbf{z} \mid \mathbf{y})=\prod_{j=1}^m p_\theta\left(z_j \mid \mathbf{y}\right)$.
 
-
+> **Proof:**
+>
+> We want to optimize: $\log p_\theta(\mathbf{x} \mid \mathbf{y})$.
+>
+> By introducing latent variable $\mathbf{z} \sim q_\phi(\mathbf{z} |\mathbf{x},\mathbf{y})$, we get 
+> $$
+> \log p_\theta(\mathbf{x} \mid \mathbf{y})=\mathbb{E}_{\mathbf{z} \sim q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\left[\log p_\theta(\mathbf{x} \mid \mathbf{y})\right]	\notag
+> $$
+> since $p_\theta(\mathbf{x} \mid \mathbf{y})$ does not depend on $\mathbf{z}$.
+>
+> And we do deduction to get:
+> $$
+> \begin{align*}
+>     \log p_\theta(\mathbf{x} \mid \mathbf{y}) &=\mathbb{E}_{\mathbf{z} \sim q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z} \mid \mathbf{y})}{p_\theta(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\right]  \quad \text{by Bayes' rule}\\
+>     &= \mathbb{E}_{\mathbf{z} \sim q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\left[\log \left(\frac{p_\theta(\mathbf{x}, \mathbf{z} \mid \mathbf{y})}{p_\theta(\mathbf{z} \mid \mathbf{x}, \mathbf{y})} \cdot \frac{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\right)\right]  \quad \text{ multiplying const 1}\\
+> & = \mathbb{E}_{\mathbf{z} \sim q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\left[\log \left(\frac{p_\theta(\mathbf{x}, \mathbf{z} \mid \mathbf{y})}{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})} \cdot \frac{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}{p_\theta(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\right)\right] \\
+> & = \mathbb{E}_{\mathbf{z} \sim q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\left[\log \left(\frac{p_\theta(\mathbf{x} \mid \mathbf{z}, \mathbf{y})  p_\theta(\mathbf{z} \mid \mathbf{y})}{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})} \cdot \frac{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}{p_\theta(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\right)\right] \\
+> & =  \mathbb{E}_{\mathbf{z} \sim q_\phi(\mathbf{z} ,\mathbf{x}\mid 
+>  \mathbf{y})}\left[\log p_\theta(\mathbf{x}, \mathbf{z} \mid \mathbf{y})\right] + 
+> \mathbb{E} _{\mathbf{z} \sim q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})} \left[\log \frac{ p_\theta(\mathbf{z} \mid \mathbf{y})}{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})} \right]  +
+> \mathbb{E}_{\mathbf{z} \sim q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}  \left[\log \frac{q_\theta(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}{p_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\right]
+> \end{align*}
+> $$
+> Here, the first term is the expected joint log-likelihood under the approximate posterior.
+> The second term is: 
+> $$
+> \mathbb{E}_{q_\phi}\left[\log \frac{p_\theta(\mathbf{z} \mid \mathbf{y})}{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\right]=-D_{\mathrm{KL}}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)	\notag
+> $$
+> The third term is:
+> $$
+> \mathbb{E}_{q_\phi}\left[\log \frac{q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}{p_\theta(\mathbf{z} \mid \mathbf{x}, \mathbf{y})}\right]=D_{\mathrm{KL}}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{x}, \mathbf{y})\right) \geq 0	\notag
+> $$
+> So putting it all together we have: 
+> $$
+> \log p_\theta(\mathbf{x} \mid \mathbf{y})=\underbrace{\mathbb{E}_{q_\phi}\left[\log p_\theta(\mathbf{x} \mid \mathbf{z}, \mathbf{y})\right]-D_{\mathrm{KL}}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)}_{: = \mathcal{L}(\theta, \phi ; \mathbf{x}, \mathbf{y})}+D_{\mathrm{KL}}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{x}, \mathbf{y})\right)	\notag
+> $$
+> And since the KL divergence $D_{\mathrm{KL}}(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{x}, \mathbf{y}))$ is non-negative, we finally get:
+> $$
+> \log p_\theta(\mathbf{x} \mid \mathbf{y}) \geq \mathcal{L}(\theta, \phi ; \mathbf{x}, \mathbf{y})	\notag
+> $$
 
 
 
@@ -822,7 +861,50 @@ $$
 
 This is a consequence of conditional independence of the components of $\mathbf{z}$.
 
-
+> **Proof:**
+>
+> Since we know 
+> $$
+> D_{K L}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)=\sum_{j=1}^m D_{K L}\left(q_\phi\left(z_j \mid \mathbf{x}, \mathbf{y}\right) \| p_\theta\left(z_j \mid \mathbf{y}\right)\right)	\notag
+> $$
+> It suffices to compute each $\sum_{j=1}^m D_{K L}\left(q_\phi\left(z_j \mid \mathbf{x}, \mathbf{y}\right) \| p_\theta\left(z_j \mid \mathbf{y}\right)\right)$. 
+>
+> We know that:
+> $$
+> q(z_j)=\mathcal{N}\left(\mu_j, \sigma_j^2\right) =\frac{1}{\sqrt{2 \pi \sigma_j^2}} \exp \left(-\frac{\left(z_j-\mu_j\right)^2}{2 \sigma_j^2}\right)	\notag
+> $$
+> And 
+> $$
+> p(z_j)=\mathcal{N}(0,1) = \frac{1}{\sqrt{2 \pi}} \exp \left(-\frac{z_j^2}{2}\right)	\notag
+> $$
+> Then we can compute the log ratio:
+> $$
+> \begin{aligned}
+>  \log \frac{q(z)}{p(z)}&=\log \left(\frac{1}{\sqrt{2 \pi \sigma_j^2}} \exp \left(-\frac{\left(z-\mu_j\right)^2}{2 \sigma_j^2}\right) \cdot \frac{\sqrt{2 \pi}}{1} \exp \left(\frac{z^2}{2}\right)\right) \\
+> &= \log \left(\frac{1}{\sqrt{\sigma_j^2}} \exp \left(-\frac{\left(z-\mu_j\right)^2}{2 \sigma_j^2}+\frac{z^2}{2}\right)\right)\\
+> &=-\frac{1}{2} \log \sigma_j^2+\frac{1}{2}\left(z^2-\frac{\left(z-\mu_j\right)^2}{\sigma_j^2}\right)
+> \end{aligned}	\notag
+> $$
+> Taking expectation to get the KL conv:
+> $$
+> D_{\mathrm{KL}}(q \| p)=\mathbb{E}_{z \sim q}\left[\log \frac{q(z)}{p(z)}\right]=-\frac{1}{2} \log \sigma_j^2+\frac{1}{2} \mathbb{E}_{z \sim q}\left[z^2-\frac{\left(z-\mu_j\right)^2}{\sigma_j^2}\right]	\notag
+> $$
+> And we compute easily that:
+> $$
+> \mathbb{E}_{z \sim q}\left[z^2\right]=\operatorname{Var}(z)+\mathbb{E}[z]^2=\sigma_j^2+\mu_j^2,\quad \mathbb{E}_{z \sim q}\left[\left(z-\mu_j\right)^2\right]=\sigma_j^2	\notag
+> $$
+> Thus putting it together we have:
+> $$
+> D_{\mathrm{KL}}(q \| p)=-\frac{1}{2} \log \sigma_j^2+\frac{1}{2}\left(\sigma_j^2+\mu_j^2-1\right)=\frac{1}{2}\left(-\log \sigma_j^2+\sigma_j^2+\mu_j^2-1\right)	\notag
+> $$
+> So back to the original sum, we have:
+> $$
+> \begin{align*}
+>     D_{K L}\left(q_\phi(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) \| p_\theta(\mathbf{z} \mid \mathbf{y})\right)
+>     & =\sum_{j=1}^m D_{K L}\left(q_\phi\left(z_j \mid \mathbf{x}, \mathbf{y}\right) \| p_\theta\left(z_j \mid \mathbf{y}\right)\right) \\
+>     &= \frac{1}{2} \sum_{j=1}^m\left(-\log \sigma_j^2+\sigma_j^2+\mu_j^2-1\right)
+> \end{align*}
+> $$
 
 
 
