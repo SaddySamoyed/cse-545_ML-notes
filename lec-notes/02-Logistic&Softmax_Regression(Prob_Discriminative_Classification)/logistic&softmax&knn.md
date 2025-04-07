@@ -1,30 +1,4 @@
-## Classification(lec 4)
-
-### framework
-
-我们已经学习了一种 supervised learning: regression. 现在学习第二种 supervised learning: classification
-
-<img src="02-classification.assets/image-20250202161526265.png" alt="image-20250202161526265" style="zoom:22%;" />
-
-<img src="02-classification.assets/image-20250202161540962.png" alt="image-20250202161540962" style="zoom:25%;" />
-
-
-
-本节 lec：learn $P(C_k | x)$ over data (e.g. max likelihood)，并直接 predict labels from inputs
-
-下节 lec：learn $P(C_k | x)$ over data (e.g. max likelihood)，而后使用 Bayes' Rule 来 predict label.
-
-
-
-
-
-
-
-
-
-
-
-### logistic regression
+# logistic regression
 
 logistic regression 是一种二分类算法，idea: 用一个 hyperplane 来分割整个空间
 
@@ -34,7 +8,7 @@ w^T\phi(x)  = 0
 $$
 
 
-![Screenshot 2025-02-02 at 16.02.04](02-classification.assets/Screenshot 2025-02-02 at 16.02.04.png)
+![Screenshot 2025-02-02 at 16.02.04](logistic&softmax&knn.assets/Screenshot 2025-02-02 at 16.02.04.png)
 
 在这个模型中，我们并不 deterministic 地 predict，而是 probabilistically.
 
@@ -53,8 +27,7 @@ $$
 
 
 
-
-#### modeling output as a probability function of $\{0,1\}$
+## modeling: output as a probability function of $\{0,1\}$
 
 我们使用这个平面作为概率为 1/2 的分界线, 配合 logistic 函数 来对输出进行建模. **这个输出是一个 source 为 $\{0,1\}$ 的函数, 表示这个点 $x$ 的 $y$ 是 1 的概率和 是 0 的概率，即一个概率密度函数.**
 $$
@@ -134,7 +107,7 @@ Note: linear regression with Gaussian noise 中的 output random variable $y$ �
 
 现在我们计算一下 gradient:
 
-<img src="02-classification.assets/image-20250202184909119.png" alt="image-20250202184909119" style="zoom:50%;" />
+<img src="logistic&softmax&knn.assets/image-20250202184909119.png" alt="image-20250202184909119" style="zoom:50%;" />
 
 因而:
 $$
@@ -142,7 +115,7 @@ $$
 $$
 和 linear regression 中差不多. **只是在 linear regression 中, 对 $h$ 中每一项施加了一个 sigmoid 函数就好.**
 
-<img src="02-classification.assets/image-20250202185623408.png" alt="image-20250202185623408" style="zoom:9%;" />
+<img src="logistic&softmax&knn.assets/image-20250202185623408.png" alt="image-20250202185623408" style="zoom:9%;" />
 
 
 
@@ -162,7 +135,7 @@ $$
 
 
 
-### Newton's method
+## 使用 Newton's method 来优化 logistic regression
 
 我们下面讲一个优化方法. newton 法是寻找一个函数的 root 的数值方法. 
 
@@ -174,7 +147,7 @@ x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}
 $$
 推导也很简洁, 我们使用一阶泰勒近似:
 
-<img src="02-classification.assets/image-20250208173307550.png" alt="image-20250208173307550" style="zoom:10%;" />
+<img src="logistic&softmax&knn.assets/image-20250208173307550.png" alt="image-20250208173307550" style="zoom:10%;" />
 
 看起来一步就出了, 但是我们仍要进行迭代, 因为这是一阶泰勒近似, 后面还有余项. 迭代就是不停地求出一阶近似结果.
 
@@ -191,41 +164,9 @@ $$
 
 #### 推导
 
-<img src="02-classification.assets/image-20250208175328176.png" alt="image-20250208175328176" style="zoom:25%;" />
+<img src="logistic&softmax&knn.assets/image-20250208175328176.png" alt="image-20250208175328176" style="zoom:25%;" />
 
 Note: **for linear regression, Hessian 为 $\Phi^T\Phi$.**
-
-
-
-### 求 gradient 和 Heissan
-
-Note: 
-
-对于 $f:\mathbb{R}^n \rightarrow \mathbb{R}$,
-$$
-\nabla f: \mathbb{R}^n \rightarrow \mathbb{R^n}
-$$
-把一个点的值映射到这个点的导数的转置
-
-而 Hessian 则是:
-$$
-H_f(x) = D(\nabla f) (x)
-$$
-对 $\nabla f$ 的求导.
-
-
-
-梯度的链式法则:
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -278,50 +219,7 @@ $$
 
 
 
-<img src="02-classification.assets/Screenshot 2025-02-08 at 18.01.34.png" alt="Screenshot 2025-02-08 at 18.01.34" style="zoom: 67%;" />
-
-
-
-
-
-
-
-### KNN(K-nerest neighbors)
-
-这是一个比起 logstic regression, 更加简单的分类算法.
-
-**它并不进行 learning！！**而是直接把 training set 原封不动拿来作为参照
-
-而是对于每个 query example, 
-
-1. 找到 $k$ 个 training set 中和它最近的点, 这个集合标记为 $KNN$
-2. 而后, predict 结果为它的 $KNN$ 中的众数 $y$. 即相邻的 training 点中最多的从属类.
-
-
-
-Note: 通过 adapt 这个预测公式, 我们也可以应用它到 regression 上。
-
-<img src="02-classification.assets/Screenshot 2025-02-08 at 18.11.36.png" alt="Screenshot 2025-02-08 at 18.11.36" style="zoom: 50%;" />
-
-
-
-#### hyper parameters
-
-1. **更大的 $k$ 可以获得更加 smooth 的 decision boundary.**
-
-2. **更大的 $N$ (training set size) 可以提高 performance.** 
-
-   ESL 13.3 定理: 当 $N\rightarrow \infty$ 时, 1-NN 分类器的 error 不会超过 optimal error 的两倍。
-
-1. distance metric 的选择也很重要.  (which $L_p$?)
-
-<img src="02-classification.assets/Screenshot 2025-02-08 at 18.15.04.png" alt="Screenshot 2025-02-08 at 18.15.04" style="zoom: 67%;" />
-
-#### Effectiveness analysis
-
-KNN 的优点是简洁，灵活，对于低维度 input 高效
-
-缺点是 expansive，对高维度 input 并不高效（都太远了），以及 not robust to irrelevant features. 容易收到 noise 影响。
+<img src="logistic&softmax&knn.assets/Screenshot 2025-02-08 at 18.01.34.png" alt="Screenshot 2025-02-08 at 18.01.34" style="zoom: 67%;" />
 
 
 
@@ -335,54 +233,11 @@ KNN 的优点是简洁，灵活，对于低维度 input 高效
 
 
 
-## Classification(lec 5)
-
-### Probabilistic Discriminative Models 和 Probabilistic Generative Models 的区别
-
-**Probabilistic Discriminative Models** 和 **Probabilistic Generative Models** 是两种概率模型，用于解决分类和预测问题，它们的主要区别在于建模的方式和目标：
-
-#### Probabilistic Discriminative Models
-
-**Probabilistic Discriminative Models** 建模 **conditional 概率分布** $P(y |x,w)$，**object 是 maximize conditional likelihood $L(w|x)$** , 即在给定 $x$ 的情况下, 输出随机变量 $y$ 的概率分布.
-
-- 例子: 比如 logistic regression 和 今天要讲的 **softmax regression (multiclass logistic regression)**
-
-- 优点
-  - 不需要对 $P(x)$ 或 $P(x,y)$ 建模
-  - 计算效率高，训练相对简单
-
-- 缺点
-
-  - 对数据的整体生成过程没有建模，适用场景有限
-
-#### Probabilistic Generative Models
-
-**Probabilistic Generative Models** 建模 **joint 概率分布** $P(x,y | w)$，object 是 **maxmize joint likelihood** $L(w)$，可以通过建模数据生成过程，间接推断 $P(y|x)$；并且同时也可以自己生成数据 $x$. 
-
-- 例子
-
-  - **Gaussian Discriminant Analysis (高斯判别分析)**: 假设类条件分布 $P(x \mid y)$ 为高斯分布。
-  - **Naive Bayes (朴素贝叶斯)**: 假设特征条件独立，简化计算。
-
-- 优点
-
-  - 可以生成新数据 (生成模型)。
-  - 对数据的分布有更全面的建模。
-
-- 缺点
-
-  - 对数据分布假设更强 (如高斯假设)。
-  - 计算量可能较大。
-
-Note: 这个模型会生成 both $x$ 和 $y$，不过它仍需要 testing set, 用于评估模型在未知数据上的表现，即它根据 $x$ 生成 $y$ 的能力.
-
-
-
-### Softmax regression: multiclass classification
+# Softmax regression: multiclass logistic
 
 先前我们的 logistic regression:
 
-![Screenshot 2025-02-08 at 22.52.42](02-classification.assets/Screenshot 2025-02-08 at 22.52.42.png)
+![Screenshot 2025-02-08 at 22.52.42](logistic&softmax&knn.assets/Screenshot 2025-02-08 at 22.52.42.png)
 
 
 
@@ -390,7 +245,7 @@ Note: 这个模型会生成 both $x$ 和 $y$，不过它仍需要 testing set, �
 
 我们 set: 
 
-![Screenshot 2025-02-08 at 22.56.55](02-classification.assets/Screenshot 2025-02-08 at 22.56.55.png)
+![Screenshot 2025-02-08 at 22.56.55](logistic&softmax&knn.assets/Screenshot 2025-02-08 at 22.56.55.png)
 
 #### setting the last weight vector $w_k$ to 0 vector 
 
@@ -429,7 +284,7 @@ $$
 
 #### log-likelihood objective function of softmax regression
 
-<img src="02-classification.assets/Screenshot 2025-02-08 at 23.38.03.png" alt="Screenshot 2025-02-08 at 23.38.03" style="zoom:50%;" />
+<img src="logistic&softmax&knn.assets/Screenshot 2025-02-08 at 23.38.03.png" alt="Screenshot 2025-02-08 at 23.38.03" style="zoom:50%;" />
 
 
 
@@ -437,126 +292,51 @@ $$
 
 
 
-### Probabilistic Generative model overview
 
-刚才我们说了，对于 probabilistic discriminative model, 我们要 model 的是 $p(C_k|x)$,
 
-而对于 probabilistic generative model, 我们要 model 的是 joint density function $p(x,C_k)$ （并同时得到 $p(x|C_k)$
 
 
 
-方法: 我们**通过 model 并 learn $p(X=x|C_k)$ 以及 prior $p(C_k)$ 的乘积 $p(x,C_k)$) **，**运用 Beyes rule 来 predict $p(x | C_k)$.**
 
-By Bayes: 
+# KNN(K-nerest neighbors)
 
-<img src="02-classification.assets/Screenshot 2025-02-09 at 03.45.06.png" alt="Screenshot 2025-02-09 at 03.45.06" style="zoom:50%;" />
+这是一个比起 logstic regression, 更加简单的分类算法.
 
-对于固定的 $x$, 我们通过我们 model 的 $p(x|C_k)$ 以及 $p(C_k)$ for each $k$, 即 $p(C_k,x)$，从而得到 $p(C_k |x)$，即我们的预测结果
+**它并不进行 learning！！**而是直接把 training set 原封不动拿来作为参照
 
-以两个 classes 为例:  two classes: 
+而是对于每个 query example, 
 
-<img src="02-classification.assets/Screenshot 2025-02-09 at 18.04.25.png" alt="Screenshot 2025-02-09 at 18.04.25" style="zoom:50%;" />
+1. 找到 $k$ 个 training set 中和它最近的点, 这个集合标记为 $KNN$
+2. 而后, predict 结果为它的 $KNN$ 中的众数 $y$. 即相邻的 training 点中最多的从属类.
 
-<img src="02-classification.assets/Screenshot 2025-02-09 at 18.05.07.png" alt="Screenshot 2025-02-09 at 18.05.07" style="zoom:50%;" />
 
 
+Note: 通过 adapt 这个预测公式, 我们也可以应用它到 regression 上。
 
+<img src="logistic&softmax&knn.assets/Screenshot 2025-02-08 at 18.11.36.png" alt="Screenshot 2025-02-08 at 18.11.36" style="zoom: 50%;" />
 
 
-### Gaussian Discriminant Analysis
 
-https://aman.ai/cs229/gda/
+#### hyper parameters: $k,p$ ($p$ for which $L^p$ Metric)
 
-https://kuleshov-group.github.io/aml-book/contents/lecture7-gaussian-discriminant-analysis.html
+1. **更大的 $k$ 可以获得更加 smooth 的 decision boundary.**
+2. distance metric 的选择也很重要.  (which $L_p$?)
 
-GDA 是一种 probabilistic generative model, 它 model 每个 $p(C_k)$ 为 constant (比如使用 Bernoulli 分布)，并对每个 $C_k$, 把 $p(x | C_k)$ model 为一个 Gaussian distribution:
+<img src="logistic&softmax&knn.assets/Screenshot 2025-02-08 at 18.15.04.png" alt="Screenshot 2025-02-08 at 18.15.04" style="zoom: 67%;" />
 
-![Screenshot 2025-02-09 at 18.36.36](02-classification.assets/Screenshot 2025-02-09 at 18.36.36.png)
+除了 hyperparameters 之外, training set size $N$ 也重要.
 
-其中 $\Sigma$ 表示 covariance matrix of the $M$ features
+**更大的 $N$ (training set size) 可以提高 performance.** 
 
-以 dim=2 为例：
+ESL 13.3 定理: 当 $N\rightarrow \infty$ 时, 1-NN 分类器的 error 不会超过 optimal error 的两倍
 
 
 
-![Screenshot 2025-02-09 at 18.41.59](02-classification.assets/Screenshot 2025-02-09 at 18.41.59.png)
+#### Effectiveness analysis
 
+KNN 的优点是简洁，灵活，对于低维度 input 高效
 
+缺点是 expansive，对高维度 input 并不高效（都太远了），以及 not robust to irrelevant features. 容易收到 noise 影响。
 
-recall: **cov matrix 一定半正定，并且对称。**
 
 
-
-
-
-**最 basic 的 GDA 假设所有 classes 的 covariance 都是相等的。**
-
-于是 follows: decision boundary 是 linear 的
-
-![Screenshot 2025-02-09 at 19.22.59](02-classification.assets/Screenshot 2025-02-09 at 19.22.59.png)
-
-<img src="02-classification.assets/Screenshot 2025-02-09 at 19.33.22.png" alt="Screenshot 2025-02-09 at 19.33.22" style="zoom: 45%;" />
-
-
-
-
-
-
-
-
-
-#### 计算 log odds 的表达式
-
-<img src="02-classification.assets/Screenshot 2025-02-09 at 19.35.36.png" alt="Screenshot 2025-02-09 at 19.35.36" style="zoom:50%;" />
-
-其表达式为: 
-
-![Screenshot 2025-02-09 at 19.36.16](02-classification.assets/Screenshot 2025-02-09 at 19.36.16.png)
-
-
-
-#### Learning GDA<img src="02-classification.assets/Screenshot 2025-02-09 at 19.34.30.png" alt="Screenshot 2025-02-09 at 19.34.30" style="zoom:50%;" />
-
-（假设所有数据 i.i.d.）
-
-
-
-
-
-#### GDA 参数一览
-
-<img src="02-classification.assets/Screenshot 2025-02-09 at 19.44.51.png" alt="Screenshot 2025-02-09 at 19.44.51" style="zoom:50%;" />
-
-因而 GDA 对 data 的 distribution 有很多的假设。logistic regression 则只有 2M 个参数。
-
-一览：
-
-<img src="02-classification.assets/Screenshot 2025-02-09 at 19.48.13.png" alt="Screenshot 2025-02-09 at 19.48.13" style="zoom:50%;" />
-
-
-
-<img src="02-classification.assets/Screenshot 2025-02-09 at 20.07.06.png" alt="Screenshot 2025-02-09 at 20.07.06" style="zoom:50%;" />
-
-<img src="02-classification.assets/Screenshot 2025-02-09 at 20.07.34.png" alt="Screenshot 2025-02-09 at 20.07.34" style="zoom:50%;" />
-
-
-
-## Classification (lec 6)
-
-### Naive Bayes
-
-
-
-仍然假设 class label 的 Probability 是 constant 的, 即 model 为 Bernoulli 分布
-$$
-y \sim Bernulli(\phi)
-$$
-即 $P(C_1)= \phi$, $P(C_0) = 1-\phi$
-
-
-
-
-
-Naive Bayes assumption: $x$ 的所有 coordinates 是 **conditionally independent**  的
-
-<img src="02-classification.assets/Screenshot 2025-02-11 at 21.38.20.png" alt="Screenshot 2025-02-11 at 21.38.20" style="zoom:40%;" />
