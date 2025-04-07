@@ -8,7 +8,7 @@
 
 
 
-![image-20250306211648511](/Users/fanqiulin/Desktop/cse-545_ML-notes/lec-notes/04-neural_network.assets/image-20250306211648511.png)
+![image-20250306211648511](RNN_and_transformer.assets/image-20250306211648511.png)
 
 因而 RNN: recurrance NN 诞生了。
 
@@ -22,7 +22,7 @@ We reuse/share parameters for each input in a recurrent computation
 
 ### RNN 架构
 
-![image-20250306214258633](/Users/fanqiulin/Desktop/cse-545_ML-notes/lec-notes/04-neural_network.assets/image-20250306214258633.png)
+![image-20250306214258633](RNN_and_transformer.assets/image-20250306214258633.png)
 
 在 RNN 中，**每个时间步 $t$ 的隐藏状态 $h_t$ 由前一个隐藏状态 $h_{t-1}$ 和当前输入 $x_t$ 共同决定：**
 
@@ -38,7 +38,7 @@ We reuse/share parameters for each input in a recurrent computation
 
 RNN 的 loss 是所有的 time 上的 loss 的总和。每过一个 timestamp 就计算一次单 time 上的 loss.
 
-![Screenshot 2025-03-06 at 21.54.22](/Users/fanqiulin/Desktop/cse-545_ML-notes/lec-notes/04-neural_network.assets/Screenshot 2025-03-06 at 21.54.22.png)
+![Screenshot 2025-03-06 at 21.54.22](RNN_and_transformer.assets/Screenshot 2025-03-06 at 21.54.22.png)
 
 为了计算这个 loss, 我们需要 do some recursion. Take: 
 $$
@@ -56,7 +56,7 @@ $$
 
 #### backpropagation through time (BPTT)
 
-![image-20250307025712487](/Users/fanqiulin/Desktop/cse-545_ML-notes/lec-notes/04-neural_network.assets/image-20250307025712487.png)
+![image-20250307025712487](RNN_and_transformer.assets/image-20250307025712487.png)
 
 
 
