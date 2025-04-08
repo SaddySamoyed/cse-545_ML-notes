@@ -1,6 +1,7 @@
-## Linear Regression(lec1)
+# Linear Regression basics
 
-### notation and expression
+## Modeling
+
 我们使用以下 notation:
 
 <img src="Linear_Regression.assets/lec1-notation.png" alt="lec1-notation" style="zoom: 25%;" />
@@ -10,28 +11,57 @@
 
 我们通过建立一个 $h(x,w): \mathbb{R}^d \times \mathbb{R}^M \rightarrow  \mathbb{R} = \sum_{i=0}^{M-1} w_i \phi_i(x)$, 使其关于 $w$ 线性, 以找到一组参数 $w \in \mathbb{R}^M$, 使得 $h(x^{(n)},w)$ 能够近似 $y^{(n)}$ for each $n$, with respect to the loss function we define to measure the distance between two vectors. 
 
-<img src="Linear_Regression.assets/lec1(expression).png" alt="lec1(expression)" style="zoom: 50%;" />
-
-
-Remark:   注意 linear regression 指的是 $y$ 和参数 $w$ 之间是 linear 的, 而不是说 $y$ 和 input $x$ 之间是 linear 的. 我们可以选择 nonlinear 的 basis funtions 来 encode $x$ 来表示 features 的特性, 比如我们可以选择:
-
-<img src="Linear_Regression.assets/lec1-basis.png" alt="lec1-basis" style="zoom: 25%;" />
+<img src="Linear_Regression.assets/Screenshot 2025-04-08 at 12.10.51.png" alt="Screenshot 2025-04-08 at 12.10.51" style="zoom:33%;" />
 
 
 
-### loss function: sum of squared error
+其中
+$$
+\begin{aligned} & w=\left(w_0, \ldots, w_{m-1}\right)^{\top}, \varphi(x)=\left(1, \varphi_1(x), \ldots, \varphi_{m-1}(x)\right)^{\top}\end{aligned}
+$$
+
+$$
+w=\left[\begin{array}{c}w_0 \\ \vdots \\ w_{m-1}\end{array}\right], \varphi(x)=\left[\begin{array}{c}1  \\ \vdots \\ \varphi_{m-1}(x)\end{array}\right]
+$$
+
+
+
+
+Remark:   注意 linear regression 指的是 **$y$ 和参数 $w$ 之间是 linear 的, 而不是说 $y$ 和 input $x$ 之间是 linear 的**. 我们可以选择 nonlinear 的 basis funtions 来 encode $x$ 来表示 features 的特性, 比如我们可以选择:
+
+<img src="Linear_Regression.assets/lec1-basis.png" alt="lec1-basis" style="zoom: 17%;" />
+
+## loss function: sum of squared error
+
 这个 loss function 衡量两个 vectors 之间的距离, 目的是衡量 $y \in \mathbb{R}^N$ 和 $h(x,w) \in \mathbb{R}^N$ 这两个 vectors 的差距. 实际上就是它们 difference 的 $L_2$-norm 的平方.
 
-<img src="Linear_Regression.assets/lec1-loss.png" alt="lec1-loss" style="zoom: 33%;" />
-
-
+**sum of squares error:**
+$$
+\begin{aligned}
+E(w) & =\frac{1}{2} \sum_{n=1}^N\left\|h\left(x^{(n)}, w\right)-y^{(n)}\right\|_2^2 \\
+& = {\frac{1}{2} \sum_{n=1}^N\left(\sum_{i=0}^{M-1} w_i \varphi_i\left(x^{(n)}\right)-y^{(n)}\right)^2}
+\end{aligned}
+$$
 
 ### gradient of sum of squared error
+
+$$
+\nabla E(w)=\left[\begin{array}{c}
+\frac{\partial E}{\partial w_0}(w) \\
+\vdots \\
+\frac{\partial E}{\partial w_m}(w)
+\end{array}\right]
+$$
+
 我们下面首先通过求 $\nabla E(w)$ 的每个 entry $\frac{\partial E}{\partial w_k}(w)$ 来写出这个 gradient.
 
-<img src="Linear_Regression.assets/lec1-gradient.png" alt="lec1-gradient" style="zoom: 50%;" />
+<img src="Linear_Regression.assets/Screenshot 2025-04-08 at 12.18.20.png" alt="Screenshot 2025-04-08 at 12.18.20" style="zoom: 25%;" />
 
 
+
+因而 vectorize:
+
+<img src="Linear_Regression.assets/Screenshot 2025-04-08 at 12.18.46.png" alt="Screenshot 2025-04-08 at 12.18.46" style="zoom:25%;" />
 
 
 
@@ -41,17 +71,15 @@ Remark:   注意 linear regression 指的是 $y$ 和参数 $w$ 之间是 linear 
 
 我们通过迭代降低 gradient 来降低 loss function 的值, 从而优化 weight vector.
 
-<img src="Linear_Regression.assets/lec1-descent.png" alt="lec1-descent" style="zoom: 50%;" />
+<img src="Linear_Regression.assets/lec1-descent.png" alt="lec1-descent" style="zoom: 33%;" />
 
 
 
-(More practically, 我们可以采用 minibatch SGD: 即在 batch GD 和 SGD 之间, 每次选择一小部分 samples, 称为一个 \textbf{minibatch}, 在这个 minibatch 上进行 GD.)
+(More practically, 我们可以采用 minibatch SGD: 即在 batch GD 和 SGD 之间, 每次选择一小部分 samples, 称为一个 minibatch, 在这个 minibatch 上进行 GD.)
 
 
 
-## Linear Regression(lec2)
-
-### vectorization
+## vectorization
 
 我们可以把每个 $x^{(n)}$ 的 features 写成一个 row vector, 并 stack up $N$ 个 row vectors, 成为一个 $N\times M$ 的 matrix $\Phi$. 从而:
 $$
@@ -75,16 +103,16 @@ $$
 为了计算 closed form solution, 我们首先要给出 $\nabla E(w)$ 的 matrix form 表达式. \\
 这里首先引入 linear form 和 quadratic form  的 gradient:
 
-<img src="Linear_Regression.assets/lec2-diff.png" alt="lec2-diff" style="zoom: 33%;" />
+<img src="Linear_Regression.assets/lec2-diff.png" alt="lec2-diff" style="zoom: 15%;" />
 
 
 我们发现: $E(w)$ 就是一个 $w$ 的 quadratic form, 一个 $w$ 的 linear form 和一个 const 的组合. 从而可以求出:
 
-<img src="Linear_Regression.assets/lec2-grad.png" alt="lec2-grad" style="zoom: 33%;" />
+<img src="Linear_Regression.assets/lec2-grad.png" alt="lec2-grad" style="zoom: 25%;" />
 
 从而我们得到 closed form solution (if exists):
 
-<img src="Linear_Regression.assets/lec2-closed.png" alt="lec2-closed" style="zoom: 25%;" />
+<img src="Linear_Regression.assets/lec2-closed.png" alt="lec2-closed" style="zoom: 15%;" />
 
 因而 closed form exists iff $\Phi^T\Phi$ 可逆, iff $\Phi$ 可逆.
 并且 recalll in linear algebra: **$rank(\Phi^T\Phi) = rank(\Phi)$.**
@@ -92,7 +120,7 @@ $$
 
 
 
-### overfitting
+## overfitting
 
 <img src="Linear_Regression.assets/Screenshot 2025-01-21 at 18.11.31.png" alt="image-20250121173433845" style="zoom:50%;" />
 
@@ -168,11 +196,11 @@ summary: regularization controls the tradeoff bewteen fitting error 和 expressi
 
 这是符合直觉的，因为一个正态分布的 noise 不影响参数的选择)
 
-<img src="Linear_Regression.assets/image-20250123180955714.png" alt="image-20250123180955714" style="zoom: 50%;" />
+<img src="Linear_Regression.assets/image-20250123180955714.png" alt="image-20250123180955714" style="zoom: 33%;" />
 
 ### locally weighted linear regression 
 
-<img src="Linear_Regression.assets/image-20250123193833909.png" alt="image-20250123193833909" style="zoom: 50%;" />
+<img src="Linear_Regression.assets/image-20250123193833909.png" alt="image-20250123193833909" style="zoom: 33%;" />
 
 
 

@@ -2,9 +2,7 @@
 
 ### image classification if fully connected
 
-![image-20250306053559243](CNN.assets/image-20250306053559243.png)
-
-
+<img src="CNN.assets/image-20250306053559243.png" alt="image-20250306053559243" style="zoom:33%;" />
 
 
 
@@ -24,23 +22,29 @@ Convolution layer 的 idea: 利用 pixels 的 2D topology, 即: 图形的 transl
 
 #### convolution layer: activation map
 
-![image-20250306054552189](CNN.assets/image-20250306054552189.png)
+<img src="CNN.assets/image-20250306054552189.png" alt="image-20250306054552189" style="zoom: 25%;" />
 
-CNN![image-20250306072411570](CNN.assets/image-20250306072411570.png)
+activation map: 
+
+<img src="CNN.assets/Screenshot 2025-04-08 at 14.01.05.png" alt="Screenshot 2025-04-08 at 14.01.05" style="zoom:25%;" />
+
+
+
+得到新的 image:
+
+<img src="CNN.assets/Screenshot 2025-04-08 at 14.01.35.png" alt="Screenshot 2025-04-08 at 14.01.35" style="zoom:15%;" />
 
 多个 filters 可创建多个 activation maps
 
-![image-20250306072606467](CNN.assets/image-20250306072606467.png)
-
-
-
-
+<img src="CNN.assets/image-20250306072606467.png" alt="image-20250306072606467" style="zoom: 33%;" />
 
 #### express the feature map as convolution
 
-![image-20250306073659842](CNN.assets/image-20250306073659842.png)
+<img src="CNN.assets/image-20250306073659842.png" alt="image-20250306073659842" style="zoom:33%;" />
 
-ex: ![image-20250306074514773](CNN.assets/image-20250306074514773.png)
+Example: 
+
+<img src="CNN.assets/image-20250306074514773.png" alt="image-20250306074514773" style="zoom: 33%;" />
 
 
 
@@ -55,11 +59,11 @@ convolution layer 一共有 4 个 hyperparameters:
 
 改变 strides 即改变 convolution 采样的间距. stride 越大, 表示采样越稀疏, 降低对了特征的采集的精细度.
 
-![image-20250306075148349](CNN.assets/image-20250306075148349.png)
+<img src="CNN.assets/image-20250306075148349.png" alt="image-20250306075148349" style="zoom: 33%;" />
 
 计算 activation map 的像的维度的公式:
 
-![image-20250306155330378](CNN.assets/image-20250306155330378.png)
+<img src="CNN.assets/image-20250306155330378.png" alt="image-20250306155330378" style="zoom:16%;" />
 
 
 
@@ -83,7 +87,7 @@ convolution layer 一共有 4 个 hyperparameters:
 
 **计算 output 大小:**
 
-![image-20250306160932346](CNN.assets/image-20250306160932346.png)
+<img src="CNN.assets/image-20250306160932346.png" alt="image-20250306160932346" style="zoom:16%;" />
 
 (for one kernel.)
 
@@ -102,7 +106,7 @@ convolution layer 一共有 4 个 hyperparameters:
   - $3 \times 3$ 卷积核 → `padding=1`
   - $5 \times 5$ 卷积核 → `padding=2`
 
-![Screenshot 2025-03-06 at 16.02.30](CNN.assets/Screenshot 2025-03-06 at 16.02.30.png)
+<img src="CNN.assets/Screenshot 2025-03-06 at 16.02.30.png" alt="Screenshot 2025-03-06 at 16.02.30" style="zoom:25%;" />
 
 
 
@@ -116,7 +120,7 @@ convolution layer 一共有 4 个 hyperparameters:
 
 convolution layer 通过滑动窗口和 image 对应位置作 inner product 来提取特征图，而 pooling 则是一种更加直接的 **subsampling (降采样)**，主要目的是降低特征图的尺寸，减少计算量，同时保留重要特征。同样**利用了模型的平移不变性，减少参数数量，从而提高泛化能力。**
 
-![image-20250306163050853](CNN.assets/image-20250306163050853.png)
+<img src="CNN.assets/image-20250306163050853.png" alt="image-20250306163050853" style="zoom:25%;" />
 
 
 
@@ -126,21 +130,21 @@ convolution layer 通过滑动窗口和 image 对应位置作 inner product 来�
 
 - 计算窗口区域内的最大值。
 
-- 主要用于保留局部区域的最强特征（高激活值）。
+- 主要用于保留局部区域的最强特征（高激活值）
 
-- 适用于提取边缘和纹理等重要特征，常用于 CNN 任务，如图像分类、目标检测等。
+- 适用于提取边缘和纹理等重要特征，常用于 CNN 任务，如图像分类、目标检测等
 
-  ![image-20250306163239902](CNN.assets/image-20250306163239902.png)
+  <img src="CNN.assets/image-20250306163239902.png" alt="image-20250306163239902" style="zoom:25%;" />
 
 #### Average Pooling
 
 - 计算窗口区域内所有值的**平均值**。
 
-- 适用于平滑特征图，减少过拟合，但可能会导致信息损失较大。
+- 适用于平滑特征图，减少过拟合，但可能会导致信息损失较大
 
-- 在某些任务（如图像分割、强化学习）中仍然有用。
+- 在某些任务（如图像分割、强化学习）中仍然有用
 
-  ![image-20250306163255277](CNN.assets/image-20250306163255277.png)
+  <img src="CNN.assets/image-20250306163255277.png" alt="image-20250306163255277" style="zoom:25%;" />
 
   
 

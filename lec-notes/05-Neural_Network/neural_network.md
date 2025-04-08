@@ -2,7 +2,7 @@
 
 DL 本质上就是**将 input Space 到 Feature Space 的映射从 single layer (比如 logistic regression) 扩展为 multilayer**，并通过这些层次化的表示来学习数据的更高阶特征.
 
-![image-20250305002815432](neural_network.assets/image-20250305002815432.png)
+<img src="neural_network.assets/image-20250305002815432.png" alt="image-20250305002815432" style="zoom: 20%;" />
 
 比方说 DL 一个分类问题:
 
@@ -15,7 +15,7 @@ DL 本质上就是**将 input Space 到 Feature Space 的映射从 single layer 
 
 以下为各种 Machine Learning methods 以 supervised 与否、deep 与否这两个标准的分类
 
-![image-20250305003035572](neural_network.assets/image-20250305003035572.png)
+<img src="neural_network.assets/image-20250305003035572.png" alt="image-20250305003035572" style="zoom:20%;" />
 
 
 
@@ -23,29 +23,21 @@ DL 本质上就是**将 input Space 到 Feature Space 的映射从 single layer 
 
 ### types of neurons
 
-![image-20250305003246906](neural_network.assets/image-20250305003246906.png)
+linear & Relu:
 
+<img src="neural_network.assets/image-20250305003246906.png" alt="image-20250305003246906" style="zoom:20%;" />
 
+Sigmoid & tanh:
 
-![image-20250305003259165](neural_network.assets/image-20250305003259165.png)
+<img src="neural_network.assets/image-20250305003259165.png" alt="image-20250305003259165" style="zoom:30%;" />
 
-![image-20250305003512806](neural_network.assets/image-20250305003512806.png)
+softmax
 
+<img src="neural_network.assets/image-20250305003512806.png" alt="image-20250305003512806" style="zoom:15%;" />
 
+使用这些组建, 我们可以搭建一个 layer; 并用 layers 组成一个 NN
 
-
-
-![image-20250305003525036](neural_network.assets/image-20250305003525036.png)
-
-
-
-
-
-
-
-
-
-
+<img src="neural_network.assets/image-20250305003525036.png" alt="image-20250305003525036" style="zoom:25%;" />
 
 
 
@@ -53,67 +45,53 @@ DL 本质上就是**将 input Space 到 Feature Space 的映射从 single layer 
 
 Algorithm of NN training: 
 
-![image-20250305003555313](neural_network.assets/image-20250305003555313.png)
+<img src="neural_network.assets/image-20250305003555313.png" alt="image-20250305003555313" style="zoom:20%;" />
 
+在这一过程中, 其中一个 layer 到另一个 layer 是这样
 
-
-在这一过程中, 其中一个 layer 到另一个 layer 是这样啊
-
-![image-20250305004949858](neural_network.assets/image-20250305004949858.png)
-
-
+<img src="neural_network.assets/image-20250305004949858.png" alt="image-20250305004949858" style="zoom:30%;" />
 
 对于某一层的 parameters $\theta$ 的导数的计算, 可以由 chain rule 得到. 
 
-![image-20250305005738165](neural_network.assets/image-20250305005738165.png)
+<img src="neural_network.assets/image-20250305005738165.png" alt="image-20250305005738165" style="zoom:25%;" />
 
 其 vectorization form: 
 
-![image-20250305010120659](neural_network.assets/image-20250305010120659.png)
+<img src="neural_network.assets/image-20250305010120659.png" alt="image-20250305010120659" style="zoom:15%;" />
 
 #### my remark: ml 里数学 notation 的不严谨之处, 以及如何指认.
 
 我们首先复习正常的多元实分析中学到的 notation:
 
-![image-20250305010319973](neural_network.assets/image-20250305010319973.png)
+<img src="neural_network.assets/image-20250305010319973.png" alt="image-20250305010319973" style="zoom:33%;" />
 
 而 ml 中, 经常会有滥用 notation 的情况。我这里并不是指 notation 的形式和数学里不一样，而是 ml 里经常会有 notation 内部的 inconsistency. 比如下面:
 
-![Screenshot 2025-03-05 at 01.15.28](neural_network.assets/Screenshot 2025-03-05 at 01.15.28.png)
+<img src="neural_network.assets/Screenshot 2025-03-05 at 01.15.28.png" alt="Screenshot 2025-03-05 at 01.15.28" style="zoom:25%;" />
 
 我们如何 consistently 翻译这个内容：在 ml 的 notation 里，**对于 R^n to R^m (where m>1)的函数, 不论它写作 nabla 形式还是 partial partial 形式, 都是 Jacobian matrix, 也就是 derivative (即便写成 nabla)；对于 R^n to R 的函数, 不论它写作 nabla 形式还是 partial partial 形式, 都是 gradient, 也就是 derivative 的 transpose (即便写成partial partial)**
 
-![image-20250305011240234](neural_network.assets/image-20250305011240234.png)
+<img src="neural_network.assets/image-20250305011240234.png" alt="image-20250305011240234" style="zoom:25%;" />
 
-虽然我们自己仍然严格地使用正确的数学标记(对于 derivative 用 partial partial, 对于 gradient 用 nabla), 但是碰到不好的标记就用上面这个翻译来理解。
-
-
-
-
-
-
+虽然我们自己仍然对于 derivative 用 partial partial, 对于 gradient 用 nabla, 但是碰到这种标记就用上面这个翻译来理解。
 
 #### ex: NN with 1 hidden layer
 
-![image-20250305122536288](neural_network.assets/image-20250305122536288.png)
+<img src="neural_network.assets/image-20250305122536288.png" alt="image-20250305122536288" style="zoom:25%;" />
 
 Scalar-valued, 很容易算
 
-![image-20250305122547854](neural_network.assets/image-20250305122547854.png)
+<img src="neural_network.assets/image-20250305122547854.png" alt="image-20250305122547854" style="zoom:25%;" />
 
 vectorized: 有点难. 
 
-![image-20250305122619418](neural_network.assets/image-20250305122619418.png)
+<img src="neural_network.assets/image-20250305122619418.png" alt="image-20250305122619418" style="zoom: 25%;" />
 
 至于 matrix input, vector valued 的函数, 其涉及 tensor 的 differentiation, 目前还没写.
 
-![image-20250305122641797](neural_network.assets/image-20250305122641797.png)
+<img src="neural_network.assets/image-20250305122641797.png" alt="image-20250305122641797" style="zoom: 33%;" />
 
 Neural Network 对于数据量很大的数据集 work well, 因为 multi layers 可以学习到复杂的数据范式；但是当数据量比较小的时候，它不 work well，反而是传统的 ml 更加有用。因为数据量小的时候它很容易过拟合。（参数过多）
-
-
-
-
 
 
 
@@ -365,5 +343,4 @@ BN 的局限性：
 ❌ **对 batch size 敏感**：如果 batch size 很小，BN 计算的均值和方差不稳定，可能导致模型性能下降（可以用 GN 代替）。  
 ❌ **不适用于 RNN**：在序列任务（如 RNN）中，BN 的 batch 计算方式不适用，通常用 **Layer Normalization (LN)** 替代。  
 ❌ **计算开销增加**：BN 需要计算均值和方差，并存储额外的统计信息，会增加计算量，特别是在推理阶段。
-
 
