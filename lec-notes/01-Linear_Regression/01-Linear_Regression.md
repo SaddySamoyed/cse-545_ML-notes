@@ -174,3 +174,7 @@ summary: regularization controls the tradeoff bewteen fitting error 和 expressi
 
 <img src="Linear_Regression.assets/image-20250123193833909.png" alt="image-20250123193833909" style="zoom: 50%;" />
 
+
+
+
+
